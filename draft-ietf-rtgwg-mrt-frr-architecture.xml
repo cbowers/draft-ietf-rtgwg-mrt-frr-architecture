@@ -249,6 +249,9 @@
               <c> per neighbor (link) or neighbor's neighbor (node) </c>
          <c/><c/><c/><c/>
          <c>Not-Via</c><c>100% Link/Node</c> <c>None</c> <c>per link and node</c>
+		 <c/><c/><c/><c/>
+         <c>TI-LFA</c><c>100% Link/Node</c> <c>Possible</c>
+			<c> per neighbor (link) or neighbor's neighbor (node) </c>
       </texttable>
 
       <t><list style="hanging">
@@ -284,6 +287,25 @@
         computation is very high (an SPF per failure point) and
         academic implementations <xref target="LightweightNotVia"/>
         have found the address management complexity to be high.</t>
+		
+		<t hangText="TI-LFA:  ">Topology Independent Loop-free Alternate Fast
+		Re-route (TI-LFA) <xref target="I-D.francois-spring-segment-routing-ti-lfa"/>
+		aims to provide link and node protection of
+		node and adjacency segments within the Segment Routing (SR)
+		framework.
+		It has improved coverage over LFA and Remote LFA for link and node 
+		protection and also guarantees complete coverage. The trade-off 
+		of looping traffic to improve coverage is still made.
+		The computation required is quite high with added complexity.
+		TI-LFA is supported only for the MPLS data plane due to the requirement 
+		for the PLR to impose an MPLS label stack on link failure. On certain
+		topologies the label stack size can grow significantly based on repair path.
+		Note that TI-LFA requires shortest path 
+		forwarding based on SR Node-SIDs, as opposed to LDP labels, 
+		in order to construct label stacks for backups paths without relying
+		on a large number of targeted LDP sessions to learn remote FEC-label
+		bindings.
+		</t>
         </list></t>
 
 <section title="Importance of 100% Coverage">
@@ -1852,7 +1874,7 @@ It is important to verify the ISIS extensions work for MRT-FRR. </t>
 
   <t>The authors would like to thank Joel Halpern, Hannes Gredler, Ted
   Qian, Kishore Tiruveedhula, Shraddha Hegde, Santosh Esale, Nitin
-  Bahadur, Harish Sitaraman, and Raveendra Torvi for
+  Bahadur, Harish Sitaraman, Raveendra Torvi, and Anil Kumar SN for
   their suggestions and review.</t>
 
 </section>
@@ -1932,6 +1954,7 @@ less than 4096 so that they can also be signalled in PIM.
 	&I-D.psarkar-rtgwg-rlfa-node-protection;
     &I-D.ietf-rtgwg-ipfrr-notvia-addresses;
     &I-D.ietf-rtgwg-ordered-fib;
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-francois-spring-segment-routing-ti-lfa-01.xml"?>
 
     <reference anchor="I-D.li-isis-mrt">
       <front>
