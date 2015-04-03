@@ -288,24 +288,25 @@
         academic implementations <xref target="LightweightNotVia"/>
         have found the address management complexity to be high.</t>
 		
-		<t hangText="TI-LFA:  ">Topology Independent Loop-free Alternate Fast
-		Re-route (TI-LFA) <xref target="I-D.francois-spring-segment-routing-ti-lfa"/>
-		aims to provide link and node protection of
-		node and adjacency segments within the Segment Routing (SR)
-		framework.
-		It has improved coverage over LFA and Remote LFA for link and node 
-		protection and also guarantees complete coverage. The trade-off 
-		of looping traffic to improve coverage is still made.
-		The computation required is quite high with added complexity.
-		TI-LFA is supported only for the MPLS data plane due to the requirement 
-		for the PLR to impose an MPLS label stack on link failure. On certain
-		topologies the label stack size can grow significantly based on repair path.
-		Note that TI-LFA requires shortest path 
-		forwarding based on SR Node-SIDs, as opposed to LDP labels, 
-		in order to construct label stacks for backups paths without relying
-		on a large number of targeted LDP sessions to learn remote FEC-label
-		bindings.
-		</t>
+	<t hangText="TI-LFA: ">Topology Independent Loop-free
+	Alternate Fast Re-route (TI-LFA) <xref
+	target="I-D.francois-spring-segment-routing-ti-lfa"/> aims to
+	provide link and node protection of node and adjacency
+	segments within the Segment Routing (SR) framework.  It
+	guarantees complete coverage.  The TI-LFA computation for
+	link-protection is fairly straightforward, while the
+	computation for node-protection is more complex.  For
+	link-protection with symmetric link costs, TI-LFA can provide
+	complete coverage by pushing up to two additional labels.
+	For node protection on arbitrary topologies, the label stack
+	size can grow significantly based on repair path.  Note that
+	TI-LFA requires shortest path forwarding based on SR
+	Node-SIDs, as opposed to LDP labels, in order to construct
+	label stacks for backups paths without relying on a large
+	number of targeted LDP sessions to learn remote FEC-label
+	bindings.  It also requires the use of Adj-SIDs to achieve
+	100% coverage.  </t>
+
         </list></t>
 
 <section title="Importance of 100% Coverage">
