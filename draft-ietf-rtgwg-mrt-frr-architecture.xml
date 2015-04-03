@@ -161,62 +161,64 @@
    </address>
    </author>
 
-    <author fullname="Russ White" initials="R.W." surname="White">
-      <organization>VCE</organization>
-      <address>
-        <email>russw@riw.us</email>
-      </address>
-    </author>
-    
-    <date day="19" month="January" year="2015"/>
+   <author fullname="Russ White" initials="R.W." surname="White">
+     <organization>VCE</organization>
+     <address>
+       <email>russw@riw.us</email>
+     </address>
+   </author>
+   
+   <date day="19" month="January" year="2015"/>
 
-    <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
-         in the current day for you. If only the current year is specified, xml2rfc will fill 
-	 in the current day and month for you. If the year is not the current one, it is 
-	 necessary to specify at least a month (xml2rfc assumes day="1" if not specified for the 
-	 purpose of calculating the expiry date).  With drafts it is normally sufficient to 
-	 specify just the year. -->
+   <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
+        in the current day for you. If only the current year is specified, xml2rfc will fill 
+	in the current day and month for you. If the year is not the current one, it is 
+	necessary to specify at least a month (xml2rfc assumes day="1" if not specified for the 
+	purpose of calculating the expiry date).  With drafts it is normally sufficient to 
+	specify just the year. -->
+   
+   <!-- Meta-data Declarations -->
 
-    <!-- Meta-data Declarations -->
+   <area>Routing</area>
 
-    <area>Routing</area>
+   <workgroup>Routing Area Working Group</workgroup>
 
-    <workgroup>Routing Area Working Group</workgroup>
+   <abstract>
 
-    <abstract>
+     <t>With increasing deployment of Loop-Free Alternates (LFA) <xref
+     target="RFC5286"/>, it is clear that a complete solution for IP
+     and LDP Fast-Reroute is required.  This specification provides
+     that solution.  IP/LDP Fast-Reroute with Maximally Redundant
+     Trees (MRT-FRR) is a technology that gives link-protection and
+     node-protection with 100% coverage in any network topology that
+     is still connected after the failure.
+     </t>
 
-      <t>With increasing deployment of Loop-Free Alternates (LFA)
-      <xref target="RFC5286"/>, it is clear that a complete solution
-      for IP and LDP Fast-Reroute is required.  This specification
-      provides that solution.  IP/LDP Fast-Reroute with Maximally
-      Redundant Trees (MRT-FRR) is a technology that gives
-      link-protection and node-protection with 100% coverage in any
-      network topology that is still connected after the failure.</t>
+     <t>MRT removes all need to engineer for coverage.  MRT is also
+     extremely computationally efficient.  For any router in the
+     network, the MRT computation is less than the LFA computation for
+     a node with three or more neighbors.
+     </t>
 
-      <t>MRT removes all need to engineer for coverage.  MRT is also
-      extremely computationally efficient.  For any router in the
-      network, the MRT computation is less than the LFA computation
-      for a node with three or more neighbors.</t>
+   </abstract>
+ </front>
 
-    </abstract>
-  </front>
-
-  <middle>
-    <section title="Introduction">
-
-      <t>This document gives a complete solution for IP/LDP
-      fast-reroute <xref target="RFC5714"/>. MRT-FRR creates two
-      alternate trees separate from the primary next-hop forwarding
-      used during stable operation.  These two trees are maximally
-      diverse from each other, providing link and node protection for
-      100% of paths and failures as long as the failure does not cut
-      the network into multiple pieces.  This document defines the
-      architecture for IP/LDP fast-reroute with MRT.  The associated
-      protocol extensions are defined in <xref
-      target="I-D.atlas-ospf-mrt"/> and <xref
-      target="I-D.atlas-mpls-ldp-mrt"/>.  The exact MRT algorithm is
-      defined in <xref
-      target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>.</t>
+ <middle>
+   <section title="Introduction">
+     
+     <t>This document gives a complete solution for IP/LDP
+     fast-reroute <xref target="RFC5714"/>. MRT-FRR creates two
+     alternate trees separate from the primary next-hop forwarding
+     used during stable operation.  These two trees are maximally
+     diverse from each other, providing link and node protection for
+     100% of paths and failures as long as the failure does not cut
+     the network into multiple pieces.  This document defines the
+     architecture for IP/LDP fast-reroute with MRT.  The associated
+     protocol extensions are defined in <xref
+     target="I-D.atlas-ospf-mrt"/> and <xref
+     target="I-D.atlas-mpls-ldp-mrt"/>.  The exact MRT algorithm is
+     defined in <xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>.
+     </t>
 
      <t>IP/LDP Fast-Reroute with MRT (MRT-FRR) uses two maximally
      diverse forwarding topologies to provide alternates.  A primary
@@ -225,280 +227,297 @@
      Once traffic has been moved to one of MRTs, it is not subject to
      further repair actions.  Thus, the traffic will not loop even if
      a worse failure (e.g. node) occurs when protection was only
-     available for a simpler failure (e.g. link).</t>
+     available for a simpler failure (e.g. link).
+     </t>
 
      <t>In addition to supporting IP and LDP unicast fast-reroute, the
      diverse forwarding topologies and guarantee of 100% coverage
      permit fast-reroute technology to be applied to multicast traffic
-     as described in <xref target="I-D.atlas-rtgwg-mrt-mc-arch"/>.</t>
+     as described in <xref target="I-D.atlas-rtgwg-mrt-mc-arch"/>.
+     </t>
 
-      <t>Other existing or proposed solutions are partial solutions
-      or have significant issues, as described below.</t>
+     <t>Other existing or proposed solutions are partial solutions
+     or have significant issues, as described below.</t>
 
-      <texttable anchor="table_comparison">
-        <preamble>Summary Comparison of IP/LDP FRR Methods</preamble>
-        <ttcol align='center'>Method</ttcol>
-        <ttcol align='center'>Coverage</ttcol>
-        <ttcol align='center'>Alternate Looping?</ttcol>
-        <ttcol align='center'>Computation (in SPFs)</ttcol>
-         <c>MRT-FRR</c><c>100% Link/Node</c> <c>None</c> <c> less than 3</c>
-         <c/><c/><c/><c/>
-         <c>LFA</c> <c>Partial Link/Node</c> <c>Possible</c> <c>per neighbor</c>
-         <c/><c/><c/><c/>
-         <c>Remote LFA</c> <c>Partial Link/Node</c> <c> Possible</c> 
-              <c> per neighbor (link) or neighbor's neighbor (node) </c>
-         <c/><c/><c/><c/>
-         <c>Not-Via</c><c>100% Link/Node</c> <c>None</c> <c>per link and node</c>
-		 <c/><c/><c/><c/>
-         <c>TI-LFA</c><c>100% Link/Node</c> <c>Possible</c>
-			<c> per neighbor (link) or neighbor's neighbor (node) </c>
-      </texttable>
+     <texttable anchor="table_comparison">
+       <preamble>Summary Comparison of IP/LDP FRR Methods</preamble>
+       <ttcol align='center'>Method</ttcol>
+       <ttcol align='center'>Coverage</ttcol>
+       <ttcol align='center'>Alternate Looping?</ttcol>
+       <ttcol align='center'>Computation (in SPFs)</ttcol>
+       <c>MRT-FRR</c><c>100% Link/Node</c> <c>None</c> <c> less than 3</c>
+       <c/><c/><c/><c/>
+       <c>LFA</c> <c>Partial Link/Node</c> <c>Possible</c> <c>per neighbor</c>
+       <c/><c/><c/><c/>
+       <c>Remote LFA</c> <c>Partial Link/Node</c> <c> Possible</c> 
+       <c> per neighbor (link) or neighbor's neighbor (node) </c>
+       <c/><c/><c/><c/>
+       <c>Not-Via</c><c>100% Link/Node</c> <c>None</c> <c>per link and node</c>
+       <c/><c/><c/><c/>
+       <c>TI-LFA</c><c>100% Link/Node</c> <c>Possible</c>
+       <c> per neighbor (link) or neighbor's neighbor (node) </c>
+     </texttable>
 
-      <t><list style="hanging">
+     <t><list style="hanging">
 
-        <t hangText="Loop-Free Alternates (LFA): "> LFAs <xref
-        target="RFC5286"/> provide limited topology-dependent coverage
-        for link and node protection.  Restrictions on choice of
-        alternates can be relaxed to improve coverage, but this can
-        cause forwarding loops if a worse failure is experienced than
-        protected against.  Augmenting a network to provide better
-        coverage is NP-hard <xref target="LFARevisited"/>.  <xref
-        target="RFC6571"/> discusses the applicability of LFA to
-        different topologies with a focus on common PoP
-        architectures.</t>
+       <t hangText="Loop-Free Alternates (LFA): "> LFAs <xref
+       target="RFC5286"/> provide limited topology-dependent coverage
+       for link and node protection.  Restrictions on choice of
+       alternates can be relaxed to improve coverage, but this can
+       cause forwarding loops if a worse failure is experienced than
+       protected against.  Augmenting a network to provide better
+       coverage is NP-hard <xref target="LFARevisited"/>.  <xref
+       target="RFC6571"/> discusses the applicability of LFA to
+       different topologies with a focus on common PoP
+       architectures.</t>
      
-        <t hangText="Remote LFA: " > Remote LFAs <xref
-        target="I-D.ietf-rtgwg-remote-lfa"/> improve coverage over
-        LFAs for link protection but still cannot guarantee complete
-        coverage.  The trade-off of looping traffic to improve
-        coverage is still made.  Remote LFAs can provide
-        node-protection <xref
-        target="I-D.psarkar-rtgwg-rlfa-node-protection"/> but not
-        guaranteed coverage and the computation required is quite high
-        (an SPF for each PQ-node evaluated). <xref
-        target="I-D.bryant-ipfrr-tunnels"/> describes additional
-        mechanisms to further improve coverage, at the cost of added
-        complexity.</t>
+       <t hangText="Remote LFA: " > Remote LFAs <xref
+       target="I-D.ietf-rtgwg-remote-lfa"/> improve coverage over LFAs
+       for link protection but still cannot guarantee complete
+       coverage.  The trade-off of looping traffic to improve coverage
+       is still made.  Remote LFAs can provide node-protection <xref
+       target="I-D.psarkar-rtgwg-rlfa-node-protection"/> but not
+       guaranteed coverage and the computation required is quite high
+       (an SPF for each PQ-node evaluated). <xref
+       target="I-D.bryant-ipfrr-tunnels"/> describes additional
+       mechanisms to further improve coverage, at the cost of added
+       complexity.</t>
 
-        <t hangText="Not-Via: ">Not-Via <xref
-        target="I-D.ietf-rtgwg-ipfrr-notvia-addresses"/> is the only
-        other solution that provides 100% coverage for link and node
-        failures and does not have potential looping.  However, the
-        computation is very high (an SPF per failure point) and
-        academic implementations <xref target="LightweightNotVia"/>
-        have found the address management complexity to be high.</t>
+       <t hangText="Not-Via: ">Not-Via <xref
+       target="I-D.ietf-rtgwg-ipfrr-notvia-addresses"/> is the only
+       other solution that provides 100% coverage for link and node
+       failures and does not have potential looping.  However, the
+       computation is very high (an SPF per failure point) and
+       academic implementations <xref target="LightweightNotVia"/>
+       have found the address management complexity to be high.</t>
 		
-	<t hangText="TI-LFA: ">Topology Independent Loop-free
-	Alternate Fast Re-route (TI-LFA) <xref
-	target="I-D.francois-spring-segment-routing-ti-lfa"/> aims to
-	provide link and node protection of node and adjacency
-	segments within the Segment Routing (SR) framework.  It
-	guarantees complete coverage.  The TI-LFA computation for
-	link-protection is fairly straightforward, while the
-	computation for node-protection is more complex.  For
-	link-protection with symmetric link costs, TI-LFA can provide
-	complete coverage by pushing up to two additional labels.
-	For node protection on arbitrary topologies, the label stack
-	size can grow significantly based on repair path.  Note that
-	TI-LFA requires shortest path forwarding based on SR
-	Node-SIDs, as opposed to LDP labels, in order to construct
-	label stacks for backups paths without relying on a large
-	number of targeted LDP sessions to learn remote FEC-label
-	bindings.  It also requires the use of Adj-SIDs to achieve
-	100% coverage.  </t>
+       <t hangText="TI-LFA: ">Topology Independent Loop-free Alternate
+       Fast Re-route (TI-LFA) <xref
+       target="I-D.francois-spring-segment-routing-ti-lfa"/> aims to
+       provide link and node protection of node and adjacency segments
+       within the Segment Routing (SR) framework.  It guarantees
+       complete coverage.  The TI-LFA computation for link-protection
+       is fairly straightforward, while the computation for
+       node-protection is more complex.  For link-protection with
+       symmetric link costs, TI-LFA can provide complete coverage by
+       pushing up to two additional labels.  For node protection on
+       arbitrary topologies, the label stack size can grow
+       significantly based on repair path.  Note that TI-LFA requires
+       shortest path forwarding based on SR Node-SIDs, as opposed to
+       LDP labels, in order to construct label stacks for backups
+       paths without relying on a large number of targeted LDP
+       sessions to learn remote FEC-label bindings.  It also requires
+       the use of Adj-SIDs to achieve 100% coverage.  </t>
 
-        </list></t>
+     </list></t>
+     
+     <section title="Importance of 100% Coverage">
 
-<section title="Importance of 100% Coverage">
+       <t>Fast-reroute is based upon the single failure assumption -
+       that the time between single failures is long enough for a
+       network to reconverge and start forwarding on the new shortest
+       paths.  That does not imply that the network will only
+       experience one failure or change.
+       </t>
+       
+       <t>It is straightforward to analyze a particular network
+       topology for coverage.  However, a real network does not always
+       have the same topology.  For instance, maintenance events will
+       take links or nodes out of use.  Simply costing out a link can
+       have a significant effect on what LFAs are
+       available. Similarly, after a single failure has happened, the
+       topology is changed and its associated coverage.  Finally, many
+       networks have new routers or links added and removed; each of
+       those changes can have an effect on the coverage for
+       topology-sensitive methods such as LFA and Remote LFA.  If
+       fast-reroute is important for the network services provided,
+       then a method that guarantees 100% coverage is important to
+       accomodate natural network topology changes.
+       </t>
 
-<t>Fast-reroute is based upon the single failure assumption - that the
-time between single failures is long enough for a network to
-reconverge and start forwarding on the new shortest paths.  That does
-not imply that the network will only experience one failure or change.</t>
+       <t>Asymmetric link costs are also a common aspect of networks.
+       There are at least three common causes for them.  First, any
+       broadcast interface is represented by a pseudo-node and has
+       asymmetric link costs to and from that pseudo-node.  Second,
+       when routers come up or a link with LDP comes up, it is
+       recommended in <xref target="RFC5443"/> and <xref
+       target="RFC3137"/> that the link metric be raised to the
+       maximum cost; this may not be symmetric and for <xref
+       target="RFC3137"/> is not expected to be.  Third, techniques
+       such as IGP metric tuning for traffic-engineering can result in
+       asymmetric link costs.  A fast-reroute solution needs to handle
+       network topologies with asymmetric link costs.
+       </t>
 
-<t>It is straightforward to analyze a particular network topology for
-coverage.  However, a real network does not always have the same
-topology.  For instance, maintenance events will take links or nodes
-out of use.  Simply costing out a link can have a significant effect
-on what LFAs are available. Similarly, after a single failure has
-happened, the topology is changed and its associated coverage.
-Finally, many networks have new routers or links added and removed;
-each of those changes can have an effect on the coverage for
-topology-sensitive methods such as LFA and Remote LFA.  If
-fast-reroute is important for the network services provided, then a
-method that guarantees 100% coverage is important to accomodate
-natural network topology changes.</t>
+       <t>When a network needs to use a micro-loop prevention
+       mechanism <xref target="RFC5715"/> such as Ordered FIB<xref
+       target="I-D.ietf-rtgwg-ordered-fib"/> or Farside Tunneling<xref
+       target="RFC5715"/>, then the whole IGP area needs to have
+       alternates available so that the micro-loop prevention
+       mechanism, which requires slower network convergence, can take
+       the necessary time without adversely impacting traffic.
+       Without complete coverage, traffic to the unprotected
+       destinations will be dropped for significantly longer than with
+       current convergence - where routers individually converge as
+       fast as possible.
+       </t>
 
-<t>Asymmetric link costs are also a common aspect of networks.  There
-are at least three common causes for them.  First, any broadcast
-interface is represented by a pseudo-node and has asymmetric link
-costs to and from that pseudo-node.  Second, when routers come up or a
-link with LDP comes up, it is recommended in <xref target="RFC5443"/>
-and <xref target="RFC3137"/> that the link metric be raised to the
-maximum cost; this may not be symmetric and for <xref
-target="RFC3137"/> is not expected to be.  Third, techniques such as
-IGP metric tuning for traffic-engineering can result in asymmetric
-link costs.  A fast-reroute solution needs to handle network
-topologies with asymmetric link costs.</t>
+     </section>
 
-<t>When a network needs to use a micro-loop prevention mechanism <xref
-target="RFC5715"/> such as Ordered FIB<xref
-target="I-D.ietf-rtgwg-ordered-fib"/> or Farside Tunneling<xref
-target="RFC5715"/>, then the whole IGP area needs to have alternates
-available so that the micro-loop prevention mechanism, which requires
-slower network convergence, can take the necessary time without
-adversely impacting traffic.  Without complete coverage, traffic to the
-unprotected destinations will be dropped for significantly longer than
-with current convergence - where routers individually converge as fast
-as possible.</t>
+     <section title="Partial Deployment and Backwards Compatibility">
 
-</section>
+       <t>MRT-FRR supports partial deployment.  As with many new
+       features, the protocols (OSPF, LDP, ISIS) indicate their
+       capability to support MRT.  Inside the MRT-capable connected
+       group of routers (referred to as an MRT Island), the MRTs are
+       computed.  Alternates to destinations outside the MRT Island
+       are computed and depend upon the existence of a loop-free
+       neighbor of the MRT Island for that destination.
+       </t>
 
-<section title="Partial Deployment and Backwards Compatibility">
+     </section>
 
-<t>MRT-FRR supports partial deployment.  As with many new features,
-the protocols (OSPF, LDP, ISIS) indicate their capability to support
-MRT.  Inside the MRT-capable connected group of routers (referred to
-as an MRT Island), the MRTs are computed.  Alternates to destinations
-outside the MRT Island are computed and depend upon the existence of a
-loop-free neighbor of the MRT Island for that destination.</t>
+   </section><!-- End of Introduction !-->
 
-</section>
+   <section title="Requirements Language">
 
-</section><!-- End of Introduction !-->
+     <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+     NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and
+     "OPTIONAL" in this document are to be interpreted as described in
+     <xref target="RFC2119"/></t>
 
-<section title="Requirements Language">
+   </section>
 
-<t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-"SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
-document are to be interpreted as described in <xref
-target="RFC2119"/></t>
+   <section title="Terminology">
+     <t><list style="hanging">
 
-</section>
+       <t hangText="network graph: ">A graph that reflects the network
+       topology where all links connect exactly two nodes and
+       broadcast links have been transformed into the standard
+       pseudo-node representation.</t>
 
-<section title="Terminology">
-<t><list style="hanging">
+       <t hangText="Redundant Trees (RT): ">A pair of trees where the
+       path from any node X to the root R along the first tree is
+       node-disjoint with the path from the same node X to the root
+       along the second tree.  These can be computed in 2-connected
+       graphs.</t>
 
-     <t hangText="network graph: ">A graph that reflects the network
-     topology where all links connect exactly two nodes and broadcast
-     links have been transformed into the standard pseudo-node
-     representation.</t>
+       <t hangText="Maximally Redundant Trees (MRT): ">A pair of trees
+       where the path from any node X to the root R along the first
+       tree and the path from the same node X to the root along the
+       second tree share the minimum number of nodes and the minimum
+       number of links.  Each such shared node is a cut-vertex.  Any
+       shared links are cut-links.  Any RT is an MRT but many MRTs are
+       not RTs.</t>
 
-     <t hangText="Redundant Trees (RT): ">A pair of trees where the
-     path from any node X to the root R along the first tree is
-     node-disjoint with the path from the same node X to the root
-     along the second tree.  These can be computed in 2-connected
-     graphs.</t>
+       <t hangText="MRT-Red: "> MRT-Red is used to describe one of the
+       two MRTs; it is used to described the associated forwarding
+       topology and MT-ID.  Specifically, MRT-Red is the decreasing
+       MRT where links in the GADAG are taken in the direction from a
+       higher topologically ordered node to a lower one.</t>
 
-     <t hangText="Maximally Redundant Trees (MRT): ">A pair of trees
-     where the path from any node X to the root R along the first tree
-     and the path from the same node X to the root along the second
-     tree share the minimum number of nodes and the minimum number of
-     links.  Each such shared node is a cut-vertex.  Any shared links
-     are cut-links.  Any RT is an MRT but many MRTs are not RTs.</t>
+       <t hangText="MRT-Blue: "> MRT-Blue is used to describe one of
+       the two MRTs; it is used to described the associated forwarding
+       topology and MT-ID.  Specifically, MRT-Blue is the increasing
+       MRT where links in the GADAG are taken in the direction from a
+       lower topologically ordered node to a higher one.</t>
 
-     <t hangText="MRT-Red: "> MRT-Red is used to describe one of the
-     two MRTs; it is used to described the associated forwarding
-     topology and MT-ID.  Specifically, MRT-Red is the decreasing MRT
-     where links in the GADAG are taken in the direction from a higher
-     topologically ordered node to a lower one.</t>
+       <t hangText="Rainbow MRT: "> It is useful to have an MT-ID that
+       refers to the multiple MRT topologies and to the default
+       topology.  This is referred to as the Rainbow MRT MT-ID and is
+       used by LDP to reduce signaling and permit the same label to
+       always be advertised to all peers for the same (MT-ID,
+       Prefix).</t>
 
-     <t hangText="MRT-Blue: "> MRT-Blue is used to describe one of the
-     two MRTs; it is used to described the associated forwarding
-     topology and MT-ID.  Specifically, MRT-Blue is the increasing MRT
-     where links in the GADAG are taken in the direction from a lower
-     topologically ordered node to a higher one.</t>
+       <t hangText="MRT Island: "> The set of routers that support a
+       particular MRT profile and the links connecting them that
+       support MRT. </t>
 
-     <t hangText="Rainbow MRT: "> It is useful to have an MT-ID that
-     refers to the multiple MRT topologies and to the default
-     topology.  This is referred to as the Rainbow MRT MT-ID and is
-     used by LDP to reduce signaling and permit the same label to
-     always be advertised to all peers for the same (MT-ID, Prefix).</t>
+       <t hangText="Island Border Router (IBR): "> A router in the MRT
+       Island that is connected to a router not in the MRT Island and
+       both routers are in a common area or level.</t>
 
-     <t hangText="MRT Island: ">  The set of routers that support a 
-	 particular MRT profile and the links connecting them that support MRT. </t>
+       <t hangText="Island Neighbor (IN): ">A router that is not in
+       the MRT Island but is adjacent to an IBR and in the same
+       area/level as the IBR.</t>
 
-     <t hangText="Island Border Router (IBR): "> A router in the MRT
-     Island that is connected to a router not in the MRT Island and
-     both routers are in a common area or level.</t>
+       <t hangText="cut-link: ">A link whose removal partitions the
+       network.  A cut-link by definition must be connected between
+       two cut-vertices.  If there are multiple parallel links, then
+       they are referred to as cut-links in this document if removing
+       the set of parallel links would partition the network
+       graph. </t>
 
-     <t hangText="Island Neighbor (IN): ">A router that is not in the
-     MRT Island but is adjacent to an IBR and in the same area/level as the IBR.</t>
+       <t hangText="cut-vertex: ">A vertex whose removal partitions
+       the network graph.</t>
 
-     <t hangText="cut-link: ">A link whose removal partitions the
-     network.  A cut-link by definition must be connected between two
-     cut-vertices.  If there are multiple parallel links, then they
-     are referred to as cut-links in this document if removing the set
-     of parallel links would partition the network graph. </t>
+       <t hangText="2-connected: ">A graph that has no cut-vertices.
+       This is a graph that requires two nodes to be removed before
+       the network is partitioned.</t>
 
-     <t hangText="cut-vertex: ">A vertex whose removal partitions the
-     network graph.</t>
+       <t hangText="2-connected cluster: ">A maximal set of nodes that
+       are 2-connected.</t>
 
-     <t hangText="2-connected: ">A graph that has no cut-vertices.
-     This is a graph that requires two nodes to be removed before the
-     network is partitioned.</t>
+       <t hangText="2-edge-connected: ">A network graph where at least
+       two links must be removed to partition the network.</t>
 
-     <t hangText="2-connected cluster: ">A maximal set of nodes that
-     are 2-connected.</t>
+       <t hangText="block: ">Either a 2-connected cluster, a cut-edge,
+       or an isolated vertex.</t>
 
-     <t hangText="2-edge-connected: ">A network graph where at least
-     two links must be removed to partition the network.</t>
+       <t hangText="DAG: ">Directed Acyclic Graph - a graph where all
+       links are directed and there are no cycles in it.</t>
 
-     <t hangText="block: ">Either a 2-connected cluster, a cut-edge,
-     or an isolated vertex.</t>
+       <t hangText="ADAG: ">Almost Directed Acyclic Graph - a graph
+       that, if all links incoming to the root were removed, would be
+       a DAG.</t>
 
-     <t hangText="DAG: ">Directed Acyclic Graph - a graph where all
-     links are directed and there are no cycles in it.</t>
+       <t hangText="GADAG: ">Generalized ADAG - a graph that is the
+       combination of the ADAGs of all blocks.</t>
 
-     <t hangText="ADAG: ">Almost Directed Acyclic Graph - a graph
-     that, if all links incoming to the root were removed, would be a
-     DAG.</t>
+       <t hangText="named proxy-node: ">A proxy-node can represent a
+       destination prefix that can be attached to the MRT Island via
+       at least two routers.  It is named if there is a way that
+       traffic can be encapsulated to reach specifically that proxy
+       node; this could be because there is an LDP FEC for the
+       associated prefix or because MRT-Red and MRT-Blue IP addresses
+       are advertised in an undefined fashion for that proxy-node.</t>
 
-     <t hangText="GADAG: ">Generalized ADAG - a graph that is
-     the combination of the ADAGs of all blocks.</t>
+     </list></t>
+   </section>
 
-     <t hangText="named proxy-node: ">A proxy-node can represent a
-     destination prefix that can be attached to the MRT Island via at
-     least two routers.  It is named if there is a way that traffic
-     can be encapsulated to reach specifically that proxy node; this
-     could be because there is an LDP FEC for the associated prefix or
-     because MRT-Red and MRT-Blue IP addresses are advertised in an
-     undefined fashion for that proxy-node.</t>
+   <section title="Maximally Redundant Trees (MRT)">
 
-</list></t>
-</section>
+     <t>A pair of Maximally Redundant Trees is a pair of directed
+     spanning trees that provides maximally disjoint paths towards
+     their common root.  Only links or nodes whose failure would
+     partition the network (i.e. cut-links and cut-vertices) are
+     shared between the trees.  The algorithm to compute MRTs is given
+     in <xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>.  This
+     algorithm can be computed in O(e + n log n); it is less than
+     three SPFs.  Modeling results comparing the alternate path
+     lengths obtained with MRT to other approaches are described in
+     <xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>.  This document
+     describes how the MRTs can be used and not how to compute
+     them.</t>
 
-<section title="Maximally Redundant Trees (MRT)">
+     <t>MRT provides destination-based trees for each destination.
+     Each router stores its normal primary next-hop(s) as well as
+     MRT-Blue next-hop(s) and MRT-Red next-hop(s) toward each
+     destination.  The alternate will be selected between the MRT-Blue
+     and MRT-Red.</t>
 
-<t>A pair of Maximally Redundant Trees is a pair of directed spanning trees
-that provides maximally disjoint paths towards their common root.  Only
-links or nodes whose failure would partition the network
-(i.e. cut-links and cut-vertices) are shared between the trees.  The
-algorithm to compute MRTs is given in <xref
-target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>.  This algorithm can be
-computed in O(e + n log n); it is less than three SPFs.  Modeling
-results comparing the alternate path lengths obtained with MRT to 
-other approaches are described in <xref
-target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>.  This document
-describes how the MRTs can be used and not how to compute them.</t>
+     <t>The most important thing to understand about MRTs is that for
+     each pair of destination-routed MRTs, there is a path from every
+     node X to the destination D on the Blue MRT that is as disjoint
+     as possible from the path on the Red MRT.</t>
 
-<t>MRT provides destination-based trees for each destination.  Each
-router stores its normal primary next-hop(s) as well as MRT-Blue
-next-hop(s) and MRT-Red next-hop(s) toward each destination.  The
-alternate will be selected between the MRT-Blue and MRT-Red.</t>
-
-<t>The most important thing to understand about MRTs is that for each
-pair of destination-routed MRTs, there is a path from every node X to
-the destination D on the Blue MRT that is as disjoint as possible from
-the path on the Red MRT.</t> 
-
-<t>For example, in <xref target="fig_example_2_connected"/>, there is
-a network graph that is 2-connected in (a) and associated MRTs in (b)
-and (c).  One can consider the paths from B to R; on the Blue MRT, the
-paths are B-&gt;F-&gt;D-&gt;E-&gt;R or B-&gt;C-&gt;D-&gt;E-&gt;R.  On
-the Red MRT, the path is B-&gt;A-&gt;R.  These are clearly link and
-node-disjoint.  These MRTs are redundant trees because the paths are
-disjoint.</t>
+     <t>For example, in <xref target="fig_example_2_connected"/>,
+     there is a network graph that is 2-connected in (a) and
+     associated MRTs in (b) and (c).  One can consider the paths from
+     B to R; on the Blue MRT, the paths are B-&gt;F-&gt;D-&gt;E-&gt;R
+     or B-&gt;C-&gt;D-&gt;E-&gt;R.  On the Red MRT, the path is
+     B-&gt;A-&gt;R.  These are clearly link and node-disjoint.  These
+     MRTs are redundant trees because the paths are disjoint.</t>
 
 <figure anchor="fig_example_2_connected" title="A 2-connected Network" align="center">
 <artwork align="center"><![CDATA[
@@ -515,15 +534,16 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
 ]]></artwork>
 </figure>
 
-<t>By contrast, in <xref target="Non-2-connected_Network_Example"/>,
-the network in (a) is not 2-connected.  If F, G or the link F&lt;-&gt;G
-failed, then the network would be partitioned.  It is clearly
-impossible to have two link-disjoint or node-disjoint paths from G, I
-or J to R.  The MRTs given in (b) and (c) offer paths that are as
-disjoint as possible.  For instance, the paths from B to R are the
-same as in <xref target="fig_example_2_connected"/> and the path from
-G to R on the Blue MRT is G-&gt;F-&gt;D-&gt;E-&gt;R and on the Red MRT
-is G-&gt;F-&gt;B-&gt;A-&gt;R.</t>
+      <t>By contrast, in <xref
+      target="Non-2-connected_Network_Example"/>, the network in (a)
+      is not 2-connected.  If F, G or the link F&lt;-&gt;G failed,
+      then the network would be partitioned.  It is clearly impossible
+      to have two link-disjoint or node-disjoint paths from G, I or J
+      to R.  The MRTs given in (b) and (c) offer paths that are as
+      disjoint as possible.  For instance, the paths from B to R are
+      the same as in <xref target="fig_example_2_connected"/> and the
+      path from G to R on the Blue MRT is G-&gt;F-&gt;D-&gt;E-&gt;R
+      and on the Red MRT is G-&gt;F-&gt;B-&gt;A-&gt;R.</t>
 
 <figure anchor="Non-2-connected_Network_Example"
   title="A non-2-connected network" align="center">
@@ -558,81 +578,85 @@ is G-&gt;F-&gt;B-&gt;A-&gt;R.</t>
 
 <section anchor="mrt_and_frr" title="Maximally Redundant Trees (MRT) and Fast-Reroute">
 
-<t>In normal IGP routing, each router has its shortest-path-tree to
-all destinations.  From the perspective of a particular destination,
-D, this looks like a reverse SPT (rSPT).  To use maximally redundant
-trees, in addition, each destination D has two MRTs associated with
-it; by convention these will be called the MRT-Blue and MRT-Red.
-MRT-FRR is realized by using multi-topology forwarding.  There is a
-MRT-Blue forwarding topology and a MRT-Red forwarding topology.</t>
+  <t>In normal IGP routing, each router has its shortest-path-tree to
+  all destinations.  From the perspective of a particular destination,
+  D, this looks like a reverse SPT (rSPT).  To use maximally redundant
+  trees, in addition, each destination D has two MRTs associated with
+  it; by convention these will be called the MRT-Blue and MRT-Red.
+  MRT-FRR is realized by using multi-topology forwarding.  There is a
+  MRT-Blue forwarding topology and a MRT-Red forwarding topology.</t>
 
-<t>Any IP/LDP fast-reroute technique beyond LFA requires an additional
-dataplane procedure, such as an additional forwarding mechanism.  The
-well-known options are multi-topology forwarding (used by MRT-FRR),
-tunneling (e.g. <xref target="I-D.ietf-rtgwg-ipfrr-notvia-addresses"/>
-or <xref target="I-D.ietf-rtgwg-remote-lfa"/>), and per-interface
-forwarding (e.g. Loop-Free Failure Insensitive Routing in <xref
-target="EnyediThesis"/>).</t>
+  <t>Any IP/LDP fast-reroute technique beyond LFA requires an
+  additional dataplane procedure, such as an additional forwarding
+  mechanism.  The well-known options are multi-topology forwarding
+  (used by MRT-FRR), tunneling (e.g. <xref
+  target="I-D.ietf-rtgwg-ipfrr-notvia-addresses"/> or <xref
+  target="I-D.ietf-rtgwg-remote-lfa"/>), and per-interface forwarding
+  (e.g. Loop-Free Failure Insensitive Routing in <xref
+  target="EnyediThesis"/>).</t>
 
-<t>When there is a link or node failure affecting, but not
-partitioning, the network, each node will still have at least one path
-via one of the MRTs to reach the destination D.  For example, in <xref
-target="Non-2-connected_Network_Example"/>, C would normally forward
-traffic to R across the C&lt;-&gt;R link.  If that C&lt;-&gt;R link
-fails, then C could use the Blue MRT path C-&gt;D-&gt;E-&gt;R.</t>
+  <t>When there is a link or node failure affecting, but not
+  partitioning, the network, each node will still have at least one
+  path via one of the MRTs to reach the destination D.  For example,
+  in <xref target="Non-2-connected_Network_Example"/>, C would
+  normally forward traffic to R across the C&lt;-&gt;R link.  If that
+  C&lt;-&gt;R link fails, then C could use the Blue MRT path
+  C-&gt;D-&gt;E-&gt;R.</t>
 
-<t>As is always the case with fast-reroute technologies, forwarding
-does not change until a local failure is detected.  Packets are
-forwarded along the shortest path.  The appropriate alternate to use
-is pre-computed.  <xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>
-describes exactly how to determine whether the MRT-Blue next-hops or
-the MRT-Red next-hops should be the MRT alternate next-hops for a
-particular primary next-hop to a particular destination.</t>
+  <t>As is always the case with fast-reroute technologies, forwarding
+  does not change until a local failure is detected.  Packets are
+  forwarded along the shortest path.  The appropriate alternate to use
+  is pre-computed.  <xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>
+  describes exactly how to determine whether the MRT-Blue next-hops or
+  the MRT-Red next-hops should be the MRT alternate next-hops for a
+  particular primary next-hop to a particular destination.</t>
 
-<t>MRT alternates are always available to use.  It is a local decision
-whether to use an MRT alternate, a Loop-Free Alternate or some other
-type of alternate.</t>
+  <t>MRT alternates are always available to use.  It is a local
+  decision whether to use an MRT alternate, a Loop-Free Alternate or
+  some other type of alternate.</t>
 
-<t>As described in <xref target="RFC5286"/>, when a worse failure than
-is anticipated happens, using LFAs that are not downstream neighbors
-can cause micro-looping.  Section 1.1 of <xref target="RFC5286"/>
-gives an example of link-protecting alternates causing a loop on node
-failure.  Even if a worse failure than anticipated happens, the use of
-MRT alternates will not cause looping.  Therefore, while
-node-protecting LFAs may be preferred, the certainty that no
-alternate-induced looping will occur is an advantage of using MRT
-alternates when the available node-protecting LFA is not a downstream
-path.</t>
+  <t>As described in <xref target="RFC5286"/>, when a worse failure
+  than is anticipated happens, using LFAs that are not downstream
+  neighbors can cause micro-looping.  Section 1.1 of <xref
+  target="RFC5286"/> gives an example of link-protecting alternates
+  causing a loop on node failure.  Even if a worse failure than
+  anticipated happens, the use of MRT alternates will not cause
+  looping.  Therefore, while node-protecting LFAs may be preferred,
+  the certainty that no alternate-induced looping will occur is an
+  advantage of using MRT alternates when the available node-protecting
+  LFA is not a downstream path.</t>
 
 </section>
      
 <section anchor="sec_uni_forwarding" title="Unicast Forwarding with MRT Fast-Reroute">
-<t>As mentioned before, MRT FRR needs multi-topology
-forwarding.  Unfortunately, neither IP nor LDP provides extra bits for
-a packet to indicate its topology.  Once the MRTs are computed, 
-the two sets of MRTs can be used as two additional forwarding topologies.  The same
-considerations apply for forwarding along the MRTs as for handling
-multiple topologies.</t>
 
-<t> There are three possible types of routers involved in forwarding 
-a packet along an MRT path.  At the MRT ingress router, the packet 
-leaves the shortest path to the destination and follows an 
-MRT path to the destination.  In a FRR application, the MRT ingress 
-router is the PLR.  An MRT transit router takes a packet that arrives already
-associated with the particular MRT, and forwards it on that same MRT.
-In some situations (to be discussed later), the packet will need 
-to leave the MRT path and return
-to the shortest path.  This takes place at the MRT egress router.
-The MRT ingress and egress 
-functionality may depend on the underlying type of packet being 
-forwarded (LDP or IP).  The MRT transit functionality is independent
-of the type of packet being forwarded.  We first consider several MRT 
-transit forwarding mechanisms.  Then we look at how these forwarding 
-mechanisms can be applied to carrying LDP and IP traffic.</t>
+  <t>As mentioned before, MRT FRR needs multi-topology forwarding.
+  Unfortunately, neither IP nor LDP provides extra bits for a packet
+  to indicate its topology.  Once the MRTs are computed, the two sets
+  of MRTs can be used as two additional forwarding topologies.  The
+  same considerations apply for forwarding along the MRTs as for
+  handling multiple topologies.</t>
+
+  <t> There are three possible types of routers involved in forwarding
+  a packet along an MRT path.  At the MRT ingress router, the packet
+  leaves the shortest path to the destination and follows an MRT path
+  to the destination.  In a FRR application, the MRT ingress router is
+  the PLR.  An MRT transit router takes a packet that arrives already
+  associated with the particular MRT, and forwards it on that same
+  MRT.  In some situations (to be discussed later), the packet will
+  need to leave the MRT path and return to the shortest path.  This
+  takes place at the MRT egress router.  The MRT ingress and egress
+  functionality may depend on the underlying type of packet being
+  forwarded (LDP or IP).  The MRT transit functionality is independent
+  of the type of packet being forwarded.  We first consider several
+  MRT transit forwarding mechanisms.  Then we look at how these
+  forwarding mechanisms can be applied to carrying LDP and IP
+  traffic.</t>
 
 <section anchor="sec_mrt_forwarding_mechanisms" title="MRT Forwarding Mechanisms">
 
-<t> The following options for MRT forwarding mechanisms are considered.</t>
+  <t> The following options for MRT forwarding mechanisms are
+  considered.</t>
 
 <t> 
 <list style="numbers">
@@ -654,416 +678,424 @@ mechanisms can be applied to carrying LDP and IP traffic.</t>
 
 <section title="MRT LDP labels">
 
-<t> We consider two options for the MRT forwarding mechanisms using MRT LDP labels.</t>
+  <t> We consider two options for the MRT forwarding mechanisms using
+  MRT LDP labels.</t>
 
-<section anchor="sec_option_1a" title="Topology-scoped FEC encoded using a single label (Option 1A)">
-<t><xref target="I-D.ietf-mpls-ldp-multi-topology"/> provides a mechanism to 
-distribute FEC-Label bindings scoped to a given topology 
-(represented by MT-ID).  To use multi-topology LDP to create MRT 
-forwarding topologies, we associate two MT-IDs with the MRT-Red and MRT-Blue 
-forwarding topologies, in addition to the default shortest path
-forwarding topology with MT-ID=0.</t>
+  <section anchor="sec_option_1a" title="Topology-scoped FEC encoded using a single label (Option 1A)">
+    
+    <t><xref target="I-D.ietf-mpls-ldp-multi-topology"/> provides a
+    mechanism to distribute FEC-Label bindings scoped to a given
+    topology (represented by MT-ID).  To use multi-topology LDP to
+    create MRT forwarding topologies, we associate two MT-IDs with the
+    MRT-Red and MRT-Blue forwarding topologies, in addition to the
+    default shortest path forwarding topology with MT-ID=0.</t>
 
-<t> With this forwarding mechanism, a single label is distributed for 
-each topology-scoped FEC.  For a given FEC in the default topology (call it default-FEC-A), 
-two additional topology-scoped FECs would be created, corresponding to the Red 
-and Blue MRT forwarding topologies (call them red-FEC-A and blue-FEC-A).
-A router supporting this MRT transit forwarding mechanism advertises a 
-different FEC-label binding for each of the three topology-scoped FECs. 
-When a packet is received with a label corresponding to red-FEC-A (for example),
-an MRT transit router will determine the  
-next-hop for the MRT-Red forwarding topology for that FEC, swap the incoming label with
-the outgoing label corresponding to red-FEC-A learned from the MRT-Red next-hop router,
-and forward the packet. </t>
+    <t> With this forwarding mechanism, a single label is distributed
+    for each topology-scoped FEC.  For a given FEC in the default
+    topology (call it default-FEC-A), two additional topology-scoped
+    FECs would be created, corresponding to the Red and Blue MRT
+    forwarding topologies (call them red-FEC-A and blue-FEC-A).  A
+    router supporting this MRT transit forwarding mechanism advertises
+    a different FEC-label binding for each of the three
+    topology-scoped FECs.  When a packet is received with a label
+    corresponding to red-FEC-A (for example), an MRT transit router
+    will determine the next-hop for the MRT-Red forwarding topology
+    for that FEC, swap the incoming label with the outgoing label
+    corresponding to red-FEC-A learned from the MRT-Red next-hop
+    router, and forward the packet. </t>
 
-<t>This forwarding mechanism has the useful property that the FEC
-associated with the packet is maintained in the labels at each hop along the MRT. We will 
-take advantage of this property when specifying how to carry LDP traffic on MRT paths 
-using multi-topology LDP labels.</t>
+    <t>This forwarding mechanism has the useful property that the FEC
+    associated with the packet is maintained in the labels at each hop
+    along the MRT. We will take advantage of this property when
+    specifying how to carry LDP traffic on MRT paths using
+    multi-topology LDP labels.</t>
 
-<t>This approach is very simple for hardware to
-support. However, it reduces the label space for other uses, and it
-increases the memory needed to store the labels and the communication
-required by LDP to distribute FEC-label bindings.</t>
+    <t>This approach is very simple for hardware to support. However,
+    it reduces the label space for other uses, and it increases the
+    memory needed to store the labels and the communication required
+    by LDP to distribute FEC-label bindings.</t>
 
-<t> This forwarding option uses the LDP signaling extensions
-described in <xref target="I-D.ietf-mpls-ldp-multi-topology"/>.
-The MRT-specific LDP extensions required to support this option are described in
-<xref target="I-D.atlas-mpls-ldp-mrt"/>. </t>
+    <t> This forwarding option uses the LDP signaling extensions
+    described in <xref target="I-D.ietf-mpls-ldp-multi-topology"/>.
+    The MRT-specific LDP extensions required to support this option
+    are described in <xref target="I-D.atlas-mpls-ldp-mrt"/>. </t>
 
-</section>
+  </section>
 
-<section anchor="sec_option_1b" title="Topology and FEC encoded using a two label stack (Option 1B)">
+  <section anchor="sec_option_1b" title="Topology and FEC encoded using a two label stack (Option 1B)">
 
-<t> With this forwarding mechanism, a two label stack is used to encode the 
-topology and the FEC of the packet.  The top label (topology-id label) 
-identifies the MRT forwarding topology, while the second label (FEC label) identifies the FEC.
-The top label would be a new FEC type with two values corresponding to MRT Red and Blue topologies.  </t>
+    <t> With this forwarding mechanism, a two label stack is used to
+    encode the topology and the FEC of the packet.  The top label
+    (topology-id label) identifies the MRT forwarding topology, while
+    the second label (FEC label) identifies the FEC.  The top label
+    would be a new FEC type with two values corresponding to MRT Red
+    and Blue topologies.  </t>
 
-<t> When an MRT transit router receives a packet with a topology-id label, the router pops
-the top label and uses that it to guide the next-hop selection in combination with
-the next label in the stack (the FEC label).  The router then swaps the FEC label, using the FEC-label bindings learned through normal LDP mechanisms.  The router then pushes the topology-id label for the next-hop.</t>
+    <t> When an MRT transit router receives a packet with a
+    topology-id label, the router pops the top label and uses that it
+    to guide the next-hop selection in combination with the next label
+    in the stack (the FEC label).  The router then swaps the FEC
+    label, using the FEC-label bindings learned through normal LDP
+    mechanisms.  The router then pushes the topology-id label for the
+    next-hop.</t>
 
-<t>As with Option 1A, this forwarding mechanism also has the useful property that the FEC
-associated with the packet is maintained in the labels at each hop along the MRT.</t>
+    <t>As with Option 1A, this forwarding mechanism also has the
+    useful property that the FEC associated with the packet is
+    maintained in the labels at each hop along the MRT.</t>
 
-<t>This forwarding mechanism has minimal usage of additional labels, memory and
-LDP communication.  It does increase the size of packets and the
-complexity of the required label operations and look-ups.  </t>
+    <t>This forwarding mechanism has minimal usage of additional
+    labels, memory and LDP communication.  It does increase the size
+    of packets and the complexity of the required label operations and
+    look-ups.</t>
 
-<t> This forwarding option is consistent with context-specific label spaces, 
-as described in [RFC 5331].  However, the precise LDP behavior required to support this 
-option for MRT has not been specified.</t>
-</section>
+    <t> This forwarding option is consistent with context-specific
+    label spaces, as described in [RFC 5331].  However, the precise
+    LDP behavior required to support this option for MRT has not been
+    specified.</t>
+  </section>
 
-<section title="Compatibility of Option 1A and 1B">
-<t>  In principle, MRT transit forwarding mechanisms 1A and 1B can coexist in the 
-same network, with a packet being forwarding along a single MRT path using 
-the single label of option 1A for some hops and the two label stack of
-option 1B for other hops.
-</t>
-</section>
+  <section title="Compatibility of Option 1A and 1B">
+    <t> In principle, MRT transit forwarding mechanisms 1A and 1B can
+    coexist in the same network, with a packet being forwarding along
+    a single MRT path using the single label of option 1A for some
+    hops and the two label stack of option 1B for other hops.
+    </t>
+  </section>
 
-<section title="Mandatory support for MRT LDP Label option 1A">
-<t>  If a router supports a profile that includes the MRT LDP Label option 
-for MRT transit forwarding mechanism, then it MUST support option 1A, which encodes
-topology-scoped FECs using a single label.  
-</t>
-</section>
+  <section title="Mandatory support for MRT LDP Label option 1A">
+    <t> If a router supports a profile that includes the MRT LDP Label
+    option for MRT transit forwarding mechanism, then it MUST support
+    option 1A, which encodes topology-scoped FECs using a single
+    label.
+    </t>
+  </section>
 
 </section>
 
 <section title="MRT IP tunnels (Options 2A and 2B)">
-<t> IP tunneling can also be used as an MRT transit forwarding 
-mechanism.  Each router supporting this MRT transit forwarding mechanism
-announces two additional loopback addresses and their
-associated MRT color.  Those addresses are used as destination
-addresses for MRT-blue and MRT-red IP tunnels respectively.  The 
-special loopback addresses
-allow the transit nodes to identify the traffic as being forwarded
-along either the MRT-blue or MRT-red topology to reach the tunnel
-destination.  Announcements of these two additional loopback
-addresses per router with their MRT color requires IGP extensions,
-which have not been defined.</t>
+  <t> IP tunneling can also be used as an MRT transit forwarding
+  mechanism.  Each router supporting this MRT transit forwarding
+  mechanism announces two additional loopback addresses and their
+  associated MRT color.  Those addresses are used as destination
+  addresses for MRT-blue and MRT-red IP tunnels respectively.  The
+  special loopback addresses allow the transit nodes to identify the
+  traffic as being forwarded along either the MRT-blue or MRT-red
+  topology to reach the tunnel destination.  Announcements of these
+  two additional loopback addresses per router with their MRT color
+  requires IGP extensions, which have not been defined.</t>
 
-<t> Either IPv4 (option 2A) or IPv6 (option 2B) can be 
-used as the tunneling mechanism.</t>
+  <t> Either IPv4 (option 2A) or IPv6 (option 2B) can be used as the
+  tunneling mechanism.</t>
 
-<t>Note that the two forwarding mechanisms using LDP Label options do not require
-additional loopbacks per router, as is required by the IP tunneling
-mechanism. This is because LDP
-labels are used on a hop-by-hop basis to identify MRT-blue and MRT-red
-forwarding topologies.</t>
-
-
-
+  <t>Note that the two forwarding mechanisms using LDP Label options
+  do not require additional loopbacks per router, as is required by
+  the IP tunneling mechanism. This is because LDP labels are used on a
+  hop-by-hop basis to identify MRT-blue and MRT-red forwarding
+  topologies.</t>
 </section>
 
 </section>
-
-
 
 <section anchor="sec_ldp_uni_forward" title="Forwarding LDP Unicast Traffic over MRT Paths">
 
+  <t>In the previous section, we examined several options for
+  providing MRT transit forwarding functionality, which is independent
+  of the type of traffic being carried.  We now look at the MRT
+  ingress functionality, which will depend on the type of traffic
+  being carried (IP or LDP). We start by considering LDP traffic. </t>
 
+  <t>We also simplify the initial discussion by assuming that the
+  network consists of a single IGP area, and that all routers in the
+  network participate in MRT.  Other deployment scenarios that require
+  MRT egress functionality are considered later in this document.</t>
 
-<t>In the previous section, we examined several options for providing 
-MRT transit forwarding functionality, which is independent of the type of traffic 
-being carried.  We now look at the MRT ingress functionality, which 
-will depend on the type of traffic being carried (IP or LDP). We start by considering
-LDP traffic. </t>
+  <t>In principle, it is possible to carry LDP traffic in MRT IP
+  tunnels.  However, for LDP traffic, it is very desirable to avoid
+  tunneling.  Tunneling LDP traffic to a remote node requires
+  knowledge of remote FEC-label bindings so that the LDP traffic can
+  continue to be forwarded properly when it leaves the tunnel. This
+  requires targeted LDP sessions which can add management complexity.
+  The two MRT LDP Label forwarding mechanisms have the useful property
+  that the FEC associated with the packet is maintained in the labels
+  at each hop along the MRT, as long as an MRT to the originator of
+  the FEC is used.  The MRT IP tunneling mechanism does not have this
+  useful property.  Therefore, this document only considers the two
+  MRT LDP Label forwarding mechanisms for protecting LDP traffic with
+  MRT fast-reroute.
+  </t>
 
-<t>We also simplify the initial discussion by assuming that the network consists 
-of a single IGP area, and that all routers in the network participate in MRT.
-Other deployment scenarios that require MRT egress functionality
-are considered later in this document.</t>
+  <section title="Forwarding LDP traffic using MRT LDP Labels (Option 1A)">
+    <t> The MRT LDP Label option 1A forwarding mechanism uses
+    topology-scoped FECs encoded using a single label as described in
+    section <xref target="sec_option_1a"/>.  When a PLR receives an
+    LDP packet that needs to be forwarded on the Red MRT (for
+    example), it does a label swap operation, replacing the usual LDP
+    label for the FEC with the Red MRT label for that FEC received
+    from the next-hop router in the Red MRT computed by the PLR.  When
+    the next-hop router in the Red MRT receives the packet with the
+    Red MRT label for the FEC, the MRT transit forwarding
+    functionality continues as described in <xref
+    target="sec_option_1a"/>.  In this way the original FEC associated
+    with the packet is maintained at each hop along the MRT. </t>
+  </section>
 
-<t>In principle, it is possible to carry LDP traffic in MRT IP tunnels.
-However, for LDP traffic, it is very desirable to avoid tunneling.  
-Tunneling LDP traffic to a remote node requires knowledge of remote 
-FEC-label bindings so that the LDP traffic can continue
-to be forwarded properly when it leaves the tunnel. This requires 
-targeted LDP sessions which can add management complexity.
-The two MRT LDP Label forwarding mechanisms have the useful property that the FEC
-associated with the packet is maintained in the labels at each hop along the MRT, 
-as long as an MRT to the originator of the FEC is used.  The MRT IP tunneling mechanism 
-does not have this useful property.  Therefore, this document only considers the
-two MRT LDP Label forwarding mechanisms 
-for protecting LDP traffic with MRT fast-reroute. 
-</t>
+  <section title="Forwarding LDP traffic using MRT LDP Labels (Option 1B)">
+    <t>The MRT LDP Label option 1B forwarding mechanism encodes the
+    topology and the FEC using a two label stack as described in <xref
+    target="sec_option_1b"/>.  When a PLR receives an LDP packet that
+    needs to be forwarded on the Red MRT, it first does a normal LDP
+    label swap operation, replacing the incoming normal LDP label
+    associated with a given FEC with the outgoing normal LDP label for
+    that FEC learned from the next-hop on the Red MRT.  In addition,
+    the PLR pushes the topology-identification label associated with
+    the Red MRT, and forward the packet to the appropriate next-hop on
+    the Red MRT.  When the next-hop router in the Red MRT receives the
+    packet with the Red MRT label for the FEC, the MRT transit
+    forwarding functionality continues as described in <xref
+    target="sec_option_1b"/>.  As with option 1A, the original FEC
+    associated with the packet is maintained at each hop along the
+    MRT.</t>
+  </section>
 
-<section title="Forwarding LDP traffic using MRT LDP Labels (Option 1A)">
-<t> The MRT LDP Label option 1A forwarding mechanism uses topology-scoped FECs
-encoded using a single label as described in section 
-<xref target="sec_option_1a"/>.  When a PLR 
-receives an LDP packet that needs to be forwarded on the Red MRT (for example), 
-it does a label swap operation, replacing the usual 
-LDP label for the FEC with the Red MRT label 
-for that FEC received from the next-hop router in the Red MRT computed by the PLR.  
-When the next-hop router in the Red MRT receives the 
-packet with the Red MRT label for the FEC, the MRT transit forwarding 
-functionality continues as described in 
-<xref target="sec_option_1a"/>.
-In this way the original FEC associated with the packet is maintained 
-at each hop along the MRT. </t>
-</section>
+  <section title="Other considerations for forwarding LDP traffic using MRT LDP Labels ">
+    
+    <t> Note that forwarding LDP traffic using MRT LDP Labels requires
+    that an MRT to the originator of the FEC be used.  For example,
+    one might find it desirable to have the PLR use an MRT to reach
+    the primary next-next-hop for the FEC, and then continue
+    forwarding the LDP packet along the shortest path tree from the
+    primary next-next-hop.  However, this would require tunneling to
+    the primary next-next-hop and a targeted LDP session for the PLR
+    to learn the FEC-label binding for primary next-next-hop to
+    correctly forward the packet.</t>
 
-<section title="Forwarding LDP traffic using MRT LDP Labels (Option 1B)">
-<t>The MRT LDP Label option 1B forwarding mechanism encodes the topology
-and the FEC using a two label stack as described in
-<xref target="sec_option_1b"/>. 
-When a PLR 
-receives an LDP packet that needs to be forwarded on the Red MRT, 
-it first does a normal LDP label swap operation, replacing the incoming
-normal LDP label associated with a given FEC with the outgoing
-normal LDP label for that FEC learned from 
-the next-hop on the Red MRT.  In addition, the PLR pushes
-the topology-identification label associated with the Red MRT,
-and forward the packet to the appropriate next-hop on the 
-Red MRT.  When the next-hop router in the Red MRT receives the 
-packet with the Red MRT label for the FEC, the MRT transit forwarding 
-functionality continues as described in 
-<xref target="sec_option_1b"/>.
-As with option 1A, the original FEC associated with the packet is maintained 
-at each hop along the MRT.</t> 
-</section>
-
-<section title="Other considerations for forwarding LDP traffic using MRT LDP Labels ">
-
-<t> Note that forwarding LDP traffic using MRT LDP Labels
-requires that an MRT to the originator of the FEC be used.
-For example, one might find it desirable to have the PLR use an MRT 
-to reach the primary next-next-hop for the FEC, and then continue 
-forwarding the LDP packet along the shortest path tree from the primary next-next-hop.
-However, this would require tunneling to the primary next-next-hop and 
-a targeted LDP session for the PLR to learn the  
-FEC-label binding for primary next-next-hop to correctly forward 
-the packet.</t>
-
-<t>For greatest hardware compatibility, routers implementing 
-MRT fast-reroute of LDP traffic
-MUST support Option 1A of encoding the MT-ID in the
-labels (See <xref target="sec_proto_ldp"/>). </t>
-</section>
-
-
+    <t>For greatest hardware compatibility, routers implementing MRT
+    fast-reroute of LDP traffic MUST support Option 1A of encoding the
+    MT-ID in the labels (See <xref target="sec_proto_ldp"/>). </t>
+  </section>
+  
 </section>
 
 <section title="Forwarding IP Unicast Traffic over MRT Paths">
 
-<t>For IP traffic, there is no currently practical alternative except
-tunneling to gain the bits needed to indicate the MRT-Blue or MRT-Red
-forwarding topology.  The choice of tunnel egress MAY be flexible
-since any router closer to the destination than the next-hop can work.
-This architecture assumes that the original destination in the area is
-selected (see <xref target="sec_multi_homed_prefixes"/> for handling
-of multi-homed prefixes); another possible choice is the next-next-hop
-towards the destination.  As discussed in the previous section, 
-for LDP traffic, using the MRT to the original
-destination simplifies MRT-FRR by avoiding the need for targeted LDP
-sessions to the next-next-hop.  For IP, that consideration doesn't
-apply.  However, consistency with LDP is RECOMMENDED.</t>
+  <t>For IP traffic, there is no currently practical alternative
+  except tunneling to gain the bits needed to indicate the MRT-Blue or
+  MRT-Red forwarding topology.  The choice of tunnel egress MAY be
+  flexible since any router closer to the destination than the
+  next-hop can work.  This architecture assumes that the original
+  destination in the area is selected (see <xref
+  target="sec_multi_homed_prefixes"/> for handling of multi-homed
+  prefixes); another possible choice is the next-next-hop towards the
+  destination.  As discussed in the previous section, for LDP traffic,
+  using the MRT to the original destination simplifies MRT-FRR by
+  avoiding the need for targeted LDP sessions to the next-next-hop.
+  For IP, that consideration doesn't apply.  However, consistency with
+  LDP is RECOMMENDED.</t>
 
-<t>  Some situations require tunneling IP traffic along an MRT 
-to a tunnel endpoint that is not the destination of the IP traffic.
-These situations will be discussed in detail later.  We note
-here that an IP packet with a destination in a different IGP area/level 
-from the PLR should be tunneled on 
-the MRT to the ABR/LBR on the shortest path 
-to the destination.  For a destination outside of the PLR's
-MRT Island, the packet should be tunneled on the MRT to a 
-non-proxy-node immediately before the named proxy-node on 
-that particular color MRT.
-</t> 
+  <t>Some situations require tunneling IP traffic along an MRT to a
+  tunnel endpoint that is not the destination of the IP traffic.
+  These situations will be discussed in detail later.  We note here
+  that an IP packet with a destination in a different IGP area/level
+  from the PLR should be tunneled on the MRT to the ABR/LBR on the
+  shortest path to the destination.  For a destination outside of the
+  PLR's MRT Island, the packet should be tunneled on the MRT to a
+  non-proxy-node immediately before the named proxy-node on that
+  particular color MRT.
+  </t> 
 
-<section title="Tunneling IP traffic using MRT LDP Labels">
-<t>An IP packet can be tunneled along an MRT path by pushing
-the appropriate MRT LDP label(s).  Tunneling using LDP labels, 
-as opposed to IP headers, has the the advantage that more
-installed routers can do line-rate encapsulation 
-and decapsulation using LDP than using IP. 
-Also, no additional IP addresses would need to be allocated or
-signaled.</t> 
+  <section title="Tunneling IP traffic using MRT LDP Labels">
+    <t>An IP packet can be tunneled along an MRT path by pushing the
+    appropriate MRT LDP label(s).  Tunneling using LDP labels, as
+    opposed to IP headers, has the the advantage that more installed
+    routers can do line-rate encapsulation and decapsulation using LDP
+    than using IP.  Also, no additional IP addresses would need to be
+    allocated or signaled.</t>
 
-<section title="Tunneling IP traffic using MRT LDP Labels (Option 1A)">
-<t>The MRT LDP Label option 1A forwarding mechanism uses topology-scoped FECs
-encoded using a single label as described in section 
-<xref target="sec_option_1a"/>.  When a PLR 
-receives an IP packet that needs to be forwarded on the Red MRT
-to a particular tunnel endpoint, 
-it does a label push operation.  The label pushed is 
-the Red MRT label for a FEC originated by the tunnel endpoint, learned from the next-hop on the Red MRT.
-</t> 
-</section>
+    <section title="Tunneling IP traffic using MRT LDP Labels (Option 1A)">
+      <t>The MRT LDP Label option 1A forwarding mechanism uses
+      topology-scoped FECs encoded using a single label as described
+      in section <xref target="sec_option_1a"/>.  When a PLR receives
+      an IP packet that needs to be forwarded on the Red MRT to a
+      particular tunnel endpoint, it does a label push operation.  The
+      label pushed is the Red MRT label for a FEC originated by the
+      tunnel endpoint, learned from the next-hop on the Red MRT.
+      </t> 
+    </section>
 
-<section title="Tunneling IP traffic using MRT LDP Labels (Option 1B)">
-<t>The MRT LDP Label option 1B forwarding mechanism encodes the topology
-and the FEC using a two label stack as described in
-<xref target="sec_option_1b"/>.   When a PLR 
-receives an IP packet that needs to be forwarded on the Red MRT
-to a particular tunnel endpoint, 
-the PLR pushes two labels on the IP packet.
-The first (inner) label is the normal LDP label 
-learned from the next-hop on the Red MRT, associated 
-with a FEC originated by the tunnel endpoint.  The second (outer)
-label is the topology-identification label associated with the Red MRT.
-</t>
+    <section title="Tunneling IP traffic using MRT LDP Labels (Option 1B)">
+      <t>The MRT LDP Label option 1B forwarding mechanism encodes the
+      topology and the FEC using a two label stack as described in
+      <xref target="sec_option_1b"/>.  When a PLR receives an IP
+      packet that needs to be forwarded on the Red MRT to a particular
+      tunnel endpoint, the PLR pushes two labels on the IP packet.
+      The first (inner) label is the normal LDP label learned from the
+      next-hop on the Red MRT, associated with a FEC originated by the
+      tunnel endpoint.  The second (outer) label is the
+      topology-identification label associated with the Red MRT.
+      </t>
 
-<t>  For completeness, we note here a potential optimization.  In order to tunnel  
-an IP packet over an MRT to the destination of the IP packet (as opposed
-to an arbitrary tunnel endpoint), then we could just push a 
-topology-identification label directly onto the packet.  An MRT transit 
-router would need to pop the topology-id label, do an IP route lookup 
-in the context of that topology-id , and push the topology-id label.
-</t> 
+      <t>  For completeness, we note here a potential optimization.  In order to tunnel  
+      an IP packet over an MRT to the destination of the IP packet (as opposed
+      to an arbitrary tunnel endpoint), then we could just push a 
+      topology-identification label directly onto the packet.  An MRT transit 
+      router would need to pop the topology-id label, do an IP route lookup 
+      in the context of that topology-id , and push the topology-id label.
+      </t> 
 
-</section>
-</section>
+    </section>
+  </section>
 
 
-<section title="Tunneling IP traffic using MRT IP Tunnels">
-<t>In order to tunnel over the MRT to a particular tunnel endpoint, the PLR 
-encapsulates the original IP packet with an additional IP header using 
-the MRT-Blue or MRT-Red loopack address of the tunnel endpoint.</t>
+  <section title="Tunneling IP traffic using MRT IP Tunnels">
+    <t>In order to tunnel over the MRT to a particular tunnel
+    endpoint, the PLR encapsulates the original IP packet with an
+    additional IP header using the MRT-Blue or MRT-Red loopack address
+    of the tunnel endpoint.</t>
+  </section>
 
+  <section title="Required support"> 
 
-</section>
+    <t>For greatest hardware compatibility and ease in removing the
+    MRT-topology marking at area/level boundaries, routers that
+    support MPLS and implement IP MRT fast-reroute MUST support
+    tunneling of IP traffic using MRT LDP Labels Option 1A
+    (topology-scoped FEC encoded using a single label). </t>
 
-<section title="Required support"> 
-
-<t>For greatest hardware compatibility
-and ease in removing the MRT-topology marking at area/level
-boundaries, routers that support MPLS and implement IP MRT
-fast-reroute MUST support tunneling of IP traffic using 
-MRT LDP Labels Option 1A (topology-scoped FEC encoded 
-using a single label). </t>
-
-</section>
+  </section>
 
 </section>
 </section>
 
 <section anchor="sec_island" title="MRT Island Formation">
 
-<t> The purpose of communicating support for MRT in the IGP is to indicate that the
-MRT-Blue and MRT-Red forwarding topologies are created for transit
-traffic.  The MRT architecture allows for different, potentially 
-incompatible options.  In order to create constistent MRT forwarding topologies, 
-the routers participating in a particular MRT Island need to use the same set of options.  These
-options are grouped into MRT profiles.  In addition, the routers in an MRT Island all need 
-to use the same set of nodes and links within the Island when computing the MRT forwarding
-topologies.  This section describes the information used by a router to determine
-the nodes and links to include in a particular MRT Island.  Some of this information is 
-shared among routers using the newly-defined IGP signaling extensions for MRT described in 
-<xref target="I-D.atlas-ospf-mrt"/> and <xref target="I-D.li-isis-mrt"/>.  Other 
-information already exists in the IGPs and can be used by MRT in Island formation, subject 
-to the interpretation defined here.</t>
+  <t> The purpose of communicating support for MRT in the IGP is to
+  indicate that the MRT-Blue and MRT-Red forwarding topologies are
+  created for transit traffic.  The MRT architecture allows for
+  different, potentially incompatible options.  In order to create
+  constistent MRT forwarding topologies, the routers participating in
+  a particular MRT Island need to use the same set of options.  These
+  options are grouped into MRT profiles.  In addition, the routers in
+  an MRT Island all need to use the same set of nodes and links within
+  the Island when computing the MRT forwarding topologies.  This
+  section describes the information used by a router to determine the
+  nodes and links to include in a particular MRT Island.  Some of this
+  information is shared among routers using the newly-defined IGP
+  signaling extensions for MRT described in <xref
+  target="I-D.atlas-ospf-mrt"/> and <xref target="I-D.li-isis-mrt"/>.
+  Other information already exists in the IGPs and can be used by MRT
+  in Island formation, subject to the interpretation defined here.</t>
 
-<t> Deployment scenarios using multi-topology OSPF or IS-IS, or running both ISIS and OSPF on the
-same routers is out of scope for this specification.  
-As with LFA, it is expected that OSPF Virtual Links will not be supported.</t>
+  <t> Deployment scenarios using multi-topology OSPF or IS-IS, or
+  running both ISIS and OSPF on the same routers is out of scope for
+  this specification.  As with LFA, it is expected that OSPF Virtual
+  Links will not be supported.</t>
 
-<section title="IGP Area or Level">
-<t> All links in an MRT Island MUST be bidirectional 
-and belong to the same IGP area or level.  For ISIS, a link belonging 
-to both level 1 and level 2 would qualify to be in multiple MRT Islands.  
-A given ABR or LBR can belong to multiple MRT Islands, 
-corresponding to the areas or levels in which it participates.  
-Inter-area forwarding behavior is discussed in  <xref target="sec_abr_forwarding"/>.</t>
+  <section title="IGP Area or Level">
+    <t> All links in an MRT Island MUST be bidirectional and belong to
+    the same IGP area or level.  For ISIS, a link belonging to both
+    level 1 and level 2 would qualify to be in multiple MRT Islands.
+    A given ABR or LBR can belong to multiple MRT Islands,
+    corresponding to the areas or levels in which it participates.
+    Inter-area forwarding behavior is discussed in <xref
+    target="sec_abr_forwarding"/>.</t>
+  </section>
 
-</section>
+  <section title="Support for a specific MRT profile">
+    <t> All routers in an MRT Island MUST support the same MRT
+    profile.  A router advertises support for a given MRT profile
+    using the IGP extensions defined in <xref
+    target="I-D.atlas-ospf-mrt"/> and <xref target="I-D.li-isis-mrt"/>
+    using an 8-bit Profile ID value.  A given router can support
+    multiple MRT profiles and participate in multiple MRT Islands.
+    The options that make up an MRT profile, as well as the default
+    MRT profile, are defined in <xref target="sec_mrt_profile"/>.
+    </t>
 
-<section title="Support for a specific MRT profile">
-<t> All routers in an MRT Island MUST support the same MRT profile.  
-A router advertises support for a given MRT profile 
-using the IGP extensions defined in <xref target="I-D.atlas-ospf-mrt"/> and
- <xref target="I-D.li-isis-mrt"/> using an 8-bit Profile ID value.  
- A given router can support multiple 
- MRT profiles and participate in multiple MRT Islands.  
- The options that make up an MRT profile, as well as the
-default MRT profile, are defined in  <xref target="sec_mrt_profile"/>.  </t> 
+  </section>
 
-</section>
+  <section title="Excluding additional routers and interfaces from the MRT Island">
+    <t> MRT takes into account existing IGP mechanisms for
+    discouraging traffic from using particular links and routers, and
+    it introduces an MRT-specific exclusion mechanism for links.
+    </t>
 
-<section title="Excluding additional routers and interfaces from the MRT Island">
+    <section title="Existing IGP exclusion mechanisms">
+      <t> Mechanisms for discouraging traffic from using particular
+      links already exist in ISIS and OSPF.  In ISIS, an interface
+      configured with a metric of 2^24-2 (0xFFFFFE) will only be used
+      as a last resort.  (An interface configured with a metric of
+      2^24-1 (0xFFFFFF) will not be advertised into the topology.)  In
+      OSPF, an interface configured with a metric of 2^16-1 (0xFFFF)
+      will only be used as a last resort.  These metrics can be
+      configured manually to enforce administrative policy, or they
+      can be set in an automated manner as with LDP IGP
+      synchronization [RFC5443].
+      </t>
 
-<t> 
-MRT takes into account existing IGP 
-mechanisms for discouraging traffic from using particular links and routers, and 
-it introduces an MRT-specific exclusion mechanism for links.
-</t>
+      <t> Mechanisms also exist in ISIS and OSPF to prevent transit
+      traffic from using a particular router.  In ISIS, the overload
+      bit is used for this purpose.  In OSPF, [RFC3137] specifies
+      setting all outgoing interface metrics to 0xFFFF to accomplish
+      this.
+      </t>
 
-<section title="Existing IGP exclusion mechanisms">
-<t> Mechanisms for discouraging traffic from using particular links
-already exist in ISIS and OSPF.  In ISIS, an interface configured with a
-metric of 2^24-2 (0xFFFFFE) will only be used as a last resort.
-(An interface configured with a metric of 2^24-1 (0xFFFFFF) will not be advertised 
-into the topology.)  In OSPF, an interface configured with a metric of 2^16-1 (0xFFFF)
-will only be used as a last resort.  These metrics can be configured manually
-to enforce administrative policy, or they can be set in an automated manner as with
-LDP IGP synchronization [RFC5443].  
-</t>
+      <t> The following rules for MRT Island formation ensure that MRT
+      FRR protection traffic does not use a link or router that is
+      discouraged from carrying traffic by existing IGP mechanisms.
 
-<t> 
-Mechanisms also exist in ISIS and OSPF to prevent transit traffic from using a particular router.
-In ISIS, the overload bit is used for this purpose.  In OSPF, [RFC3137] specifies setting all outgoing
-interface metrics to 0xFFFF to accomplish this.
-</t>
+      <list style="numbers">
+	<t> A bidirectional link MUST be excluded from an MRT Island
+	if either the forward or reverse cost on the link is 0xFFFFFE
+	(for ISIS) or 0xFFFF for OSPF.</t>
+	<t> A router MUST be excluded from an MRT Island if it is
+	advertised with the overload bit set (for ISIS), or it is
+	advertised with metric values of 0xFFFF on all of its outgoing
+	interfaces (for OSPF).</t>
+      </list>
 
-<t> 
-The following rules for MRT Island formation ensure that MRT FRR protection 
-traffic does not use a link or router that is discouraged from carrying traffic 
-by existing IGP mechanisms.
+      </t>
 
-<list style="numbers">
-<t> A bidirectional link MUST be excluded from an MRT Island if either the
-forward or reverse cost on the link is 0xFFFFFE (for ISIS) or 0xFFFF for OSPF.</t>
-<t> A router MUST be excluded from an MRT Island if it is advertised with the overload 
-bit set (for ISIS), or it is advertised with metric values of 0xFFFF on all of its 
-outgoing interfaces (for OSPF).</t>
-</list>
+    </section>
 
-</t>
-
-</section>
-
-<section title="MRT-specific exclusion mechanism">
-<t> 
-This architecture also defines a means of excluding an otherwise usable link from MRT Islands. 
-<xref target="I-D.atlas-ospf-mrt"/> and
- <xref target="I-D.li-isis-mrt"/> define the IGP extensions for OSPF and ISIS used to advertise that
- a link is MRT-Ineligible.  A link with either interface advertised as MRT-Ineligible MUST 
- be excluded from an MRT Island.  Note that an interface advertised as MRT-Ineligigle by a router is
- ineligible with respect to all profiles advertised by that router.
-</t>
-</section>
-
+    <section title="MRT-specific exclusion mechanism">
+      <t> This architecture also defines a means of excluding an
+      otherwise usable link from MRT Islands.  <xref
+      target="I-D.atlas-ospf-mrt"/> and <xref
+      target="I-D.li-isis-mrt"/> define the IGP extensions for OSPF
+      and ISIS used to advertise that a link is MRT-Ineligible.  A
+      link with either interface advertised as MRT-Ineligible MUST be
+      excluded from an MRT Island.  Note that an interface advertised
+      as MRT-Ineligigle by a router is ineligible with respect to all
+      profiles advertised by that router.
+      </t>
+    </section>
 
 </section>
 
 <section title="Connectivity">
-<t> All of the routers in an MRT Island MUST be connected by bidirectional links with other
-routers in the MRT Island.  Disconnected MRT Islands will operate independently of one another.</t> 
+  <t> All of the routers in an MRT Island MUST be connected by
+  bidirectional links with other routers in the MRT Island.
+  Disconnected MRT Islands will operate independently of one
+  another.</t>
 </section>
 
 <section title="Example algorithm">
-<t>An algorithm that allows a computing router to identify the routers and
-links in the local MRT Island satisfying the above rules is given in
-section 5.1 of <xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>. </t>
-
+  <t>An algorithm that allows a computing router to identify the
+  routers and links in the local MRT Island satisfying the above rules
+  is given in section 5.1 of <xref
+  target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>. </t>
 </section>
 
 </section>
-
 
 <section anchor="sec_mrt_profile" title="MRT Profile">
-
-<t>An MRT Profile is a set of values and options related to MRT behavior.  The 
-complete set of options is designated by the corresponding 8-bit Profile ID value. </t>
+  <t>An MRT Profile is a set of values and options related to MRT
+  behavior.  The complete set of options is designated by the
+  corresponding 8-bit Profile ID value. </t>
 
 <section anchor="sec_mrt_profile_options" title="MRT Profile Options">
-
-<t>Below is a description of the values and options that define an MRT Profile.</t>
+  <t>Below is a description of the values and options that define an
+  MRT Profile.</t>
 
 <t><list style="hanging">
 
@@ -1083,25 +1115,25 @@ complete set of options is designated by the corresponding 8-bit Profile ID valu
 
   <t hangText="GADAG Root Selection Policy: ">This specifes the manner
   in which the GADAG root is selected. All routers in the MRT island
-  need to use the same GADAG root in the calculations used construct the
-  MRTs.  A valid GADAG Root Selection Policy MUST be such that each router
-  in the MRT island chooses the same GADAG root based on information 
-  available to all routers in the MRT island.  GADAG Root Selection Priority
-  values, advertised in the IGP as router-specific MRT parameters,
-  MAY be used in a GADAG Root Selection Policy.</t>
+  need to use the same GADAG root in the calculations used construct
+  the MRTs.  A valid GADAG Root Selection Policy MUST be such that
+  each router in the MRT island chooses the same GADAG root based on
+  information available to all routers in the MRT island.  GADAG Root
+  Selection Priority values, advertised in the IGP as router-specific
+  MRT parameters, MAY be used in a GADAG Root Selection Policy.</t>
 
-  <t hangText="MRT Forwarding Mechanism: ">This specifies which forwarding
-  mechanism the router uses to carry transit traffic along MRT paths.
-  A router which supports a specific MRT forwarding mechanism
-  must program appropriate next-hops into the forwarding plane.  The
-  current options are MRT LDP Labels, IPv4 Tunneling, IPv6 Tunneling, and None.
-  If the MRT LDP Labels option is supported, then option 1A and the
-  appropriate signaling extensions MUST be supported.  
-  If IPv4 is supported, then both MRT-Red and MRT-Blue IPv4 
-  Loopback Addresses SHOULD be 
-  specified.  If IPv6 is supported, both MRT-Red and MRT-Blue IPv6
-  Loopback Addresses SHOULD be specified.  
-  The None option in may be useful for multicast global protection.</t>
+  <t hangText="MRT Forwarding Mechanism: ">This specifies which
+  forwarding mechanism the router uses to carry transit traffic along
+  MRT paths.  A router which supports a specific MRT forwarding
+  mechanism must program appropriate next-hops into the forwarding
+  plane.  The current options are MRT LDP Labels, IPv4 Tunneling, IPv6
+  Tunneling, and None.  If the MRT LDP Labels option is supported,
+  then option 1A and the appropriate signaling extensions MUST be
+  supported.  If IPv4 is supported, then both MRT-Red and MRT-Blue
+  IPv4 Loopback Addresses SHOULD be specified.  If IPv6 is supported,
+  both MRT-Red and MRT-Blue IPv6 Loopback Addresses SHOULD be
+  specified.  The None option in may be useful for multicast global
+  protection.</t>
 
   <t hangText="Recalculation: ">As part of what process and timing
   should the new MRTs be computed on a modified topology?  <xref
@@ -1123,31 +1155,31 @@ complete set of options is designated by the corresponding 8-bit Profile ID valu
 
 <t>If a router advertises support for multiple MRT profiles, then it
 MUST create the transit forwarding topologies for each of those,
-unless the profile specifies the None option for MRT Forwarding Mechanism.
-A router MUST NOT advertise multiple MRT profiles that overlap in their
-MRT-Red MT-ID or MRT-Blue MT-ID.</t>
+unless the profile specifies the None option for MRT Forwarding
+Mechanism.  A router MUST NOT advertise multiple MRT profiles that
+overlap in their MRT-Red MT-ID or MRT-Blue MT-ID.</t>
 
 </section>
 
 <section title="Router-specific MRT paramaters">
 
-<t>For some profiles, additional router-specific 
-
-MRT parameters may need to be distributed via the IGP.  While the set of options indicated by
-the MRT Profile ID must be identical for all routers in an MRT Island, these 
-router-specific MRT parameters may differ between routers in the same 
-MRT island.  Several such parameters are described below.</t>
+  <t>For some profiles, additional router-specific MRT parameters may
+  need to be distributed via the IGP.  While the set of options
+  indicated by the MRT Profile ID must be identical for all routers in
+  an MRT Island, these router-specific MRT parameters may differ
+  between routers in the same MRT island.  Several such parameters are
+  described below.</t>
 
 <t><list style="hanging">
 
-<t hangText="GADAG Root Selection Priority: "> A GADAG Root Selection Policy MAY 
-rely on the GADAG Root Selection Priority values advertised by each router in the 
-MRT island.  A GADAG Root Selection Policy may use the 
-GADAG Root Selection Priority to allow network operators to configure a parameter to 
-ensure that the GADAG root is selected from a particular subset of routers.
-An example of this use of the 
-GADAG Root Selection Priority value by the GADAG Root Selection Policy is given 
-in the Default MRT profile below. 
+<t hangText="GADAG Root Selection Priority: "> A GADAG Root Selection
+Policy MAY rely on the GADAG Root Selection Priority values advertised
+by each router in the MRT island.  A GADAG Root Selection Policy may
+use the GADAG Root Selection Priority to allow network operators to
+configure a parameter to ensure that the GADAG root is selected from a
+particular subset of routers.  An example of this use of the GADAG
+Root Selection Priority value by the GADAG Root Selection Policy is
+given in the Default MRT profile below.
 </t>
 
 <t hangText="MRT-Red Loopback Address: ">This provides the router's
@@ -1160,31 +1192,32 @@ topology.  It can be specified for either IPv4 and IPv6.</t>
 
 </list></t>
 
-<t>The extensions to OSPF and ISIS for advertising a router's 
-GADAG Root Selection Priority value are defined in 
-<xref target="I-D.atlas-ospf-mrt"/> and <xref target="I-D.li-isis-mrt"/>.
-IGP extensions for the advertising a router's MRT-Red and MRT-Blue Loopback 
-Addresses have not been defined.  
+<t>The extensions to OSPF and ISIS for advertising a router's GADAG
+Root Selection Priority value are defined in <xref
+target="I-D.atlas-ospf-mrt"/> and <xref target="I-D.li-isis-mrt"/>.
+IGP extensions for the advertising a router's MRT-Red and MRT-Blue
+Loopback Addresses have not been defined.
 </t>
 
 </section>
 
 <section title="Default MRT profile">
 
-<t>The following set of options defines the default MRT Profile.  The default 
-MRT profile is indicated by the MRT Profile ID value of 0.</t>
+<t>The following set of options defines the default MRT Profile.  The
+default MRT profile is indicated by the MRT Profile ID value of 0.</t>
 
 <t><list style="hanging">
 
 <t hangText="MRT Algorithm: ">MRT Lowpoint algorithm defined in <xref
 target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>.</t>
 
-<t hangText="MRT-Red MT-ID: "> TBA-MRT-ARCH-1, final value assigned
-by IANA allocated from the LDP MT-ID space (prototype experiments have
+<t hangText="MRT-Red MT-ID: "> TBA-MRT-ARCH-1, final value assigned by
+IANA allocated from the LDP MT-ID space (prototype experiments have
 used 3997)</t>
 
-<t hangText="MRT-Blue MT-ID: "> TBA-MRT-ARCH-2, final value
-assigned by IANA allocated from the LDP MT-ID space (prototype experiments have used 3998)</t>
+<t hangText="MRT-Blue MT-ID: "> TBA-MRT-ARCH-2, final value assigned
+by IANA allocated from the LDP MT-ID space (prototype experiments have
+used 3998)</t>
 
 <t hangText="GADAG Root Selection Policy: ">Among the routers in the
 MRT Island and with the highest priority advertised, an implementation
@@ -1211,42 +1244,42 @@ topology.</t>
 
 <section anchor="sec_proto_ldp" title="LDP signaling extensions and considerations">
 
-<t>The protocol extensions for LDP are defined in <xref
-target="I-D.atlas-mpls-ldp-mrt"/>.  A router must indicate that it
-has the ability to support MRT; having this explicit allows the use of
-MRT-specific processing, such as special handling of FECs sent with
-the Rainbow MRT MT-ID.</t>
+  <t>The protocol extensions for LDP are defined in <xref
+  target="I-D.atlas-mpls-ldp-mrt"/>.  A router must indicate that it
+  has the ability to support MRT; having this explicit allows the use
+  of MRT-specific processing, such as special handling of FECs sent
+  with the Rainbow MRT MT-ID.</t>
 
-<t>A FEC sent with the Rainbow MRT MT-ID indicates that the FEC
-applies to all the MRT-Blue and MRT-Red MT-IDs in supported MRT
-profiles.  The FEC-label bindings for the default shortest-path 
-based MT-ID 0 MUST still be sent (even though it could be inferred
-from the Rainbow FEC-label bindings) to ensure continuous operation
-of normal LDP forwarding. The 
-Rainbow MRT MT-ID is defined to provide an easy way to handle the
-special signaling that is needed at ABRs or LBRs.  It avoids the
-problem of needing to signal different MPLS labels for the same FEC.
-Because the Rainbow MRT MT-ID is used only by ABRs/LBRs or an LDP
-egress router, it is not MRT profile specific.</t>
+  <t>A FEC sent with the Rainbow MRT MT-ID indicates that the FEC
+  applies to all the MRT-Blue and MRT-Red MT-IDs in supported MRT
+  profiles.  The FEC-label bindings for the default shortest-path
+  based MT-ID 0 MUST still be sent (even though it could be inferred
+  from the Rainbow FEC-label bindings) to ensure continuous operation
+  of normal LDP forwarding. The Rainbow MRT MT-ID is defined to
+  provide an easy way to handle the special signaling that is needed
+  at ABRs or LBRs.  It avoids the problem of needing to signal
+  different MPLS labels for the same FEC.  Because the Rainbow MRT
+  MT-ID is used only by ABRs/LBRs or an LDP egress router, it is not
+  MRT profile specific.</t>
 
-<t> <xref target="I-D.atlas-mpls-ldp-mrt"/> 
-contains the IANA request for the Rainbow MRT MT-ID.
-</t>
+  <t> <xref target="I-D.atlas-mpls-ldp-mrt"/> contains the IANA
+  request for the Rainbow MRT MT-ID.
+  </t>
 
 </section>
 
 <section anchor= "sec_abr_forwarding" title="Inter-area Forwarding Behavior">
 
-<t>Unless otherwise specified, in this section 
-we will use the terms area and ABR to indicate either 
-an OSPF area and OSPF ABR or ISIS level and ISIS LBR.</t>
+<t>Unless otherwise specified, in this section we will use the terms
+area and ABR to indicate either an OSPF area and OSPF ABR or ISIS
+level and ISIS LBR.</t>
 
 <t>An ABR/LBR has two forwarding roles.  First, it forwards traffic
-within areas.  Second, it forwards traffic from one area into
-another.  These same two roles apply for MRT transit traffic.  Traffic
-on MRT-Red or MRT-Blue destined inside the area needs to stay on
-MRT-Red or MRT-Blue in that area.  However, it is desirable for
-traffic leaving the area to also exit MRT-Red or MRT-Blue and return to
+within areas.  Second, it forwards traffic from one area into another.
+These same two roles apply for MRT transit traffic.  Traffic on
+MRT-Red or MRT-Blue destined inside the area needs to stay on MRT-Red
+or MRT-Blue in that area.  However, it is desirable for traffic
+leaving the area to also exit MRT-Red or MRT-Blue and return to
 shortest path forwarding.</t>
 
 <t>For unicast MRT-FRR, the need to stay on an MRT forwarding topology
@@ -1260,10 +1293,10 @@ multiple areas (e.g. ABR/LBR failures) to be separately identified and
 repaired around.  Third, the packet can be fast-rerouted again, if
 necessary, due to a failure in a different area.</t>
 
-<t>An ABR/LBR that receives a packet on MRT-Red or MRT-Blue towards 
-destination Z should continue to forward the packet along MRT-Red
-or MRT-Blue only if the best route to Z is in the same area as the interface 
-that the packet was received on.  Otherwise, the packet
+<t>An ABR/LBR that receives a packet on MRT-Red or MRT-Blue towards
+destination Z should continue to forward the packet along MRT-Red or
+MRT-Blue only if the best route to Z is in the same area as the
+interface that the packet was received on.  Otherwise, the packet
 should be removed from MRT-Red or MRT-Blue and forwarded on the
 shortest-path default forwarding topology.</t>
 
@@ -1272,21 +1305,20 @@ the ABR/LBR needs to arrange that packets destined to a different area
 arrive at the ABR/LBR already not marked as MRT-Red or MRT-Blue.</t>
 
 <section title="ABR Forwarding Behavior with MRT LDP Label Option 1A">
+
 <t>For LDP forwarding where a single label specifies (MT-ID, FEC), the
 ABR/LBR is responsible for advertising the proper label to each
 neighbor.  Assume that an ABR/LBR has allocated three labels for a
 particular destination; those labels are L_primary, L_blue, and L_red.
-To those routers in the same area as the best route to the destination,
-the ABR/LBR advertises the following FEC-label bindings: 
-L_primary for the default topology, L_blue for the MRT-Blue MT-ID
-and L_red for the MRT-Red MT-ID, as expected.
-However, to routers in other areas, 
-the ABR/LBR advertises the following FEC-label bindings:
-L_primary for the default topology, and
-L_primary for the Rainbow MRT MT-ID.  Associating 
-L_primary with the Rainbow MRT MT-ID causes the receiving 
-routers to use L_primary for the MRT-Blue MT-ID and for 
-the MRT-Red MT-ID.</t>
+To those routers in the same area as the best route to the
+destination, the ABR/LBR advertises the following FEC-label bindings:
+L_primary for the default topology, L_blue for the MRT-Blue MT-ID and
+L_red for the MRT-Red MT-ID, as expected.  However, to routers in
+other areas, the ABR/LBR advertises the following FEC-label bindings:
+L_primary for the default topology, and L_primary for the Rainbow MRT
+MT-ID.  Associating L_primary with the Rainbow MRT MT-ID causes the
+receiving routers to use L_primary for the MRT-Blue MT-ID and for the
+MRT-Red MT-ID.</t>
 
 <t>The ABR/LBR installs all next-hops for the best area: primary
 next-hops for L_primary, MRT-Blue next-hops for L_blue, and MRT-Red
@@ -1299,31 +1331,31 @@ enforce that packets exiting the area do so on the shortest-path
 default topology.</t>
 
 <section title="Motivation for Creating the Rainbow-FEC">
-<t> The desired forwarding behavior could be achieved in the above example 
-without using the Rainbow-FEC. This could be done by having the 
-ABR/LBR advertise the following 
-FEC-label bindings to neighbors not in the best area:
-L1_primary for the default topology, L1_primary for the MRT-Blue MT-ID, 
-and L1_primary for the MRT-Red MT-ID.  Doing this would require machinery
-to spoof the labels used in FEC-label binding advertisements on a 
-per-neighbor basis.  Such label-spoofing machinery does not currently
-exist in most LDP implmentations and doesn't have other obvious uses.
+<t> The desired forwarding behavior could be achieved in the above
+example without using the Rainbow-FEC. This could be done by having
+the ABR/LBR advertise the following FEC-label bindings to neighbors
+not in the best area: L1_primary for the default topology, L1_primary
+for the MRT-Blue MT-ID, and L1_primary for the MRT-Red MT-ID.  Doing
+this would require machinery to spoof the labels used in FEC-label
+binding advertisements on a per-neighbor basis.  Such label-spoofing
+machinery does not currently exist in most LDP implmentations and
+doesn't have other obvious uses.
 </t>
 
-<t>Many existing LDP implmentations do however have the ability to filter
-FEC-label binding advertisements on a per-neighbor basis. The Rainbow-FEC 
-allows us to re-use the existing per-neighbor FEC filtering machinery 
-to achieve the desired result.  By introducing the Rainbow FEC, we can use 
-per-neighbor FEC-filtering machinery to advertise the FEC-label binding for the 
-Rainbow-FEC (and filter those for MRT-Blue and MRT-Red) to non-best-area
-neighbors of the ABR.</t>
+<t>Many existing LDP implmentations do however have the ability to
+filter FEC-label binding advertisements on a per-neighbor basis. The
+Rainbow-FEC allows us to re-use the existing per-neighbor FEC
+filtering machinery to achieve the desired result.  By introducing the
+Rainbow FEC, we can use per-neighbor FEC-filtering machinery to
+advertise the FEC-label binding for the Rainbow-FEC (and filter those
+for MRT-Blue and MRT-Red) to non-best-area neighbors of the ABR.</t>
 
 <t>The use of the Rainbow-FEC by the ABR for non-best-area
-advertisements is RECOMMENDED.  An ABR MAY advertise the label 
-for the default topology in separate MRT-Blue and MRT-Red advertisements.
-However, a router that supports the LDP Label MRT Forwarding Mechanism 
-MUST be able to receive and correctly interpret the Rainbow-FEC.  
- </t>
+advertisements is RECOMMENDED.  An ABR MAY advertise the label for the
+default topology in separate MRT-Blue and MRT-Red advertisements.
+However, a router that supports the LDP Label MRT Forwarding Mechanism
+MUST be able to receive and correctly interpret the Rainbow-FEC.
+</t>
 
 </section>
 
@@ -1339,8 +1371,8 @@ default SPT topology.  If the outermost IP address is not an MRT
 loopback address of the ABR/LBR, then the packet is simply forwarded
 along the associated forwarding topology.  A PLR sending traffic to a
 destination outside its local area/level will pick the MRT and use the
-associated MRT loopback address of the selected ABR/LBR advertising the 
-lowest cost to the external destination.</t>
+associated MRT loopback address of the selected ABR/LBR advertising
+the lowest cost to the external destination.</t>
 
 <t>Thus, for these two MRT Forwarding Mechanisms( MRT LDP Label 
 option 1A and IP tunneling option 2), there is 
@@ -1351,19 +1383,18 @@ no need for additional computation or per-area forwarding state.</t>
 <section title="ABR Forwarding Behavior with LDP Label option 1B">
 <t>The other MRT forwarding mechanism described in <xref
 target="sec_uni_forwarding"/> uses two labels, a topology-id label,
-and a FEC-label.  
-This mechanism would require that any router whose MRT-Red or MRT-Blue
-next-hop is an ABR/LBR would need to determine whether the ABR/LBR
-would forward the packet out of the area/level.  If so, then that
-router should pop off the topology-identification label before
-forwarding the packet to the ABR/LBR.</t>
+and a FEC-label.  This mechanism would require that any router whose
+MRT-Red or MRT-Blue next-hop is an ABR/LBR would need to determine
+whether the ABR/LBR would forward the packet out of the area/level.
+If so, then that router should pop off the topology-identification
+label before forwarding the packet to the ABR/LBR.</t>
 
 <t> For example, in <xref target="fig_abr_mrt"/>, if node H fails,
 node E has to put traffic towards prefix p onto MRT-Red.  But since
-node D knows that ABR1 will use a best route from another area, it is safe
-for D to pop the Topology-Identification Label and just forward the
-packet to ABR1 along the MRT-Red next-hop.  ABR1 will use the shortest
-path in Area 10.</t>
+node D knows that ABR1 will use a best route from another area, it is
+safe for D to pop the Topology-Identification Label and just forward
+the packet to ABR1 along the MRT-Red next-hop.  ABR1 will use the
+shortest path in Area 10.</t>
 
 <t>In all cases for ISIS and most cases for OSPF, the penultimate
 router can determine what decision the adjacent ABR will make.  The
@@ -1439,18 +1470,19 @@ Island.  The key difference is whether the traffic, once out of the
 MRT Island, remains in the same area/level and might reenter the MRT
 Island if a loop-free exit point is not selected.</t>
 
-<t>FRR using LFA has the useful property that it is able 
-to protect multi-homed prefixes against ABR failure. For instance, if
-a prefix from the backbone is available via both ABR A and ABR B, if A
-fails, then the traffic should be redirected to B. This can be 
-accomplished with MRT FRR as well.</t>
+<t>FRR using LFA has the useful property that it is able to protect
+multi-homed prefixes against ABR failure. For instance, if a prefix
+from the backbone is available via both ABR A and ABR B, if A fails,
+then the traffic should be redirected to B. This can be accomplished
+with MRT FRR as well.</t>
 
 <t>If ASBR protection is desired, this has additional complexities if
 the ASBRs are in different areas.  Similarly, protecting labeled BGP
 traffic in the event of an ASBR failure has additional complexities
 due to the per-ASBR label spaces involved.</t>
 
-<t>As discussed in <xref target="RFC5286"/>, a multi-homed prefix could be:
+<t>As discussed in <xref target="RFC5286"/>, a multi-homed prefix
+could be:
 <list style="symbols">
 <t>An out-of-area prefix announced by more than one ABR,</t>
 <t>An AS-External route announced by 2 or more ASBRs,</t>
@@ -1459,11 +1491,11 @@ due to the per-ASBR label spaces involved.</t>
 </list></t>
 
 <t>There are also two different approaches to protection.  The first
-is tunnel endpoint selection where the 
-PLR picks a router to tunnel to where that
-router is loop-free with respect to the failure-point.  Conceptually,
-the set of candidate routers to provide LFAs expands to all routers
-that can be reached via an MRT alternate, attached to the prefix.</t> 
+is tunnel endpoint selection where the PLR picks a router to tunnel to
+where that router is loop-free with respect to the failure-point.
+Conceptually, the set of candidate routers to provide LFAs expands to
+all routers that can be reached via an MRT alternate, attached to the
+prefix.</t>
 
 <t>The second is to use a proxy-node, that can be named via MPLS label
 or IP address, and pick the appropriate label or IP address to reach
@@ -1480,32 +1512,33 @@ forwarded from the attaching router along a predetermined interface
 towards the relevant prefixes.</t>
 
 
-<t>For IP traffic, multi-homed prefixes can use tunnel endpoint selection.
-For IP traffic that is destined to a router outside the MRT Island, if
-that router is the egress for a FEC advertised into the MRT Island,
-then the named proxy-node approach can be used.</t>
+<t>For IP traffic, multi-homed prefixes can use tunnel endpoint
+selection.  For IP traffic that is destined to a router outside the
+MRT Island, if that router is the egress for a FEC advertised into the
+MRT Island, then the named proxy-node approach can be used.</t>
 
 <t>For LDP traffic, there is always a FEC advertised into the MRT
-Island.  The named proxy-node approach should be used, unless the computing
-router S knows the label for the FEC at the selected tunnel endpoint.</t>
+Island.  The named proxy-node approach should be used, unless the
+computing router S knows the label for the FEC at the selected tunnel
+endpoint.</t>
 
 <t>If a FEC is advertised from outside the MRT Island into the MRT
 Island and the forwarding mechanism specified in the profile includes
 LDP, then the routers learning that FEC MUST also advertise labels for
 (MRT-Red, FEC) and (MRT-Blue, FEC) to neighbors inside the MRT Island.
-Any router receiving a FEC
-corresponding to a router outside the MRT Island or to a multi-homed
-prefix MUST compute and install the transit MRT-Blue and MRT-Red
-next-hops for that FEC.  The FEC-label bindings for the topology-scoped
-FECs ((MT-ID 0, FEC),
-(MRT-Red, FEC), and (MRT-Blue, FEC)) MUST also be provided via LDP to
-neighbors inside the MRT Island.</t>
+Any router receiving a FEC corresponding to a router outside the MRT
+Island or to a multi-homed prefix MUST compute and install the transit
+MRT-Blue and MRT-Red next-hops for that FEC.  The FEC-label bindings
+for the topology-scoped FECs ((MT-ID 0, FEC), (MRT-Red, FEC), and
+(MRT-Blue, FEC)) MUST also be provided via LDP to neighbors inside the
+MRT Island.</t>
 
 <section title="Protecting Multi-Homed Prefixes using Tunnel Endpoint Selection">
 
-<t>Tunnel endpoint selection is a local matter for a router in the MRT Island
-since it pertains to selecting and using an alternate and does not
-affect the transit MRT-Red and MRT-Blue forwarding topologies. </t>
+<t>Tunnel endpoint selection is a local matter for a router in the MRT
+Island since it pertains to selecting and using an alternate and does
+not affect the transit MRT-Red and MRT-Blue forwarding
+topologies. </t>
 
 <t>Let the computing router be S and the next-hop F be the node whose
 failure is to be avoided.  Let the destination be prefix p.  Have A be
@@ -1533,10 +1566,10 @@ compute the shortest path from F to p.</t>
 
 
 <t>Finally, the rules for Endpoint selection are given below.  The
-basic idea is to repair to the prefix-advertising router selected for the
-shortest-path and only to select and tunnel to a different endpoint if
-necessary (e.g. A=F or F is a cut-vertex or the link (S,F) is a
-cut-link).</t>
+basic idea is to repair to the prefix-advertising router selected for
+the shortest-path and only to select and tunnel to a different
+endpoint if necessary (e.g. A=F or F is a cut-vertex or the link (S,F)
+is a cut-link).</t>
 
 <t><list style="numbers">
 
@@ -1560,24 +1593,25 @@ and the MRT alternate for reaching B from S that avoid the link
 (S,F).</t>
 </list></t>
 
-<t>The tunnel endpoint selected will receive a packet destined to itself and,
-being the egress, will pop that MPLS label (or have signaled Implicit
-Null) and forward based on what is underneath.  This suffices for IP
-traffic since the tunnel endpoint can use the IP header of the 
-original packet to continue forwarding the packet.  However, 
-tunneling will not work for LDP traffic without targeted LDP sesssions 
-for learning the FEC-label binding at the tunnel endpoint.</t>
+<t>The tunnel endpoint selected will receive a packet destined to
+itself and, being the egress, will pop that MPLS label (or have
+signaled Implicit Null) and forward based on what is underneath.  This
+suffices for IP traffic since the tunnel endpoint can use the IP
+header of the original packet to continue forwarding the packet.
+However, tunneling will not work for LDP traffic without targeted LDP
+sesssions for learning the FEC-label binding at the tunnel
+endpoint.</t>
 
 </section>
 
 <section title="Protecting Multi-Homed Prefixes using Named Proxy-Nodes">
 
-<t> Instead, the named proxy-node method works with LDP traffic 
-without the need for targeted LDP sessions.  It also has a clear advantage
-over tunnel endpoint selection, in that it is
-possible to explicitly forward from the MRT Island along an interface
-to a loop-free island neighbor when that interface may not be a
-primary next-hop.</t>
+<t> Instead, the named proxy-node method works with LDP traffic
+without the need for targeted LDP sessions.  It also has a clear
+advantage over tunnel endpoint selection, in that it is possible to
+explicitly forward from the MRT Island along an interface to a
+loop-free island neighbor when that interface may not be a primary
+next-hop.</t>
 
 <t>A named proxy-node represents one or more destinations and, for LDP
 forwarding, has a FEC associated with it that is signaled into the MRT
@@ -1595,15 +1629,14 @@ target="I-D.atlas-mpls-ldp-mrt"/>.</t>
 
 <t>Computing the MRT next-hops to a named proxy-node and the MRT
 alternate for the computing router S to avoid a particular failure
-node F is straightforward.  The details of the simple
-constant-time functions, Select_Proxy_Node_NHs() and
-Select_Alternates_Proxy_Node(), are given in
-<xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>.  A key point is that
-computing these MRT next-hops and alternates can be done as new named
-proxy-nodes are added or removed without requiring a new MRT
-computation or impacting other existing MRT paths.  This maps very
-well to, for example, how OSPFv2 [<xref target="RFC2328"/> Section 16.5]
-does incremental updates for new summary-LSAs.</t>
+node F is straightforward.  The details of the simple constant-time
+functions, Select_Proxy_Node_NHs() and Select_Alternates_Proxy_Node(),
+are given in <xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>.  A key
+point is that computing these MRT next-hops and alternates can be done
+as new named proxy-nodes are added or removed without requiring a new
+MRT computation or impacting other existing MRT paths.  This maps very
+well to, for example, how OSPFv2 [<xref target="RFC2328"/> Section
+16.5] does incremental updates for new summary-LSAs.</t>
 
 <t>The key question is how to attach the named proxy-node to the MRT
 Island; all the routers in the MRT Island MUST do this consistently.
@@ -1614,29 +1647,29 @@ area/level.</t>
 
 <t>There are two sources for candidate routers in the MRT Island to
 connect to the named proxy-node.  The first set are those routers that
-are advertising the prefix; the named-proxy-cost
-assigned to each prefix-advertising router is
-the announced cost to the prefix.  The second set are those routers in
-the MRT Island that are connected to routers not in the MRT Island but
-in the same area/level; such routers will be defined as Island Border
-Routers (IBRs).  The routers connected to the IBRs that are not in the
-MRT Island and are in the same area/level as the MRT island
-are Island Neighbors(INs).</t>
+are advertising the prefix; the named-proxy-cost assigned to each
+prefix-advertising router is the announced cost to the prefix.  The
+second set are those routers in the MRT Island that are connected to
+routers not in the MRT Island but in the same area/level; such routers
+will be defined as Island Border Routers (IBRs).  The routers
+connected to the IBRs that are not in the MRT Island and are in the
+same area/level as the MRT island are Island Neighbors(INs).</t>
 
-<t>Since packets sent to the named proxy-node along MRT-Red or MRT-Blue
-may come from any router inside the MRT Island, it is necessary that
-whatever router to which an IBR forwards the packet be loop-free with
-regard to the whole MRT Island for the destination.  Thus, an IBR is a
-candidate router only if it possesses at least one IN whose shortest path to
-the prefix does not enter the MRT Island.  A method for identifying
-loop-free Island Neighbors(LFINs) is discussed below.  The named-proxy-cost
-assigned to each (IBR, IN) pair is cost(IBR, IN) + D_opt(IN, prefix).</t>
+<t>Since packets sent to the named proxy-node along MRT-Red or
+MRT-Blue may come from any router inside the MRT Island, it is
+necessary that whatever router to which an IBR forwards the packet be
+loop-free with regard to the whole MRT Island for the destination.
+Thus, an IBR is a candidate router only if it possesses at least one
+IN whose shortest path to the prefix does not enter the MRT Island.  A
+method for identifying loop-free Island Neighbors(LFINs) is discussed
+below.  The named-proxy-cost assigned to each (IBR, IN) pair is
+cost(IBR, IN) + D_opt(IN, prefix).</t>
 
-<t>From the set of prefix-advertising routers and the set of IBRs 
-with at least one LFIN, the two routers with the lowest named-proxy-cost 
-are selected.  Ties are broken based upon the
-lowest Router ID.  For ease of discussion, the two 
-selected routers will be referred to as proxy-node attachment routers.</t>
+<t>From the set of prefix-advertising routers and the set of IBRs with
+at least one LFIN, the two routers with the lowest named-proxy-cost
+are selected.  Ties are broken based upon the lowest Router ID.  For
+ease of discussion, the two selected routers will be referred to as
+proxy-node attachment routers.</t>
 
 <t>A proxy-node attachment router has a special forwarding role.  When
 a packet is received destined to (MRT-Red, prefix) or (MRT-Blue,
@@ -1743,8 +1776,8 @@ remote from the failure.  Managing micro-loops is an orthogonal issue
 to having alternates for local repair, such as MRT fast-reroute
 provides.</t>
 
-<t>There are two possible micro-loop prevention mechanisms discussed in
-<xref target="RFC5715"/>.  The first is Ordered FIB <xref
+<t>There are two possible micro-loop prevention mechanisms discussed
+in <xref target="RFC5715"/>.  The first is Ordered FIB <xref
 target="I-D.ietf-rtgwg-ordered-fib"/>.  The second is Farside
 Tunneling which requires tunnels or an alternate topology to reach
 routers on the farside of the failure.</t>
@@ -1795,25 +1828,24 @@ MRTs and install them quickly.</t>
 </t>
 
 <t>This section records the status of known implementations of the
-protocol defined by this specification at the time of posting of
-this Internet-Draft, and is based on a proposal described in <xref
-target="RFC6982"/>.  The description of implementations in this section is
-intended to assist the IETF in its decision processes in
+protocol defined by this specification at the time of posting of this
+Internet-Draft, and is based on a proposal described in <xref
+target="RFC6982"/>.  The description of implementations in this
+section is intended to assist the IETF in its decision processes in
 progressing drafts to RFCs.  Please note that the listing of any
-individual implementation here does not imply endorsement by the
-IETF.  Furthermore, no effort has been spent to verify the
-information presented here that was supplied by IETF contributors.
-This is not intended as, and must not be construed to be, a
-catalog of available implementations or their features.  Readers
-are advised to note that other implementations may exist.</t>
+individual implementation here does not imply endorsement by the IETF.
+Furthermore, no effort has been spent to verify the information
+presented here that was supplied by IETF contributors.  This is not
+intended as, and must not be construed to be, a catalog of available
+implementations or their features.  Readers are advised to note that
+other implementations may exist.</t>
 
-<t>According to <xref
-target="RFC6982"/>, "this will allow reviewers and working
-groups to assign due consideration to documents that have the
-benefit of running code, which may serve as evidence of valuable
-experimentation and feedback that have made the implemented
-protocols more mature.  It is up to the individual working groups
-to use this information as they see fit".</t>
+<t>According to <xref target="RFC6982"/>, "this will allow reviewers
+and working groups to assign due consideration to documents that have
+the benefit of running code, which may serve as evidence of valuable
+experimentation and feedback that have made the implemented protocols
+more mature.  It is up to the individual working groups to use this
+information as they see fit".</t>
 	  
 <t> Juniper Networks Implementation
 <list style="symbols">
@@ -1823,15 +1855,14 @@ Juniper Networks</t>
 <t>Implementation description: The MRT-FRR algorithm 
   using OSPF as the IGP has been implemented and verified. </t> 
 <t>The implementation's level of maturity: prototype </t> 
-<t>Protocol coverage: This implementation of the 
-MRT algorithm includes Island 
-identification, GADAG root selection, Lowpoint algorithm,
-augmentation of GADAG with additional links, and calculation of 
-MRT transit next-hops alternate next-hops based on 
-draft "draft-ietf-rtgwg-mrt-frr-algorithm-00".  This implementation 
-also includes the M-bit in OSPF based on 
-"draft-atlas-ospf-mrt-01" as well as LDP MRT Capability based 
-on "draft-atlas-mpls-ldp-mrt-00". </t> 
+<t>Protocol coverage: This implementation of the MRT algorithm
+includes Island identification, GADAG root selection, Lowpoint
+algorithm, augmentation of GADAG with additional links, and
+calculation of MRT transit next-hops alternate next-hops based on
+draft "draft-ietf-rtgwg-mrt-frr-algorithm-00".  This implementation
+also includes the M-bit in OSPF based on "draft-atlas-ospf-mrt-01" as
+well as LDP MRT Capability based on
+"draft-atlas-mpls-ldp-mrt-00". </t>
 <t>Licensing: proprietary </t>
 <t>Implementation experience: Implementation was useful for 
 verifying functionality and lack of gaps.  It has also been useful for 
@@ -1848,7 +1879,7 @@ shraddha@juniper.net, kishoret@juniper.net </t>
 Huawei Technology Co., Ltd.</t> 
 <t>Implementation name: MRT-FRR algorithm and IS-IS extensions for MRT. </t> 
 <t>Implementation description: The MRT-FRR algorithm, IS-IS extensions
-for MRT and LDP multi-topology have been implemented and verified.</t> 
+for MRT and LDP multi-topology have been implemented and verified.</t>
 <t>The implementation's level of maturity: prototype </t> 
 <t>Protocol coverage: This implementation of the 
 MRT algorithm includes Island 
@@ -1859,9 +1890,10 @@ draft "draft-enyedi-rtgwg-mrt-frr-algorithm-03".  This implementation
 also includes IS-IS extension for MRT 
 based on "draft-li-mrt-00". </t> 
 <t>Licensing: proprietary </t>
-<t>Implementation experience: It is important produce a second 
-implementation to verify the algorithm is implemented correctly without looping.
-It is important to verify the ISIS extensions work for MRT-FRR. </t> 
+<t>Implementation experience: It is important produce a second
+implementation to verify the algorithm is implemented correctly
+without looping.  It is important to verify the ISIS extensions work
+for MRT-FRR. </t>
 <t>Contact information: lizhenbin@huawei.com, eric.wu@huawei.com </t>
 </list>
 </t>
@@ -1880,45 +1912,27 @@ It is important to verify the ISIS extensions work for MRT-FRR. </t>
 
 </section>
 
-    <!-- Possibly a 'Contributors' section ... -->
-
-    <section anchor="IANA" title="IANA Considerations">
+<section anchor="IANA" title="IANA Considerations">
 <t>Please create an MRT Profile registry for the MRT Profile TLV.  The
 range is 0 to 255.  The default MRT Profile has value 0.  Values 1-200
 are by Standards Action.  Values 201-220 are for experimentation.
 Values 221-255 are for vendor private use.</t>
 
-<t>Please allocate values from the LDP Multi-Topology (MT) ID Name Space 
-<xref target="I-D.ietf-mpls-ldp-multi-topology"/> for the following:
-Default Profile MRT-Red MT-ID (TBA-MRT-ARCH-1) and 
-Default Profile MRT-Blue MT-ID (TBA-MRT-ARCH-2).  Please allocate MT-ID values
+<t>Please allocate values from the LDP Multi-Topology (MT) ID Name
+Space <xref target="I-D.ietf-mpls-ldp-multi-topology"/> for the
+following: Default Profile MRT-Red MT-ID (TBA-MRT-ARCH-1) and Default
+Profile MRT-Blue MT-ID (TBA-MRT-ARCH-2).  Please allocate MT-ID values
 less than 4096 so that they can also be signalled in PIM.
 </t>
 
-    </section>
+</section>
 
-    <section anchor="Security" title="Security Considerations">
-      <t>This architecture is not currently believed to introduce new security concerns.</t>
-    </section>
-  </middle>
+<section anchor="Security" title="Security Considerations">
+  <t>This architecture is not currently believed to introduce new security concerns.</t>
+</section>
+</middle>
 
-  <!--  *****BACK MATTER ***** -->
-
-  <back>
-
-
-    <!-- References split into informative and normative -->
-
-    <!-- There are 2 ways to insert reference entries from the citation libraries:
-     1. define an ENTITY at the top, and use "ampersand character"RFC2629; here (as shown)
-     2. simply use a PI "less than character"?rfc include="reference.RFC.2119.xml"?> here
-        (for I-Ds: include="reference.I-D.narten-iana-considerations-rfc2434bis.xml")
-
-     Both are cited textually in the same manner: by using xref elements.
-     If you use the PI option, xml2rfc will, by default, try to find included files in the same
-     directory as the including file. You can also define the XML_LIBRARY environment variable
-     with a value containing a set of directories to search.  These can be either in the local
-     filing system or remote ones accessed by http (http://domain/dir/... ).-->
+<back>
 
     <references title="Normative References">
     &RFC5714;
@@ -2075,24 +2089,7 @@ to ASBR Y.  If the traffic is unlabeled or the appropriate MPLS labels
 are known, then explicit tunneling MAY be used as long as the
 shortest-path of the tunnel avoids the failure point.  In that case, A
 must determine that it should use an explicit tunnel instead of an MRT
-alternate.</t>
-
-</section>
-
-    <!-- Change Log
-
-v00 2011-06-28  AKA   Initial version
-v01 2011-07-13  RWK   Multicast Changes
-v02 2012-01-18  AKA   First WG version - removed multicast
-v03 2012-03-08 AKA    Second WG version - added more details for
-              inter-area, IGP signaling, and phased deployment. 
-v04 2013-02-23 AKA WG-03 - added profile flags, LDP signaling, removed
-restriction to only 2 nodes for proxy-nodes.
-
-v05 2013-06-27 AKA Third WG version - serious revision for clarity,
-added plan for MRT profiles, added full clear computation and details
-for multi-homed prefixes and MRT islands.  
-
--->
-  </back>
+alternate.</t> 
+</section> 
+</back> 
 </rfc>
