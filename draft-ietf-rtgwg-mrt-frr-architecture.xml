@@ -15,17 +15,14 @@
 <!ENTITY RFC5715 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5715.xml">
 <!ENTITY RFC6571 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6571.xml">
 <!ENTITY RFC6982 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6982.xml">
+<!ENTITY RFC7490 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7490.xml">
 
 <!ENTITY I-D.ietf-mpls-ldp-multi-topology SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-mpls-ldp-multi-topology.xml">
 
 <!ENTITY I-D.ietf-rtgwg-ipfrr-notvia-addresses SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-rtgwg-ipfrr-notvia-addresses.xml">
 <!ENTITY I-D.ietf-rtgwg-ordered-fib SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-rtgwg-ordered-fib.xml">
 
-<!ENTITY I-D.ietf-rtgwg-remote-lfa SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-rtgwg-remote-lfa.xml">
-
 <!ENTITY I-D.bryant-ipfrr-tunnels SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.bryant-ipfrr-tunnels.xml">
-
-<!ENTITY I-D.psarkar-rtgwg-rlfa-node-protection SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-psarkar-rtgwg-rlfa-node-protection-04.xml">
 
 <!ENTITY I-D.atlas-rtgwg-mrt-mc-arch SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.atlas-rtgwg-mrt-mc-arch.xml">
 
@@ -57,7 +54,7 @@
 <?rfc subcompact="no" ?>
 <!-- keep one blank line between list items -->
 <!-- end of list of popular I-D processing instructions -->
-<rfc category="std" docName="draft-ietf-rtgwg-mrt-frr-architecture-05" ipr="trust200902">
+<rfc category="std" docName="draft-ietf-rtgwg-mrt-frr-architecture-06" ipr="trust200902">
   <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
      you can add the attributes updates="NNNN" and obsoletes="NNNN" 
@@ -168,7 +165,7 @@
      </address>
    </author>
    
-   <date day="19" month="January" year="2015"/>
+   <date day="3" month="July" year="2015"/>
 
    <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
         in the current day for you. If only the current year is specified, xml2rfc will fill 
@@ -215,8 +212,8 @@
      the network into multiple pieces.  This document defines the
      architecture for IP/LDP fast-reroute with MRT.  The associated
      protocol extensions are defined in <xref
-     target="I-D.atlas-ospf-mrt"/> and <xref
-     target="I-D.atlas-mpls-ldp-mrt"/>.  The exact MRT algorithm is
+     target="I-D.ietf-ospf-mrt"/> and <xref
+     target="I-D.ietf-mpls-ldp-mrt"/>.  The exact MRT algorithm is
      defined in <xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>.
      </t>
 
@@ -272,11 +269,11 @@
        architectures.</t>
      
        <t hangText="Remote LFA: " > Remote LFAs <xref
-       target="I-D.ietf-rtgwg-remote-lfa"/> improve coverage over LFAs
+       target="RFC7490"/> improve coverage over LFAs
        for link protection but still cannot guarantee complete
        coverage.  The trade-off of looping traffic to improve coverage
        is still made.  Remote LFAs can provide node-protection <xref
-       target="I-D.psarkar-rtgwg-rlfa-node-protection"/> but not
+       target="I-D.ietf-rtgwg-rlfa-node-protection"/> but not
        guaranteed coverage and the computation required is quite high
        (an SPF for each PQ-node evaluated). <xref
        target="I-D.bryant-ipfrr-tunnels"/> describes additional
@@ -591,7 +588,7 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
   mechanism.  The well-known options are multi-topology forwarding
   (used by MRT-FRR), tunneling (e.g. <xref
   target="I-D.ietf-rtgwg-ipfrr-notvia-addresses"/> or <xref
-  target="I-D.ietf-rtgwg-remote-lfa"/>), and per-interface forwarding
+  target="RFC7490"/>), and per-interface forwarding
   (e.g. Loop-Free Failure Insensitive Routing in <xref
   target="EnyediThesis"/>).</t>
 
@@ -718,7 +715,7 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
     <t> This forwarding option uses the LDP signaling extensions
     described in <xref target="I-D.ietf-mpls-ldp-multi-topology"/>.
     The MRT-specific LDP extensions required to support this option
-    are described in <xref target="I-D.atlas-mpls-ldp-mrt"/>. </t>
+    are described in <xref target="I-D.ietf-mpls-ldp-mrt"/>. </t>
 
   </section>
 
@@ -981,7 +978,7 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
   nodes and links to include in a particular MRT Island.  Some of this
   information is shared among routers using the newly-defined IGP
   signaling extensions for MRT described in <xref
-  target="I-D.atlas-ospf-mrt"/> and <xref target="I-D.li-isis-mrt"/>.
+  target="I-D.ietf-ospf-mrt"/> and <xref target="I-D.ietf-isis-mrt"/>.
   Other information already exists in the IGPs and can be used by MRT
   in Island formation, subject to the interpretation defined here.</t>
 
@@ -1004,7 +1001,7 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
     <t> All routers in an MRT Island MUST support the same MRT
     profile.  A router advertises support for a given MRT profile
     using the IGP extensions defined in <xref
-    target="I-D.atlas-ospf-mrt"/> and <xref target="I-D.li-isis-mrt"/>
+    target="I-D.ietf-ospf-mrt"/> and <xref target="I-D.ietf-isis-mrt"/>
     using an 8-bit Profile ID value.  A given router can support
     multiple MRT profiles and participate in multiple MRT Islands.
     The options that make up an MRT profile, as well as the default
@@ -1060,8 +1057,8 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
     <section title="MRT-specific exclusion mechanism">
       <t> This architecture also defines a means of excluding an
       otherwise usable link from MRT Islands.  <xref
-      target="I-D.atlas-ospf-mrt"/> and <xref
-      target="I-D.li-isis-mrt"/> define the IGP extensions for OSPF
+      target="I-D.ietf-ospf-mrt"/> and <xref
+      target="I-D.ietf-isis-mrt"/> define the IGP extensions for OSPF
       and ISIS used to advertise that a link is MRT-Ineligible.  A
       link with either interface advertised as MRT-Ineligible MUST be
       excluded from an MRT Island.  Note that an interface advertised
@@ -1194,7 +1191,7 @@ topology.  It can be specified for either IPv4 and IPv6.</t>
 
 <t>The extensions to OSPF and ISIS for advertising a router's GADAG
 Root Selection Priority value are defined in <xref
-target="I-D.atlas-ospf-mrt"/> and <xref target="I-D.li-isis-mrt"/>.
+target="I-D.ietf-ospf-mrt"/> and <xref target="I-D.ietf-isis-mrt"/>.
 IGP extensions for the advertising a router's MRT-Red and MRT-Blue
 Loopback Addresses have not been defined.
 </t>
@@ -1245,7 +1242,7 @@ topology.</t>
 <section anchor="sec_proto_ldp" title="LDP signaling extensions and considerations">
 
   <t>The protocol extensions for LDP are defined in <xref
-  target="I-D.atlas-mpls-ldp-mrt"/>.  A router must indicate that it
+  target="I-D.ietf-mpls-ldp-mrt"/>.  A router must indicate that it
   has the ability to support MRT; having this explicit allows the use
   of MRT-specific processing, such as special handling of FECs sent
   with the Rainbow MRT MT-ID.</t>
@@ -1262,7 +1259,7 @@ topology.</t>
   MT-ID is used only by ABRs/LBRs or an LDP egress router, it is not
   MRT profile specific.</t>
 
-  <t> <xref target="I-D.atlas-mpls-ldp-mrt"/> contains the IANA
+  <t> <xref target="I-D.ietf-mpls-ldp-mrt"/> contains the IANA
   request for the Rainbow MRT MT-ID.
   </t>
 
@@ -1406,7 +1403,7 @@ ASBR link-state advertisement (LSA).  In this one case, suboptimal
 forwarding along the MRT in the other area would happen.  If that
 becomes a realistic deployment scenario, OSPF extensions could be
 considered.  This is not covered in <xref
-target="I-D.atlas-ospf-mrt"/>.</t>
+target="I-D.ietf-ospf-mrt"/>.</t>
 
 <figure anchor="fig_abr_mrt" title="ABR Forwarding Behavior and MRTs"
 align="center">
@@ -1623,9 +1620,9 @@ extensions to signal two IP addresses to be associated with MRT-Red
 and MRT-Blue for the proxy-node.  A named proxy-node can be uniquely
 represented by the two routers in the MRT Island to which it is
 connected.  The extensions to signal such IP addresses are not defined
-in <xref target="I-D.atlas-ospf-mrt"/>.  The details of what
+in <xref target="I-D.ietf-ospf-mrt"/>.  The details of what
 label-bindings must be originated are described in <xref
-target="I-D.atlas-mpls-ldp-mrt"/>.</t>
+target="I-D.ietf-mpls-ldp-mrt"/>.</t>
 
 <t>Computing the MRT next-hops to a named proxy-node and the MRT
 alternate for the computing router S to avoid a particular failure
@@ -1907,8 +1904,8 @@ for MRT-FRR. </t>
 
   <t>The authors would like to thank Joel Halpern, Hannes Gredler, Ted
   Qian, Kishore Tiruveedhula, Shraddha Hegde, Santosh Esale, Nitin
-  Bahadur, Harish Sitaraman, Raveendra Torvi, and Anil Kumar SN for
-  their suggestions and review.</t>
+  Bahadur, Harish Sitaraman, Raveendra Torvi, Anil Kumar SN, and
+  Bruno Decraene for their suggestions and review.</t>
 
 </section>
 
@@ -1937,21 +1934,7 @@ less than 4096 so that they can also be signalled in PIM.
     <references title="Normative References">
     &RFC5714;
     &RFC5286;
-	<reference anchor="I-D.ietf-rtgwg-mrt-frr-algorithm">
-      <front>
-         <title>Algorithms for computing Maximally Redundant Trees for IP/LDP Fast-Reroute</title>
-         <author fullname="G&aacute;bor S&aacute;ndor Enyedi" initials="G.S.E." surname="Enyedi"/>
-         <author fullname="Andr&aacute;s Cs&aacute;sz&aacute;r" initials="A.C." surname="Cs&aacute;sz&aacute;r"/>
-         <author fullname="Alia K. Atlas" initials="A." surname="Atlas"/>
-         <author fullname="Chris Bowers" initials="C." surname="Bowers"/>
-         <author fullname="Abishek Gopalan" initials="A.G." surname="Gopalan"/>
-         <date month="July" day="4" year="2014"/>
-      </front>
-      <seriesInfo name="Internet-Draft" value="draft-rtgwg-mrt-frr-algorithm-01"/>
-      <format type="TXT"
-          target="http://www.ietf.org/internet-drafts/draft-rtgwg-mrt-frr-algorithm-01.txt"/>
-    </reference>
-
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-mrt-frr-algorithm-05.xml"?>
     </references>
 
     <references title="Informative References">
@@ -1962,58 +1945,17 @@ less than 4096 so that they can also be signalled in PIM.
     &RFC5715;
     &RFC6571;
 	&RFC6982;
+	&RFC7490;
     &I-D.atlas-rtgwg-mrt-mc-arch;
     &I-D.ietf-mpls-ldp-multi-topology;
     &I-D.bryant-ipfrr-tunnels;
-    &I-D.ietf-rtgwg-remote-lfa;
-	&I-D.psarkar-rtgwg-rlfa-node-protection;
     &I-D.ietf-rtgwg-ipfrr-notvia-addresses;
     &I-D.ietf-rtgwg-ordered-fib;
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-francois-spring-segment-routing-ti-lfa-01.xml"?>
-
-    <reference anchor="I-D.li-isis-mrt">
-      <front>
-         <title>Intermediate System to Intermediate System (IS-IS) Extensions for Maximally Redundant Trees(MRT)</title>
-         <author fullname="Zhenbin Li" initials="Z. " surname="Li"/>
-         <author fullname="Nan Wu" initials="N. " surname="Wu"/>
-         <author fullname="Quintin Zhao" initials="Q." surname="Zhao"/>
-         <author fullname="Alia K. Atlas" initials="A." surname="Atlas"/>
-         <author fullname="Chris Bowers" initials="C." surname="Bowers"/>
-         <author fullname="Jeff Tantsura" initials="J." surname="Tantsura"/>
-         <date month="July" day="4" year="2014"/>
-      </front>
-      <seriesInfo name="Internet-Draft" value="draft-li-isis-mrt-01"/>
-      <format type="TXT"
-          target="http://www.ietf.org/internet-drafts/draft-li-isis-mrt-01.txt"/>
-    </reference>
-	
-    <reference anchor="I-D.atlas-ospf-mrt">
-      <front>
-         <title>OSPF Extensions to Support Maximally Redundant Trees</title>
-         <author fullname="Alia K. Atlas" initials="A." surname="Atlas"/>
-         <author fullname="Shraddha Hegde" initials="S." surname="Hegde"/>
-         <author fullname="Chris Bowers" initials="C." surname="Bowers"/>
-         <author fullname="Jeff Tantsura" initials="J." surname="Tantsura"/>
-         <date month="July" day="4" year="2014"/>
-      </front>
-      <seriesInfo name="Internet-Draft" value="draft-atlas-ospf-mrt-02"/>
-      <format type="TXT"
-          target="http://www.ietf.org/internet-drafts/draft-atlas-ospf-mrt-02.txt"/>
-    </reference>
-
-    <reference anchor="I-D.atlas-mpls-ldp-mrt">
-      <front>
-         <title>LDP Extensions to Support Maximally Redundant Trees</title>
-         <author fullname="Alia K. Atlas" initials="A." surname="Atlas"/>
-         <author fullname="Kishore Tiruveedhula" initials="K" surname="Tiruveedhula"/>
-         <author fullname="Jeff Tantsura" initials="J.T." surname="Tantsura"/>
-         <author fullname="IJsbrand Wijnands" initials="IJ.W." surname="Wijnands"/>
-         <date month="July" day="4" year="2014"/>
-      </front>
-      <seriesInfo name="Internet-Draft" value="draft-atlas-mpls-ldp-mrt-01"/>
-      <format type="TXT" 
-          target="http://www.ietf.org/internet-drafts/draft-atlas-mpls-ldp-mrt-01.txt"/>
-    </reference>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-isis-mrt-00.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-mpls-ldp-mrt-00.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-ospf-mrt-00.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-rlfa-node-protection-02.xml"?>
 
       <reference anchor="LightweightNotVia"
                  target="http://mycite.omikk.bme.hu/doc/71691.pdf">
