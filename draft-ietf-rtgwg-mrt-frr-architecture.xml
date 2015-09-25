@@ -54,7 +54,7 @@
 <?rfc subcompact="no" ?>
 <!-- keep one blank line between list items -->
 <!-- end of list of popular I-D processing instructions -->
-<rfc category="std" docName="draft-ietf-rtgwg-mrt-frr-architecture-06" ipr="trust200902">
+<rfc category="std" docName="draft-ietf-rtgwg-mrt-frr-architecture-07" ipr="trust200902">
   <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
      you can add the attributes updates="NNNN" and obsoletes="NNNN" 
@@ -165,7 +165,7 @@
      </address>
    </author>
    
-   <date day="3" month="July" year="2015"/>
+   <date day="25" month="September" year="2015"/>
 
    <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
         in the current day for you. If only the current year is specified, xml2rfc will fill 
@@ -1464,7 +1464,7 @@ attached to an MRT Island.  The first type are multi-homed prefixes
 that usually connect at a domain or protocol boundary.  The second
 type represent routers that do not support the profile for the MRT
 Island.  The key difference is whether the traffic, once out of the
-MRT Island, remains in the same area/level and might reenter the MRT
+MRT Island, remains in the same area/level and might re-enter the MRT
 Island if a loop-free exit point is not selected.</t>
 
 <t>FRR using LFA has the useful property that it is able to protect
@@ -1502,12 +1502,11 @@ attached to the MRT Island via at least two routers.  It is termed a
 named proxy-node if there is a way that traffic can be encapsulated to
 reach specifically that proxy-node; this could be because there is an
 LDP FEC for the associated prefix or because MRT-Red and MRT-Blue IP
-addresses are advertised in an as-yet undefined fashion for that
+addresses are advertised (in an as-yet undefined fashion) for that
 proxy-node.  Traffic to a named proxy-node may take a different path
 than traffic to the attaching router; traffic is also explicitly
 forwarded from the attaching router along a predetermined interface
 towards the relevant prefixes.</t>
-
 
 <t>For IP traffic, multi-homed prefixes can use tunnel endpoint
 selection.  For IP traffic that is destined to a router outside the
@@ -1561,7 +1560,6 @@ compute the shortest path from F to p.</t>
 
 <t>Loop-Free for F:   D_opt(B, p) &lt; D_opt(B, F) + D_opt(S, p) - D_opt(S, F)</t>
 
-
 <t>Finally, the rules for Endpoint selection are given below.  The
 basic idea is to repair to the prefix-advertising router selected for
 the shortest-path and only to select and tunnel to a different
@@ -1595,8 +1593,8 @@ itself and, being the egress, will pop that MPLS label (or have
 signaled Implicit Null) and forward based on what is underneath.  This
 suffices for IP traffic since the tunnel endpoint can use the IP
 header of the original packet to continue forwarding the packet.
-However, tunneling will not work for LDP traffic without targeted LDP
-sesssions for learning the FEC-label binding at the tunnel
+However, tunnelling of LDP traffic requires targeted LDP
+sessions for learning the FEC-label binding at the tunnel
 endpoint.</t>
 
 </section>
@@ -1611,7 +1609,7 @@ loop-free island neighbor when that interface may not be a primary
 next-hop.</t>
 
 <t>A named proxy-node represents one or more destinations and, for LDP
-forwarding, has a FEC associated with it that is signaled into the MRT
+forwarding, has a FEC associated with it that is signalled into the MRT
 Island.  Therefore, it is possible to explicitly label packets to go
 to (MRT-Red, FEC) or (MRT-Blue, FEC); at the border of the MRT Island,
 the label will swap to meaning (MT-ID 0, FEC).  It would be possible
@@ -1671,7 +1669,7 @@ proxy-node attachment routers.</t>
 <t>A proxy-node attachment router has a special forwarding role.  When
 a packet is received destined to (MRT-Red, prefix) or (MRT-Blue,
 prefix), if the proxy-node attachment router is an IBR, it MUST swap
-to the default topology (e.g. swap to the label for (MT-ID 0, prefix)
+to the shortest path forwarding topology (e.g. swap to the label for (MT-ID 0, prefix)
 or remove the outer IP encapsulation) and forward the packet to the IN
 whose cost was used in the selection.  If the proxy-node attachment
 router is not an IBR, then the packet MUST be removed from the MRT
@@ -1681,53 +1679,89 @@ area/level/AS.</t>
 
 <section title="Computing if an Island Neighbor (IN) is loop-free">
 
-<t>As discussed, the Island Neighbor needs to be loop-free with regard
-to the whole MRT Island for the destination.  Conceptually, the cost
-of transiting the MRT Island should be regarded as 0.  This can be
-done by collapsing the MRT Island into a single node, as seen in <xref
-target="fig_island_ext_dest"/>, and then computing SPFs from each
-Island Neighbor and from the MRT Island itself.</t>
+<t>As discussed above, the Island Neighbor needs to be loop-free with 
+regard to the whole MRT Island for the destination. This can be 
+accomplished but run the usual SPF algorithm while keeping track of 
+which shortest paths have passed through the MRT island. Pseudo-code for 
+this is shown in <xref target="fig_island_marking_spf"/>. The 
+Island_Marking_SPF() is run for each IN that needs to be evaluated for 
+the loop-free condition, with the IN as the spf_root. Whether or not an 
+IN is loop-free with respect to the MRT island can then be determined by 
+evaluating node.PATH_HITS_ISLAND for each destination of interest.</t> 
 
-<figure anchor="fig_island_ext_dest" 
-title="Computing alternates to destinations outside the MRT Island">
-
+<figure anchor="fig_island_marking_spf" align="center">
 <artwork align="center"><![CDATA[
-
-      [G]---[E]---(V)---(U)---(T)    
-       | \   |     |           | 
-       |  \  |     |           |
-       |   \ |     |           |
-      [H]---[F]---(R)---(S)----|
-
-   (1) Network Graph with Partial Deployment
-
-     [E],[F],[G],[H] :  No support for MRT
-     (R),(S),(T),(U),(V):  MRT Island - supports MRT
-
-
- [G]---[E]----|                     |---(V)---(U)---(T)
-  | \   |     |                     |    |           | 
-  |  \  |  ( MRT Island )      [ proxy ] |           | 
-  |   \ |     |                     |    |           | 
- [H]---[F]----|                     |---(R)---(S)----|
-
-  (2) Graph for determining    (3) Graph for MRT computation
-      loop-free neighbors
-
+Island_Marking_SPF(spf_root)
+    Initialize spf_heap to empty
+    Initialize nodes' spf_metric to infinity and next_hops to empty
+        and PATH_HITS_ISLAND to false
+    spf_root.spf_metric = 0
+    insert(spf_heap, spf_root)
+    while (spf_heap is not empty)
+        min_node = remove_lowest(spf_heap)
+        foreach interface intf of min_node
+            path_metric = min_node.spf_metric + intf.metric
+            if path_metric < intf.remote_node.spf_metric
+                intf.remote_node.spf_metric = path_metric
+                if min_node is spf_root
+                    intf.remote_node.next_hops = make_list(intf)
+                else
+                    intf.remote_node.next_hops = min_node.next_hops
+                if intf.remote_node.IN_MRT_ISLAND
+                    intf.remote_node.PATH_HITS_ISLAND = true
+                else
+                    intf.remote_node.PATH_HITS_ISLAND =
+                        min_node.PATH_HITS_ISLAND
+                insert_or_update(spf_heap, intf.remote_node)
+            else if path_metric == intf.remote_node.spf_metric
+                if min_node is spf_root
+                    add_to_list(intf.remote_node.next_hops, intf)
+                else
+                    add_list_to_list(intf.remote_node.next_hops,
+                                     min_node.next_hops)
+                if intf.remote_node.IN_MRT_ISLAND
+                    intf.remote_node.PATH_HITS_ISLAND = true
+                else
+                    intf.remote_node.PATH_HITS_ISLAND =
+                        min_node.PATH_HITS_ISLAND
 ]]></artwork>
 </figure>
 
-<t>The simple way to do this without manipulating the topology is to
-compute the SPFs from each IN and a node in the MRT Island (e.g. the
-GADAG root), but use a link metric of 0 for all links between routers
-in the MRT Island.  The distances computed via SPF this way will be
-refered to as Dist_mrt0.</t>
+<t>It is also possible that a given prefix is originated by a 
+combination of non-island routers and island routers. The results of the 
+Island_Marking_SPF computation can be used to determine if the shortest 
+path from an IN to reach that prefix hits the MRT island. The shortest 
+path for the IN to reach prefix P is determined by the total cost to 
+reach prefix P, which is the sum of the cost for the IN to reach a 
+prefix-advertising node and the cost with which that node advertises the 
+prefix. The path with the minimum total cost to prefix P is chosen. If 
+the prefix-advertising node for that minimum total cost path has 
+PATH_HITS_ISLAND set to True, then the IN is not loop-free with respect 
+to the MRT Island for reaching prefix P. If there multiple minimum total 
+cost paths to reach prefix P, then all of the prefix-advertising routers 
+involved in the minimum total cost paths MUST have PATH_HITS_ISLAND set 
+to False for the IN to be considered loop-free to reach P. </t> 
 
-<t>An IN is loop-free with respect to a destination D if:
-Dist_mrt0(IN, D) &lt; Dist_mrt0(IN, MRT Island Router) + Dist_mrt0(MRT
-Island Router, D).  Any router in the MRT Island can be used since the
-cost of transiting between MRT Island routers is 0.  The GADAG Root is
-recommended for consistency.</t>
+<t>Note that there are other computations that could be used to 
+determine if paths from a given IN _might_ pass through the MRT Island 
+for a given prefix or destination. For example, a previous version of 
+this draft specified running the SPF algorithm on modified topology 
+which treats the MRT island as a single node (with intra-island links 
+set to zero cost) in order to provide input to computations to determine 
+if the path from IN to non-island destination hits the MRT island in 
+this modified topology. This computation is enough to guarantee that a 
+path will not hit the MRT island in the original topology. However, it 
+is possible that a path which is disqualified for hitting the MRT island 
+in the modified topology will not actually hit the MRT Island in the 
+original topology. The algorithm described in Island_Marking_SPF() above 
+does not modify the original topology, and will only disqualify a path 
+if the actual path does in fact hit the MRT island. </t> 
+
+<t>Since all routers need to come to the same conclusion about which 
+routers qualify as LFINs, this specification requires that all routers 
+computing LFINs MUST use an algorithm whose result is identical to that 
+of the Island_Marking_SPF() in <xref target="fig_island_marking_spf"/>. 
+</t> 
 
 </section>
 </section>
