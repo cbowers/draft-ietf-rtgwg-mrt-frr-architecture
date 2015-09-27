@@ -17,8 +17,6 @@
 <!ENTITY RFC6982 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6982.xml">
 <!ENTITY RFC7490 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7490.xml">
 
-<!ENTITY I-D.ietf-mpls-ldp-multi-topology SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-mpls-ldp-multi-topology.xml">
-
 <!ENTITY I-D.ietf-rtgwg-ipfrr-notvia-addresses SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-rtgwg-ipfrr-notvia-addresses.xml">
 <!ENTITY I-D.ietf-rtgwg-ordered-fib SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-rtgwg-ordered-fib.xml">
 
@@ -409,20 +407,20 @@
 
        <t hangText="MRT-Red: "> MRT-Red is used to describe one of the
        two MRTs; it is used to described the associated forwarding
-       topology and MT-ID.  Specifically, MRT-Red is the decreasing
+       topology and MPLS MT-ID.  Specifically, MRT-Red is the decreasing
        MRT where links in the GADAG are taken in the direction from a
        higher topologically ordered node to a lower one.</t>
 
        <t hangText="MRT-Blue: "> MRT-Blue is used to describe one of
        the two MRTs; it is used to described the associated forwarding
-       topology and MT-ID.  Specifically, MRT-Blue is the increasing
+       topology and MPLS MT-ID.  Specifically, MRT-Blue is the increasing
        MRT where links in the GADAG are taken in the direction from a
        lower topologically ordered node to a higher one.</t>
 
-       <t hangText="Rainbow MRT: "> It is useful to have an MT-ID that
+       <t hangText="Rainbow MRT: "> It is useful to have an MPLS MT-ID that
        refers to the multiple MRT topologies and to the default
-       topology.  This is referred to as the Rainbow MRT MT-ID and is
-       used by LDP to reduce signaling and permit the same label to
+       topology.  This is referred to as the Rainbow MRT MPLS MT-ID and is
+       used by LDP to reduce signalling and permit the same label to
        always be advertised to all peers for the same (MT-ID,
        Prefix).</t>
 
@@ -680,10 +678,10 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
 
   <section anchor="sec_option_1a" title="Topology-scoped FEC encoded using a single label (Option 1A)">
     
-    <t><xref target="I-D.ietf-mpls-ldp-multi-topology"/> provides a
+    <t><xref target="RFC7307"/> provides a
     mechanism to distribute FEC-Label bindings scoped to a given
-    topology (represented by MT-ID).  To use multi-topology LDP to
-    create MRT forwarding topologies, we associate two MT-IDs with the
+    MPLS topology (represented by MPLS MT-ID).  To use multi-topology LDP to
+    create MRT forwarding topologies, we associate two MPLS MT-IDs with the
     MRT-Red and MRT-Blue forwarding topologies, in addition to the
     default shortest path forwarding topology with MT-ID=0.</t>
 
@@ -713,7 +711,7 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
     by LDP to distribute FEC-label bindings.</t>
 
     <t> This forwarding option uses the LDP signaling extensions
-    described in <xref target="I-D.ietf-mpls-ldp-multi-topology"/>.
+    described in <xref target="RFC7307"/>.
     The MRT-specific LDP extensions required to support this option
     are described in <xref target="I-D.ietf-mpls-ldp-mrt"/>. </t>
 
@@ -1208,13 +1206,15 @@ default MRT profile is indicated by the MRT Profile ID value of 0.</t>
 <t hangText="MRT Algorithm: ">MRT Lowpoint algorithm defined in <xref
 target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>.</t>
 
-<t hangText="MRT-Red MT-ID: "> TBA-MRT-ARCH-1, final value assigned by
-IANA allocated from the LDP MT-ID space (prototype experiments have
-used 3997)</t>
+<t hangText="MRT-Red MPLS MT-ID: "> <xref target="I-D.ietf-mpls-ldp-mrt"/> 
+contains the IANA request for allocation of this value from 
+the MPLS Multi-Topology Identifiers Registry.  Prototype experiments have
+used a value of 3997.</t>
 
-<t hangText="MRT-Blue MT-ID: "> TBA-MRT-ARCH-2, final value assigned
-by IANA allocated from the LDP MT-ID space (prototype experiments have
-used 3998)</t>
+<t hangText="MRT-Blue MPLS MT-ID: "> <xref target="I-D.ietf-mpls-ldp-mrt"/> 
+contains the IANA request for allocation of this value from 
+the MPLS Multi-Topology Identifiers Registry.  Prototype experiments have
+used a value of 3998.</t>
 
 <t hangText="GADAG Root Selection Policy: ">Among the routers in the
 MRT Island and with the highest priority advertised, an implementation
@@ -1260,7 +1260,7 @@ topology.</t>
   MRT profile specific.</t>
 
   <t> <xref target="I-D.ietf-mpls-ldp-mrt"/> contains the IANA
-  request for the Rainbow MRT MT-ID.
+  request for the Rainbow MRT MPLS MT-ID.
   </t>
 
 </section>
@@ -1949,13 +1949,6 @@ range is 0 to 255.  The default MRT Profile has value 0.  Values 1-200
 are by Standards Action.  Values 201-220 are for experimentation.
 Values 221-255 are for vendor private use.</t>
 
-<t>Please allocate values from the LDP Multi-Topology (MT) ID Name
-Space <xref target="I-D.ietf-mpls-ldp-multi-topology"/> for the
-following: Default Profile MRT-Red MT-ID (TBA-MRT-ARCH-1) and Default
-Profile MRT-Blue MT-ID (TBA-MRT-ARCH-2).  Please allocate MT-ID values
-less than 4096 so that they can also be signalled in PIM.
-</t>
-
 </section>
 
 <section anchor="Security" title="Security Considerations">
@@ -1980,8 +1973,8 @@ less than 4096 so that they can also be signalled in PIM.
     &RFC6571;
 	&RFC6982;
 	&RFC7490;
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.7307.xml"?>
     &I-D.atlas-rtgwg-mrt-mc-arch;
-    &I-D.ietf-mpls-ldp-multi-topology;
     &I-D.bryant-ipfrr-tunnels;
     &I-D.ietf-rtgwg-ipfrr-notvia-addresses;
     &I-D.ietf-rtgwg-ordered-fib;
