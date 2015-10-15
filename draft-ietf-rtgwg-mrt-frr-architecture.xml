@@ -1255,7 +1255,8 @@ topology.</t>
   of normal LDP forwarding. The Rainbow MRT MT-ID is defined to
   provide an easy way to handle the special signaling that is needed
   at ABRs or LBRs.  It avoids the problem of needing to signal
-  different MPLS labels for the same FEC.  Because the Rainbow MRT
+  different MPLS labels to different LDP neighbors for the same FEC.
+  Because the Rainbow MRT
   MT-ID is used only by ABRs/LBRs or an LDP egress router, it is not
   MRT profile specific.</t>
 
