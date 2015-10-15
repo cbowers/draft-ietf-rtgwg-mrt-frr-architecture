@@ -163,7 +163,7 @@
      </address>
    </author>
    
-   <date day="25" month="September" year="2015"/>
+   <date day="15" month="October" year="2015"/>
 
    <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
         in the current day for you. If only the current year is specified, xml2rfc will fill 
@@ -1653,7 +1653,7 @@ same area/level as the MRT island are Island Neighbors(INs).</t>
 <t>Since packets sent to the named proxy-node along MRT-Red or
 MRT-Blue may come from any router inside the MRT Island, it is
 necessary that whatever router to which an IBR forwards the packet be
-loop-free with regard to the whole MRT Island for the destination.
+loop-free with respect to the whole MRT Island for the destination.
 Thus, an IBR is a candidate router only if it possesses at least one
 IN whose shortest path to the prefix does not enter the MRT Island.  A
 method for identifying loop-free Island Neighbors(LFINs) is discussed
@@ -1680,8 +1680,8 @@ area/level/AS.</t>
 <section title="Computing if an Island Neighbor (IN) is loop-free">
 
 <t>As discussed above, the Island Neighbor needs to be loop-free with 
-regard to the whole MRT Island for the destination. This can be 
-accomplished but run the usual SPF algorithm while keeping track of 
+respect to the whole MRT Island for the destination. This can be 
+accomplished by running the usual SPF algorithm while keeping track of 
 which shortest paths have passed through the MRT island. Pseudo-code for 
 this is shown in <xref target="fig_island_marking_spf"/>. The 
 Island_Marking_SPF() is run for each IN that needs to be evaluated for 
@@ -1938,8 +1938,8 @@ for MRT-FRR. </t>
 
   <t>The authors would like to thank Joel Halpern, Hannes Gredler, Ted
   Qian, Kishore Tiruveedhula, Shraddha Hegde, Santosh Esale, Nitin
-  Bahadur, Harish Sitaraman, Raveendra Torvi, Anil Kumar SN, and
-  Bruno Decraene for their suggestions and review.</t>
+  Bahadur, Harish Sitaraman, Raveendra Torvi, Anil Kumar SN, Bruno Decraene, 
+  Eric Wu, and Janos Farkas for their suggestions and review.</t>
 
 </section>
 
