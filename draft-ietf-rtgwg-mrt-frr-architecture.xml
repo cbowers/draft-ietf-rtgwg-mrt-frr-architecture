@@ -201,7 +201,7 @@
  <middle>
    <section title="Introduction">
      
-     <t>This document gives a complete solution for IP/LDP
+     <t>This document describes a solution for IP/LDP
      fast-reroute <xref target="RFC5714"/>. MRT-FRR creates two
      alternate trees separate from the primary next-hop forwarding
      used during stable operation.  These two trees are maximally
@@ -420,7 +420,7 @@
        <t hangText="Rainbow MRT: "> It is useful to have an MPLS MT-ID that
        refers to the multiple MRT topologies and to the default
        topology.  This is referred to as the Rainbow MRT MPLS MT-ID and is
-       used by LDP to reduce signalling and permit the same label to
+       used by LDP to reduce signaling and permit the same label to
        always be advertised to all peers for the same (MT-ID,
        Prefix).</t>
 
@@ -625,13 +625,6 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
      
 <section anchor="sec_uni_forwarding" title="Unicast Forwarding with MRT Fast-Reroute">
 
-  <t>As mentioned before, MRT FRR needs multi-topology forwarding.
-  Unfortunately, neither IP nor LDP provides extra bits for a packet
-  to indicate its topology.  Once the MRTs are computed, the two sets
-  of MRTs can be used as two additional forwarding topologies.  The
-  same considerations apply for forwarding along the MRTs as for
-  handling multiple topologies.</t>
-
   <t> There are three possible types of routers involved in forwarding
   a packet along an MRT path.  At the MRT ingress router, the packet
   leaves the shortest path to the destination and follows an MRT path
@@ -768,16 +761,24 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
 </section>
 
 <section title="MRT IP tunnels (Options 2A and 2B)">
-  <t> IP tunneling can also be used as an MRT transit forwarding
-  mechanism.  Each router supporting this MRT transit forwarding
-  mechanism announces two additional loopback addresses and their
-  associated MRT color.  Those addresses are used as destination
-  addresses for MRT-blue and MRT-red IP tunnels respectively.  The
-  special loopback addresses allow the transit nodes to identify the
-  traffic as being forwarded along either the MRT-blue or MRT-red
-  topology to reach the tunnel destination.  Announcements of these
-  two additional loopback addresses per router with their MRT color
-  requires IGP extensions, which have not been defined.</t>
+ <t> IP tunneling can also be used as an MRT transit forwarding 
+mechanism. Each router supporting this MRT transit forwarding mechanism 
+announces two additional loopback addresses and their associated MRT 
+color. Those addresses are used as destination addresses for MRT-blue 
+and MRT-red IP tunnels respectively. The special loopback addresses 
+allow the transit nodes to identify the traffic as being forwarded along 
+either the MRT-blue or MRT-red topology to reach the tunnel destination. 
+For example, an MRT ingress router can cause a packet to be tunneled 
+along the MRT-red path to router X by encapsulating the packet using 
+the MRT-red loopback address advertised by router X. Upon receiving the 
+packet, router X would remove the encapsulation header and forward the 
+packet based on the original destination address.</t> 
+
+<t>Announcements of these two additional loopback addresses per router with 
+their MRT color requires IGP extensions, which have not been 
+defined.</t> 
+
+
 
   <t> Either IPv4 (option 2A) or IPv6 (option 2B) can be used as the
   tunneling mechanism.</t>
@@ -805,20 +806,14 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
   MRT egress functionality are considered later in this document.</t>
 
   <t>In principle, it is possible to carry LDP traffic in MRT IP
-  tunnels.  However, for LDP traffic, it is very desirable to avoid
+  tunnels.  However, for LDP traffic, it is desirable to avoid
   tunneling.  Tunneling LDP traffic to a remote node requires
   knowledge of remote FEC-label bindings so that the LDP traffic can
   continue to be forwarded properly when it leaves the tunnel. This
   requires targeted LDP sessions which can add management complexity.
-  The two MRT LDP Label forwarding mechanisms have the useful property
-  that the FEC associated with the packet is maintained in the labels
-  at each hop along the MRT, as long as an MRT to the originator of
-  the FEC is used.  The MRT IP tunneling mechanism does not have this
-  useful property.  Therefore, this document only considers the two
-  MRT LDP Label forwarding mechanisms for protecting LDP traffic with
-  MRT fast-reroute.
-  </t>
-
+  As described below, the two MRT forwarding mechanisms that 
+  use LDP labels do not require targeted LDP sessions.</t>
+  
   <section title="Forwarding LDP traffic using MRT LDP Labels (Option 1A)">
     <t> The MRT LDP Label option 1A forwarding mechanism uses
     topology-scoped FECs encoded using a single label as described in
@@ -853,16 +848,19 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
   </section>
 
   <section title="Other considerations for forwarding LDP traffic using MRT LDP Labels ">
-    
-    <t> Note that forwarding LDP traffic using MRT LDP Labels requires
-    that an MRT to the originator of the FEC be used.  For example,
-    one might find it desirable to have the PLR use an MRT to reach
-    the primary next-next-hop for the FEC, and then continue
-    forwarding the LDP packet along the shortest path tree from the
-    primary next-next-hop.  However, this would require tunneling to
-    the primary next-next-hop and a targeted LDP session for the PLR
-    to learn the FEC-label binding for primary next-next-hop to
-    correctly forward the packet.</t>
+ <t> Note that forwarding LDP traffic using MRT LDP Labels can be done 
+without the use of targeted LDP sessions when an MRT path to the 
+destination FEC is used. The alternates selected in <xref 
+target="I-D.ietf-rtgwg-mrt-frr-algorithm"/> use the MRT path to the 
+destination FEC, so targeted LDP sessions are not needed. If instead one 
+found it desirable to have the PLR use an MRT to reach the primary 
+next-next-hop for the FEC, and then continue forwarding the LDP packet 
+along the shortest path tree from the primary next-next-hop, this would 
+require tunneling to the primary next-next-hop and a targeted LDP 
+session for the PLR to learn the FEC-label binding for primary 
+next-next-hop to correctly forward the packet.</t> 
+
+
 
     <t>For greatest hardware compatibility, routers implementing MRT
     fast-reroute of LDP traffic MUST support Option 1A of encoding the
@@ -872,10 +870,18 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
 </section>
 
 <section title="Forwarding IP Unicast Traffic over MRT Paths">
+ <t> For IPv4 traffic, there is no currently practical alternative 
+except tunneling to gain the bits needed to indicate the MRT-Blue or 
+MRT-Red forwarding topology. For IPv6 traffic, in principle one could 
+define bits in the IPv6 options header to indicate the MRT-Blue or 
+MRT-Red forwarding topology. However, in this document, we have chosen 
+not to define a solution that would work for IPv6 traffic but not for 
+IPv4 traffic.</t> 
 
-  <t>For IP traffic, there is no currently practical alternative
-  except tunneling to gain the bits needed to indicate the MRT-Blue or
-  MRT-Red forwarding topology.  The choice of tunnel egress MAY be
+
+
+
+  <t>The choice of tunnel egress MAY be
   flexible since any router closer to the destination than the
   next-hop can work.  This architecture assumes that the original
   destination in the area is selected (see <xref
@@ -929,7 +935,8 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
       topology-identification label associated with the Red MRT.
       </t>
 
-      <t>  For completeness, we note here a potential optimization.  In order to tunnel  
+      <t>  For completeness, we note here a potential variation that uses
+	  a single label as opposed to two labels.  In order to tunnel  
       an IP packet over an MRT to the destination of the IP packet (as opposed
       to an arbitrary tunnel endpoint), then we could just push a 
       topology-identification label directly onto the packet.  An MRT transit 
@@ -1130,10 +1137,9 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
   specified.  The None option in may be useful for multicast global
   protection.</t>
 
-  <t hangText="Recalculation: ">As part of what process and timing
-  should the new MRTs be computed on a modified topology?  <xref
-  target="sec_recalculation"/> describes the minimum behavior required
-  to support fast-reroute.</t>
+  <t hangText="Recalculation: ">Recalculation specifies the process and timing
+  by which new MRTs are computed after the topology has been modified.
+  </t>
 
   <t hangText="Area/Level Border Behavior: ">Should inter-area traffic
   on the MRT-Blue or MRT-Red be put back onto the shortest path tree?
@@ -1634,7 +1640,7 @@ MRT computation or impacting other existing MRT paths.  This maps very
 well to, for example, how OSPFv2 [<xref target="RFC2328"/> Section
 16.5] does incremental updates for new summary-LSAs.</t>
 
-<t>The key question is how to attach the named proxy-node to the MRT
+<t>The remaining question is how to attach the named proxy-node to the MRT
 Island; all the routers in the MRT Island MUST do this consistently.
 No more than 2 routers in the MRT Island can be selected; one should
 only be selected if there are no others that meet the necessary
@@ -1642,7 +1648,8 @@ criteria.  The named proxy-node is logically part of the
 area/level.</t>
 
 <t>There are two sources for candidate routers in the MRT Island to
-connect to the named proxy-node.  The first set are those routers that
+connect to the named proxy-node.  The first set are those routers 
+in the MRT Island that
 are advertising the prefix; the named-proxy-cost assigned to each
 prefix-advertising router is the announced cost to the prefix.  The
 second set are those routers in the MRT Island that are connected to
@@ -1657,8 +1664,9 @@ necessary that whatever router to which an IBR forwards the packet be
 loop-free with respect to the whole MRT Island for the destination.
 Thus, an IBR is a candidate router only if it possesses at least one
 IN whose shortest path to the prefix does not enter the MRT Island.  A
-method for identifying loop-free Island Neighbors(LFINs) is discussed
-below.  The named-proxy-cost assigned to each (IBR, IN) pair is
+method for identifying loop-free Island Neighbors(LFINs) 
+is given in <xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>.
+The named-proxy-cost assigned to each (IBR, IN) pair is
 cost(IBR, IN) + D_opt(IN, prefix).</t>
 
 <t>From the set of prefix-advertising routers and the set of IBRs with
@@ -1678,93 +1686,7 @@ forwarding topology and sent along the interface(s) that caused the
 router to advertise the prefix; this interface might be out of the
 area/level/AS.</t>
 
-<section title="Computing if an Island Neighbor (IN) is loop-free">
 
-<t>As discussed above, the Island Neighbor needs to be loop-free with 
-respect to the whole MRT Island for the destination. This can be 
-accomplished by running the usual SPF algorithm while keeping track of 
-which shortest paths have passed through the MRT island. Pseudo-code for 
-this is shown in <xref target="fig_island_marking_spf"/>. The 
-Island_Marking_SPF() is run for each IN that needs to be evaluated for 
-the loop-free condition, with the IN as the spf_root. Whether or not an 
-IN is loop-free with respect to the MRT island can then be determined by 
-evaluating node.PATH_HITS_ISLAND for each destination of interest.</t> 
-
-<figure anchor="fig_island_marking_spf" align="center">
-<artwork align="center"><![CDATA[
-Island_Marking_SPF(spf_root)
-    Initialize spf_heap to empty
-    Initialize nodes' spf_metric to infinity and next_hops to empty
-        and PATH_HITS_ISLAND to false
-    spf_root.spf_metric = 0
-    insert(spf_heap, spf_root)
-    while (spf_heap is not empty)
-        min_node = remove_lowest(spf_heap)
-        foreach interface intf of min_node
-            path_metric = min_node.spf_metric + intf.metric
-            if path_metric < intf.remote_node.spf_metric
-                intf.remote_node.spf_metric = path_metric
-                if min_node is spf_root
-                    intf.remote_node.next_hops = make_list(intf)
-                else
-                    intf.remote_node.next_hops = min_node.next_hops
-                if intf.remote_node.IN_MRT_ISLAND
-                    intf.remote_node.PATH_HITS_ISLAND = true
-                else
-                    intf.remote_node.PATH_HITS_ISLAND =
-                        min_node.PATH_HITS_ISLAND
-                insert_or_update(spf_heap, intf.remote_node)
-            else if path_metric == intf.remote_node.spf_metric
-                if min_node is spf_root
-                    add_to_list(intf.remote_node.next_hops, intf)
-                else
-                    add_list_to_list(intf.remote_node.next_hops,
-                                     min_node.next_hops)
-                if intf.remote_node.IN_MRT_ISLAND
-                    intf.remote_node.PATH_HITS_ISLAND = true
-                else
-                    intf.remote_node.PATH_HITS_ISLAND =
-                        min_node.PATH_HITS_ISLAND
-]]></artwork>
-</figure>
-
-<t>It is also possible that a given prefix is originated by a 
-combination of non-island routers and island routers. The results of the 
-Island_Marking_SPF computation can be used to determine if the shortest 
-path from an IN to reach that prefix hits the MRT island. The shortest 
-path for the IN to reach prefix P is determined by the total cost to 
-reach prefix P, which is the sum of the cost for the IN to reach a 
-prefix-advertising node and the cost with which that node advertises the 
-prefix. The path with the minimum total cost to prefix P is chosen. If 
-the prefix-advertising node for that minimum total cost path has 
-PATH_HITS_ISLAND set to True, then the IN is not loop-free with respect 
-to the MRT Island for reaching prefix P. If there multiple minimum total 
-cost paths to reach prefix P, then all of the prefix-advertising routers 
-involved in the minimum total cost paths MUST have PATH_HITS_ISLAND set 
-to False for the IN to be considered loop-free to reach P. </t> 
-
-<t>Note that there are other computations that could be used to 
-determine if paths from a given IN _might_ pass through the MRT Island 
-for a given prefix or destination. For example, a previous version of 
-this draft specified running the SPF algorithm on modified topology 
-which treats the MRT island as a single node (with intra-island links 
-set to zero cost) in order to provide input to computations to determine 
-if the path from IN to non-island destination hits the MRT island in 
-this modified topology. This computation is enough to guarantee that a 
-path will not hit the MRT island in the original topology. However, it 
-is possible that a path which is disqualified for hitting the MRT island 
-in the modified topology will not actually hit the MRT Island in the 
-original topology. The algorithm described in Island_Marking_SPF() above 
-does not modify the original topology, and will only disqualify a path 
-if the actual path does in fact hit the MRT island. </t> 
-
-<t>Since all routers need to come to the same conclusion about which 
-routers qualify as LFINs, this specification requires that all routers 
-computing LFINs MUST use an algorithm whose result is identical to that 
-of the Island_Marking_SPF() in <xref target="fig_island_marking_spf"/>. 
-</t> 
-
-</section>
 </section>
 
 <section title="MRT Alternates for Destinations Outside the MRT Island">
@@ -1824,7 +1746,12 @@ MRT.</t>
 
 </section>
 
-<section anchor="sec_recalculation" title="MRT Recalculation">
+<section anchor="sec_recalculation" title="MRT Recalculation for Default Profile">
+
+<t>This section describes how the MRT recalculation SHOULD be performed for 
+the Default MRT Profile. This is intended to support FRR applications. 
+Other approaches are possible, but they are not specified in this 
+document. </t> 
 
 <t>When a failure event happens, traffic is put by the PLRs onto the
 MRT topologies.  After that, each router recomputes its shortest path
@@ -1930,6 +1857,17 @@ for MRT-FRR. </t>
 </list>
 </t>
   
+</section>
+
+<section anchor="sec_OAM" title="Operations and Management Considerations">
+<t> An implementation SHOULD provide an operator with the ability to 
+test MRT paths with OAM traffic. For example, when MRT paths are 
+realized using LDP labels distributed for topology-scoped FECs, an 
+implementation can use the MPLS ping and traceroute as defined in <xref 
+target="RFC4379"/> and extended in <xref target="RFC7307"/> for 
+topology-scoped FECs. </t> 
+
+
 
 </section>
 
@@ -1953,7 +1891,18 @@ Values 221-255 are for vendor private use.</t>
 </section>
 
 <section anchor="Security" title="Security Considerations">
-  <t>This architecture is not currently believed to introduce new security concerns.</t>
+<t>In general, MRT forwarding paths do not follow shortest paths. 
+The transit forwarding state corresponding to the MRT paths is 
+created during normal operations (before a failure occurs). Therefore, a 
+malicious packet with an appropriate header injected into the network 
+from a compromised location would be forwarded to a destination along a 
+non-shortest path. When this technology is deployed, a network security 
+design should not rely on assumptions about potentially malicious 
+traffic only following shortest paths.</t> 
+
+<t>It should be noted that the creation of non-shortest forwarding
+paths is not unique to MRT.</t>
+
 </section>
 </middle>
 
@@ -1975,6 +1924,7 @@ Values 221-255 are for vendor private use.</t>
 	&RFC6982;
 	&RFC7490;
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.7307.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.4379.xml"?>
     &I-D.atlas-rtgwg-mrt-mc-arch;
     &I-D.bryant-ipfrr-tunnels;
     &I-D.ietf-rtgwg-ipfrr-notvia-addresses;
