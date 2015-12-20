@@ -1091,6 +1091,10 @@ IPv4 traffic.</t>
   <t>An MRT Profile is a set of values and options related to MRT
   behavior.  The complete set of options is designated by the
   corresponding 8-bit Profile ID value. </t>
+  
+  <t>This document specifies the values and options that correspond
+  to the Default MRT Profile (Profile ID = 0).  Future documents may 
+  define other MRT Profiles by specifying the MRT Profile Options below. </t>
 
 <section anchor="sec_mrt_profile_options" title="MRT Profile Options">
   <t>Below is a description of the values and options that define an
@@ -1866,11 +1870,11 @@ topology-scoped FECs. </t>
 </section>
 
 <section anchor="sec_policy" title="Applying Policy to Select from Multiple Possible Alternates for FRR ">
-<t> For a given topology, GADAG root, and algorithm, MRT will provide an
-alternate path from each PLR to each destination for any single link or 
-node failure, if an alternate path exists. Therefore, an implementation 
-may choose to only use the alternates determined by MRT to provide 100% 
-FRR coverage.</t> 
+<t> For a given topology, GADAG root, and profile, MRT will provide a 
+node-protecting alternate path from each PLR to each destination for any 
+single link or node failure, if such a path exists. Therefore, an 
+implementation may choose to only use the alternates determined by MRT 
+to provide 100% FRR coverage.</t> 
 
 <t>However, it may be desirable to allow an operator to use MRT 
 alternates together with alternates provided by other FRR technologies. 
@@ -1878,10 +1882,16 @@ A policy-based alternate selection process can allow an operator to
 select the best alternate from those provided by MRT and other FRR 
 technologies. As an example, it may be desirable to implement a policy 
 where a node-protecting LFA (if it exists for a given failure mode and 
-destination) is preferred over an MRT alternate. <xref 
+destination) is preferred over a given MRT alternate. <xref 
 target="I-D.ietf-rtgwg-lfa-manageability"/> discusses many of the 
 potential criteria that one might take into account when evaluating 
 different alternates for selection. </t> 
+
+<t> Note that future documents may define MRT profiles in addition to 
+the default profile defined here. Different MRT profiles will generally 
+produce red and blue paths with different properties. An implementation 
+may allow an operator to use different MRT profiles instead of or in 
+addition to the default profile. </t> 
 
 </section>
 
