@@ -8,7 +8,6 @@
 
 <!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
 <!ENTITY RFC2328 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2328.xml">
-<!ENTITY RFC3137 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3137.xml">
 <!ENTITY RFC5286 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5286.xml">
 <!ENTITY RFC5443 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5443.xml">
 <!ENTITY RFC5714 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5714.xml">
@@ -16,9 +15,6 @@
 <!ENTITY RFC6571 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6571.xml">
 <!ENTITY RFC6982 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6982.xml">
 <!ENTITY RFC7490 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7490.xml">
-
-<!ENTITY I-D.ietf-rtgwg-ipfrr-notvia-addresses SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-rtgwg-ipfrr-notvia-addresses.xml">
-<!ENTITY I-D.ietf-rtgwg-ordered-fib SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.ietf-rtgwg-ordered-fib.xml">
 
 <!ENTITY I-D.bryant-ipfrr-tunnels SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.bryant-ipfrr-tunnels.xml">
 
@@ -52,7 +48,7 @@
 <?rfc subcompact="no" ?>
 <!-- keep one blank line between list items -->
 <!-- end of list of popular I-D processing instructions -->
-<rfc category="std" docName="draft-ietf-rtgwg-mrt-frr-architecture-07" ipr="trust200902">
+<rfc category="std" docName="draft-ietf-rtgwg-mrt-frr-architecture-08" ipr="trust200902">
   <!-- category values: std, bcp, info, exp, and historic
      ipr values: full3667, noModification3667, noDerivatives3667
      you can add the attributes updates="NNNN" and obsoletes="NNNN" 
@@ -74,7 +70,7 @@
 
     <!-- Another author who claims to be an editor -->
 
-    <author fullname="Alia Atlas" initials="A.K.A." role="editor" surname="Atlas">
+    <author fullname="Alia Atlas" initials="A.K.A." surname="Atlas">
      <organization>Juniper Networks</organization>
      <address>
        <postal>
@@ -163,7 +159,7 @@
      </address>
    </author>
    
-   <date day="15" month="October" year="2015"/>
+   <date day="20" month="December" year="2015"/>
 
    <!-- If the month and year are both specified and are the current ones, xml2rfc will fill 
         in the current day for you. If only the current year is specified, xml2rfc will fill 
@@ -180,8 +176,8 @@
 
    <abstract>
 
-     <t>With increasing deployment of Loop-Free Alternates (LFA) <xref
-     target="RFC5286"/>, it is clear that a complete solution for IP
+     <t>With increasing deployment of Loop-Free Alternates (LFA),
+	 it is clear that a complete solution for IP
      and LDP Fast-Reroute is required.  This specification provides
      that solution.  IP/LDP Fast-Reroute with Maximally Redundant
      Trees (MRT-FRR) is a technology that gives link-protection and
@@ -279,7 +275,7 @@
        complexity.</t>
 
        <t hangText="Not-Via: ">Not-Via <xref
-       target="I-D.ietf-rtgwg-ipfrr-notvia-addresses"/> is the only
+       target="RFC6981"/> is the only
        other solution that provides 100% coverage for link and node
        failures and does not have potential looping.  However, the
        computation is very high (an SPF per failure point) and
@@ -288,7 +284,7 @@
 		
        <t hangText="TI-LFA: ">Topology Independent Loop-free Alternate
        Fast Re-route (TI-LFA) <xref
-       target="I-D.francois-spring-segment-routing-ti-lfa"/> aims to
+       target="I-D.francois-rtgwg-segment-routing-ti-lfa"/> aims to
        provide link and node protection of node and adjacency segments
        within the Segment Routing (SR) framework.  It guarantees
        complete coverage.  The TI-LFA computation for link-protection
@@ -336,9 +332,9 @@
        asymmetric link costs to and from that pseudo-node.  Second,
        when routers come up or a link with LDP comes up, it is
        recommended in <xref target="RFC5443"/> and <xref
-       target="RFC3137"/> that the link metric be raised to the
+       target="RFC6987"/> that the link metric be raised to the
        maximum cost; this may not be symmetric and for <xref
-       target="RFC3137"/> is not expected to be.  Third, techniques
+       target="RFC6987"/> is not expected to be.  Third, techniques
        such as IGP metric tuning for traffic-engineering can result in
        asymmetric link costs.  A fast-reroute solution needs to handle
        network topologies with asymmetric link costs.
@@ -346,7 +342,7 @@
 
        <t>When a network needs to use a micro-loop prevention
        mechanism <xref target="RFC5715"/> such as Ordered FIB<xref
-       target="I-D.ietf-rtgwg-ordered-fib"/> or Farside Tunneling<xref
+       target="RFC6976"/> or Farside Tunneling<xref
        target="RFC5715"/>, then the whole IGP area needs to have
        alternates available so that the micro-loop prevention
        mechanism, which requires slower network convergence, can take
@@ -379,7 +375,7 @@
      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
      NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and
      "OPTIONAL" in this document are to be interpreted as described in
-     <xref target="RFC2119"/></t>
+     <xref target="RFC2119"/>.</t>
 
    </section>
 
@@ -585,7 +581,7 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
   additional dataplane procedure, such as an additional forwarding
   mechanism.  The well-known options are multi-topology forwarding
   (used by MRT-FRR), tunneling (e.g. <xref
-  target="I-D.ietf-rtgwg-ipfrr-notvia-addresses"/> or <xref
+  target="RFC6981"/> or <xref
   target="RFC7490"/>), and per-interface forwarding
   (e.g. Loop-Free Failure Insensitive Routing in <xref
   target="EnyediThesis"/>).</t>
@@ -737,7 +733,7 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
     look-ups.</t>
 
     <t> This forwarding option is consistent with context-specific
-    label spaces, as described in [RFC 5331].  However, the precise
+    label spaces, as described in <xref target="RFC5331"/>.  However, the precise
     LDP behavior required to support this option for MRT has not been
     specified.</t>
   </section>
@@ -1031,12 +1027,13 @@ IPv4 traffic.</t>
       will only be used as a last resort.  These metrics can be
       configured manually to enforce administrative policy, or they
       can be set in an automated manner as with LDP IGP
-      synchronization [RFC5443].
+      synchronization <xref target="RFC5443"/>.
       </t>
 
       <t> Mechanisms also exist in ISIS and OSPF to prevent transit
       traffic from using a particular router.  In ISIS, the overload
-      bit is used for this purpose.  In OSPF, [RFC3137] specifies
+      bit is used for this purpose.  In OSPF, <xref
+       target="RFC6987"/> specifies
       setting all outgoing interface metrics to 0xFFFF to accomplish
       this.
       </t>
@@ -1637,8 +1634,8 @@ are given in <xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>.  A key
 point is that computing these MRT next-hops and alternates can be done
 as new named proxy-nodes are added or removed without requiring a new
 MRT computation or impacting other existing MRT paths.  This maps very
-well to, for example, how OSPFv2 [<xref target="RFC2328"/> Section
-16.5] does incremental updates for new summary-LSAs.</t>
+well to, for example, how OSPFv2 (see <xref target="RFC2328"/> Section
+16.5) does incremental updates for new summary-LSAs.</t>
 
 <t>The remaining question is how to attach the named proxy-node to the MRT
 Island; all the routers in the MRT Island MUST do this consistently.
@@ -1732,7 +1729,7 @@ provides.</t>
 
 <t>There are two possible micro-loop prevention mechanisms discussed
 in <xref target="RFC5715"/>.  The first is Ordered FIB <xref
-target="I-D.ietf-rtgwg-ordered-fib"/>.  The second is Farside
+target="RFC6976"/>.  The second is Farside
 Tunneling which requires tunnels or an alternate topology to reach
 routers on the farside of the failure.</t>
 
@@ -1866,6 +1863,29 @@ realized using LDP labels distributed for topology-scoped FECs, an
 implementation can use the MPLS ping and traceroute as defined in <xref 
 target="RFC4379"/> and extended in <xref target="RFC7307"/> for 
 topology-scoped FECs. </t> 
+</section>
+
+<section anchor="sec_policy" title="Applying Policy to Select from Multiple Possible Alternates for FRR ">
+<t> For a given topology, GADAG root, and algorithm, MRT will provide an
+alternate path from each PLR to each destination for any single link or 
+node failure, if an alternate path exists. Therefore, an implementation 
+may choose to only use the alternates determined by MRT to provide 100% 
+FRR coverage.</t> 
+
+<t>However, it may be desirable to allow an operator to use MRT 
+alternates together with alternates provided by other FRR technologies. 
+A policy-based alternate selection process can allow an operator to 
+select the best alternate from those provided by MRT and other FRR 
+technologies. As an example, it may be desirable to implement a policy 
+where a node-protecting LFA (if it exists for a given failure mode and 
+destination) is preferred over an MRT alternate. <xref 
+target="I-D.ietf-rtgwg-lfa-manageability"/> discusses many of the 
+potential criteria that one might take into account when evaluating 
+different alternates for selection. </t> 
+
+</section>
+
+<section anchor="sec_contributors" title="Contributors">
 
 
 
@@ -1909,31 +1929,34 @@ paths is not unique to MRT.</t>
 <back>
 
     <references title="Normative References">
-    &RFC5714;
+
     &RFC5286;
-	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-mrt-frr-algorithm-05.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-mrt-frr-algorithm-06.xml"?>
     </references>
 
     <references title="Informative References">
+	&RFC5714;
     &RFC2119;
     &RFC2328;
-    &RFC3137;
     &RFC5443;
     &RFC5715;
     &RFC6571;
 	&RFC6982;
 	&RFC7490;
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5331.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.6976.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.6981.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.6987.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.7307.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.4379.xml"?>
     &I-D.atlas-rtgwg-mrt-mc-arch;
     &I-D.bryant-ipfrr-tunnels;
-    &I-D.ietf-rtgwg-ipfrr-notvia-addresses;
-    &I-D.ietf-rtgwg-ordered-fib;
-	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-francois-spring-segment-routing-ti-lfa-01.xml"?>
-	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-isis-mrt-00.xml"?>
-	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-mpls-ldp-mrt-00.xml"?>
-	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-ospf-mrt-00.xml"?>
-	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-rlfa-node-protection-02.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-lfa-manageability-11.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-francois-rtgwg-segment-routing-ti-lfa-00.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-isis-mrt-01.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-mpls-ldp-mrt-02.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-ospf-mrt-01.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-rlfa-node-protection-05.xml"?>
 
       <reference anchor="LightweightNotVia"
                  target="http://mycite.omikk.bme.hu/doc/71691.pdf">
