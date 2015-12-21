@@ -1695,7 +1695,7 @@ MRT.</t>
 
 </section>
 
-<section anchor="sec_recalculation" title="MRT Recalculation for Default Profile">
+<section anchor="sec_recalculation" title="MRT Recalculation for the Default MRT Profile">
 
 <t>This section describes how the MRT recalculation SHOULD be performed for 
 the Default MRT Profile. This is intended to support FRR applications. 
@@ -1837,7 +1837,7 @@ different alternates for selection. </t>
 
 <t> Note that future documents may define MRT profiles in addition to 
 the default profile defined here. Different MRT profiles will generally 
-produce red and blue paths with different properties. An implementation 
+produce alternate paths with different properties. An implementation 
 may allow an operator to use different MRT profiles instead of or in 
 addition to the default profile. </t> 
 
