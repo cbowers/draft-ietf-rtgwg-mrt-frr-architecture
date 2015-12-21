@@ -1029,7 +1029,7 @@ IPv4 traffic.</t>
 <section title="Example algorithm">
   <t>An algorithm that allows a computing router to identify the
   routers and links in the local MRT Island satisfying the above rules
-  is given in section 5.1 of <xref
+  is given in section 5.2 of <xref
   target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>. </t>
 </section>
 
