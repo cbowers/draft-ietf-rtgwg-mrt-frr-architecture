@@ -128,16 +128,12 @@
 
    <abstract>
 
-     <t>With increasing deployment of Loop-Free Alternates (LFA),
-	 it is clear that a complete solution for IP
-     and LDP Fast-Reroute is required.  This specification provides
-     that solution.  IP/LDP Fast-Reroute with Maximally Redundant
-     Trees (MRT-FRR) is a technology that gives link-protection and
-     node-protection with 100% coverage in any network topology that
-     is still connected after the failure.
-     </t>
+<t>This document defines the architecture for IP/LDP Fast-Reroute using 
+Maximally Redundant Trees (MRT-FRR). MRT-FRR is a technology that gives 
+link-protection and node-protection with 100% coverage in any network 
+topology that is still connected after the failure.</t> 
 
-     <t>MRT removes all need to engineer for coverage.  MRT is also
+     <t>MRT removes the need to engineer for coverage.  MRT is also
      extremely computationally efficient.  For any router in the
      network, the MRT computation is less than the LFA computation for
      a node with three or more neighbors.
