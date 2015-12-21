@@ -83,20 +83,6 @@
        <email>akatlas@juniper.net</email>
       </address>
     </author>
-
-    <author fullname="Robert Kebler" initials="R.K." surname="Kebler">
-     <organization>Juniper Networks</organization>
-     <address>
-       <postal>
-         <street>10 Technology Park Drive</street>
-         <city>Westford</city>
-         <region>MA</region>
-         <code>01886</code>
-         <country>USA</country>
-       </postal>
-       <email>rkebler@juniper.net</email>
-      </address>
-    </author>
 	
 	<author fullname="Chris Bowers" initials="C." surname="Bowers">
      <organization>Juniper Networks</organization>
@@ -124,40 +110,6 @@
         <email>Gabor.Sandor.Enyedi@ericsson.com</email>
      </address>
     </author>
-
-    <author fullname="Andr&aacute;s Cs&aacute;sz&aacute;r" initials="A.C." surname="Cs&aacute;sz&aacute;r">
-      <organization>Ericsson</organization>
-      <address>
-        <postal>
-          <street>Konyves Kalman krt 11</street>
-          <city>Budapest</city>
-          <country>Hungary</country>
-          <code>1097</code>
-        </postal>
-        <email>Andras.Csaszar@ericsson.com</email>
-     </address>
-    </author>
-
-   <author fullname="Jeff Tantsura" initials="J.T." surname="Tantsura">
-   <organization>Ericsson</organization>
-   <address>
-     <postal>
-       <street>300 Holger Way</street>
-       <city>San Jose</city>
-         <region>CA</region>
-         <code>95134</code>
-         <country>USA</country>       
-     </postal>
-     <email>jeff.tantsura@ericsson.com</email>
-   </address>
-   </author>
-
-   <author fullname="Russ White" initials="R.W." surname="White">
-     <organization>VCE</organization>
-     <address>
-       <email>russw@riw.us</email>
-     </address>
-   </author>
    
    <date day="20" month="December" year="2015"/>
 
@@ -1895,12 +1847,6 @@ addition to the default profile. </t>
 
 </section>
 
-<section anchor="sec_contributors" title="Contributors">
-
-
-
-</section>
-
 <section anchor="Acknowledgements" title="Acknowledgements">
   <t>The authors would like to thank Mike Shand for his valuable
   review and contributions.</t>
@@ -1934,9 +1880,45 @@ traffic only following shortest paths.</t>
 paths is not unique to MRT.</t>
 
 </section>
+
+<section anchor="sec_contributors" title="Contributors">
+<figure>
+<artwork align="left"><![CDATA[
+   Robert Kebler
+   Juniper Networks
+   10 Technology Park Drive
+   Westford, MA  01886
+   USA
+   Email: rkebler@juniper.net
+
+   Andras Csaszar
+   Ericsson
+   Konyves Kalman krt 11
+   Budapest  1097
+   Hungary
+   Email: Andras.Csaszar@ericsson.com
+
+   Jeff Tantsura
+   Ericsson
+   300 Holger Way
+   San Jose, CA  95134
+   USA
+   Email: jeff.tantsura@ericsson.com
+
+   Russ White
+   VCE
+   Email: russw@riw.us
+]]></artwork>
+</figure>
+
+</section>
+
+
 </middle>
 
 <back>
+
+
 
     <references title="Normative References">
 
