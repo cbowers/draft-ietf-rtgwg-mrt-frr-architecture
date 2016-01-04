@@ -16,7 +16,6 @@
 <!ENTITY RFC6982 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6982.xml">
 <!ENTITY RFC7490 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.7490.xml">
 
-<!ENTITY I-D.bryant-ipfrr-tunnels SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.bryant-ipfrr-tunnels.xml">
 
 <!ENTITY I-D.atlas-rtgwg-mrt-mc-arch SYSTEM "http://xml.resource.org/public/rfc/bibxml3/reference.I-D.atlas-rtgwg-mrt-mc-arch.xml">
 
@@ -133,11 +132,11 @@ Maximally Redundant Trees (MRT-FRR). MRT-FRR is a technology that gives
 link-protection and node-protection with 100% coverage in any network 
 topology that is still connected after the failure.</t> 
 
-     <t>MRT removes the need to engineer for coverage.  MRT is also
-     extremely computationally efficient.  For any router in the
-     network, the MRT computation is less than the LFA computation for
-     a node with three or more neighbors.
-     </t>
+<t>MRT removes the need to engineer for coverage.  MRT is also
+extremely computationally efficient.  For any router in the
+network, the MRT computation is less than the LFA computation for
+a node with three or more neighbors.
+</t>
 
    </abstract>
  </front>
@@ -145,108 +144,183 @@ topology that is still connected after the failure.</t>
  <middle>
    <section title="Introduction">
      
-     <t>This document describes a solution for IP/LDP
-     fast-reroute <xref target="RFC5714"/>. MRT-FRR creates two
-     alternate trees separate from the primary next-hop forwarding
-     used during stable operation.  These two trees are maximally
-     diverse from each other, providing link and node protection for
-     100% of paths and failures as long as the failure does not cut
-     the network into multiple pieces.  This document defines the
-     architecture for IP/LDP fast-reroute with MRT.  The associated
-     protocol extensions are defined in <xref
-     target="I-D.ietf-ospf-mrt"/> and <xref
-     target="I-D.ietf-mpls-ldp-mrt"/>.  The exact MRT algorithm is
-     defined in <xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>.
-     </t>
+<t>This document describes a solution for IP/LDP fast-reroute <xref 
+target="RFC5714"/>. MRT-FRR creates two alternate trees separate from 
+the primary next-hop forwarding used during stable operation. These two 
+trees are maximally diverse from each other, providing link and node 
+protection for 100% of paths and failures as long as the failure does 
+not cut the network into multiple pieces. This document defines the 
+architecture for IP/LDP fast-reroute with MRT. The associated protocol 
+extensions are defined in <xref target="I-D.ietf-ospf-mrt"/> and <xref 
+target="I-D.ietf-mpls-ldp-mrt"/>. The exact MRT algorithm is defined in 
+<xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>. </t> 
 
-     <t>IP/LDP Fast-Reroute with MRT (MRT-FRR) uses two maximally
-     diverse forwarding topologies to provide alternates.  A primary
-     next-hop should be on only one of the diverse forwarding
-     topologies; thus, the other can be used to provide an alternate.
-     Once traffic has been moved to one of MRTs, it is not subject to
-     further repair actions.  Thus, the traffic will not loop even if
-     a worse failure (e.g. node) occurs when protection was only
-     available for a simpler failure (e.g. link).
-     </t>
+<t>IP/LDP Fast-Reroute with MRT (MRT-FRR) uses two maximally diverse 
+forwarding topologies to provide alternates. A primary next-hop should 
+be on only one of the diverse forwarding topologies; thus, the other can 
+be used to provide an alternate. Once traffic has been moved to one of 
+MRTs, it is not subject to further repair actions. Thus, the traffic 
+will not loop even if multiple failures occur. </t> 
 
-     <t>In addition to supporting IP and LDP unicast fast-reroute, the
-     diverse forwarding topologies and guarantee of 100% coverage
-     permit fast-reroute technology to be applied to multicast traffic
-     as described in <xref target="I-D.atlas-rtgwg-mrt-mc-arch"/>.
-     </t>
+<t> While MRT provides 100% protection for a single link or node 
+failure, it may not protect traffic in the event of multiple 
+simultaneous failures, nor does take into account Shared Risk Link 
+Groups (SRLGs). Also, while the MRT algorithm is computationally 
+efficient, it is also new. In order for MRT-FRR to function properly, 
+all of the other nodes in the network that support MRT must correctly 
+compute next-hops based on the same algorithm, and install the 
+corresponding forwarding state. This is in contrast to other FRR methods 
+where the calculation of backup paths generally involves repeated 
+application of the simpler and widely-deployed SPF algorithm, and backup 
+paths themselves re-use the forwarding state used for shortest path 
+forwarding of normal traffic. It is RECOMMENDED that operators 
+proactively monitor the MRT forwarding paths to ensure that they are 
+available to act as alternate paths when needed (see <xref 
+target="sec_OAM"/>).</t> 
 
-     <t>Other existing or proposed solutions are partial solutions
-     or have significant issues, as described below.</t>
+<t>In addition to supporting IP and LDP unicast fast-reroute, the diverse 
+forwarding topologies and guarantee of 100% coverage permit fast-reroute 
+technology to be applied to multicast traffic as described in <xref 
+target="I-D.atlas-rtgwg-mrt-mc-arch"/>. </t> 
 
-     <texttable anchor="table_comparison">
-       <preamble>Summary Comparison of IP/LDP FRR Methods</preamble>
-       <ttcol align='center'>Method</ttcol>
-       <ttcol align='center'>Coverage</ttcol>
-       <ttcol align='center'>Alternate Looping?</ttcol>
-       <ttcol align='center'>Computation (in SPFs)</ttcol>
-       <c>MRT-FRR</c><c>100% Link/Node</c> <c>None</c> <c> less than 3</c>
-       <c/><c/><c/><c/>
-       <c>LFA</c> <c>Partial Link/Node</c> <c>Possible</c> <c>per neighbor</c>
-       <c/><c/><c/><c/>
-       <c>Remote LFA</c> <c>Partial Link/Node</c> <c> Possible</c> 
-       <c> per neighbor (link) or neighbor's neighbor (node) </c>
-       <c/><c/><c/><c/>
-       <c>Not-Via</c><c>100% Link/Node</c> <c>None</c> <c>per link and node</c>
-       <c/><c/><c/><c/>
-       <c>TI-LFA</c><c>100% Link/Node</c> <c>Possible</c>
-       <c> per neighbor (link) or neighbor's neighbor (node) </c>
-     </texttable>
+<t> <xref target="table_comparison"/> compares different methods of 
+providing FRR for IP and LDP traffic, illustrating some of the 
+trade-offs between the different approaches. For several methods, the 
+methods are separated into link-protecting (LP) and node-protecting (NP) 
+variants since the metrics for LP and NP differ. The first column 
+indicates whether the method provides 100% protection coverage (when 
+topologically feasible). The second column indicates whether or not 
+traffic traversing alternate path can loop when multiple 
+failures occur.</t> 
+
+<t> The third column gives an estimate of the computation required at 
+each node to support the FRR method, in addition to the usual SPF 
+computation. This metric is important for implementations that seek to 
+quickly recompute repair paths following their initial use after a 
+topology change, without reliance on an external system, in order to 
+minimize the risk of a new failure occurring before the new repair paths 
+are in place.</t>
+
+<t> The fourth column indicates the maximum number of additional labels 
+that need to be applied to packets to support the FRR method, while the 
+fifth column gives indicates the size of the MPLS label table needed to 
+support the FRR method. These two metrics may be useful for evaluating 
+requirements placed on hardware to support the different FRR 
+methods.</t> 
+
+<t> The last column indicates the additional requirements placed on the 
+control plane by the FRR method, beyond what is required for IGP 
+shortest path forwarding with LDP.</t> 
+
+<figure anchor="table_comparison" title="Comparison of IP/LDP FRR Methods">
+<artwork align="left"><![CDATA[
++---------+-----+------+-------------+-------+-------------+----------+
+| Method  |100% | Alt. | Additional  | Max.  | Label table | Control  |
+|         |prot.| can  | computation | addit.|    size     | plane    |
+|         |cov. | loop?| at each     | labels|(relative to | reqs.    |
+|         |     |      | node        |       | SPF labels) |          |
++---------+-----+------+-------------+-------+-------------+----------+
+| MRT-FRR | Yes | No   | equivalent  | 0(LDP)|     3x      | IGP and  |
+| LP and  |     |      | of less     | 1(IP) |             | LDP      |
+| NP      |     |      | than        |       |             | exts.    |
+|         |     |      | 3 SPFs      |       |             | for MRT  |
++---------+-----+------+-------------+-------+-------------+----------+
+| LFA LP  | No  | Yes  |  SPF per    |   0   |     1x      | None     |
+| and NP  |     |      |  neighbor   |       |             |          |
++---------+-----+------+-------------+-------+-------------+----------+
+| Remote  | No  | Yes  |  SPF per    |   1   |     1x      | T-LDP    |
+| LFA LP  |     |      |  neighbor   |       |             | session  |
+|         |     |      |             |       |             | for each |
+|         |     |      |             |       |             | selected |
+|         |     |      |             |       |             | PQ node  |
++---------+-----+------+-------------+-------+-------------+----------+
+| Remote  | No  | Yes  | SPF per nbr |   1   |     1x      | T-LDP    |
+| LFA NP  |     |      | and SPF per |       |             | session  |
+|         |     |      | per PQ node |       |             | for each |
+|         |     |      | evaluated   |       |             | selected |
+|         |     |      |             |       |             | PQ node  |
++---------+-----+------+-------------+-------+-------------+----------+
+| Not-Via | Yes | No   | SPF per     |   1   |  (average   | T-LDP    |
+| LP and  |     |      | link and    |       |  number of  | session  |
+| NP      |     |      | per node    |       |  neighbors) | for each |
+|         |     |      | in topology |       |      x      | nbr's nbr|
++---------+-----+------+-------------+-------+-------------+----------+
+| TI-LFA  | Yes | Yes  | SPF per     |   2   |     1x      | uses     |
+| LP with |     |      | neighbor    |       |             | SPRING   |
+| symm.   |     |      |             |       |             | for      |
+| metrics |     |      |             |       |             | label    |
+|         |     |      |             |       |             | dist.    |
++---------+-----+------+-------------+-------+-------------+----------+
+| TI-LFA  | Yes | Yes  | # of SPFs   |depth  |     1x      | uses     |
+| NP or   |     |      | dependent   |depend-|             | SPRING   |
+| LP with |     |      | on topology |ent on |             | for      |
+| asymm.  |     |      |             |topo.  |             | label    |
+| metrics |     |      |             |       |             | dist.    |
++---------+-----+------+-------------+-------+-------------+----------+
+]]></artwork>
+</figure>
 
      <t><list style="hanging">
+	 
+<t hangText="MRT: "> MRT provides 100% coverage for link and node 
+protection, and traffic on the alternate paths will not loop. The 
+computation required on each node is equivalent to less than 3 
+additional SPFs in terms of computational complexity.  For IP traffic, 
+MRT requires one additional label, while for LDP traffic, no additional 
+labels are needed. However, the size of the MPLS label table is three 
+times what would normally be required for shortest path LDP forwarding, 
+due to the presence of additional red and blue labels for each FEC. MRT 
+requires IGP extensions in order to allow a node to advertise support 
+for MRT as well as a value for the GADAG Root Selection Priority. It 
+also requires support for multi-topology LDP extensions. </t> 
 
-       <t hangText="Loop-Free Alternates (LFA): "> LFAs <xref
-       target="RFC5286"/> provide limited topology-dependent coverage
-       for link and node protection.  Restrictions on choice of
-       alternates can be relaxed to improve coverage, but this can
-       cause forwarding loops if a worse failure is experienced than
-       protected against.  Augmenting a network to provide better
-       coverage is NP-hard <xref target="LFARevisited"/>.  <xref
-       target="RFC6571"/> discusses the applicability of LFA to
-       different topologies with a focus on common PoP
-       architectures.</t>
-     
-       <t hangText="Remote LFA: " > Remote LFAs <xref
-       target="RFC7490"/> improve coverage over LFAs
-       for link protection but still cannot guarantee complete
-       coverage.  The trade-off of looping traffic to improve coverage
-       is still made.  Remote LFAs can provide node-protection <xref
-       target="I-D.ietf-rtgwg-rlfa-node-protection"/> but not
-       guaranteed coverage and the computation required is quite high
-       (an SPF for each PQ-node evaluated). <xref
-       target="I-D.bryant-ipfrr-tunnels"/> describes additional
-       mechanisms to further improve coverage, at the cost of added
-       complexity.</t>
+<t hangText="Loop-Free Alternates (LFA): "> LFAs <xref 
+target="RFC5286"/> provide limited topology-dependent coverage for link 
+and node protection. Restrictions on choice of alternates can be relaxed 
+to improve coverage, but this can cause forwarding loops if a worse 
+failure is experienced than protected against. <xref target="RFC6571"/> 
+discusses the applicability of LFA to different topologies with a focus 
+on common PoP architectures. The computation required is one SPF per 
+neighbor. LFA imposes no additional labels imposed, has no impact on the 
+label table size, and has no additional control plane requirements. </t> 
 
-       <t hangText="Not-Via: ">Not-Via <xref
-       target="RFC6981"/> is the only
-       other solution that provides 100% coverage for link and node
-       failures and does not have potential looping.  However, the
-       computation is very high (an SPF per failure point) and
-       academic implementations <xref target="LightweightNotVia"/>
-       have found the address management complexity to be high.</t>
-		
-       <t hangText="TI-LFA: ">Topology Independent Loop-free Alternate
-       Fast Re-route (TI-LFA) <xref
-       target="I-D.francois-rtgwg-segment-routing-ti-lfa"/> aims to
-       provide link and node protection of node and adjacency segments
-       within the Segment Routing (SR) framework.  It guarantees
-       complete coverage.  The TI-LFA computation for link-protection
-       is fairly straightforward, while the computation for
-       node-protection is more complex.  For link-protection with
-       symmetric link costs, TI-LFA can provide complete coverage by
-       pushing up to two additional labels.  For node protection on
-       arbitrary topologies, the label stack size can grow
-       significantly based on repair path.  Note that TI-LFA requires
-       shortest path forwarding based on SR Node-SIDs, as opposed to
-       LDP labels, in order to construct label stacks for backups
-       paths without relying on a large number of targeted LDP
-       sessions to learn remote FEC-label bindings.  It also requires
-       the use of Adj-SIDs to achieve 100% coverage.  </t>
+<t hangText="Remote LFA: " > Remote LFA <xref target="RFC7490"/> 
+improves coverage over LFA for both link and node protection, but it 
+does not guarantee 100% coverage. The alternates can also loop with 
+worse than expected failures. Computation for link protection is one SPF 
+per neighbor, while computation for node protection requires an 
+additional SPF per PQ node <xref 
+target="I-D.ietf-rtgwg-rlfa-node-protection"/>. Remote LFA can impose up 
+to one additional label on the packet, but does not increase the size of 
+the label table. It requires a T-LDP session for each selected PQ 
+node.</t> 
+
+<t hangText="Not-Via: ">Not-Via <xref target="RFC6981"/> provides 100% 
+coverage for link and node failures and does not have potential looping 
+among alternates. The computation is high with an SPF per potential 
+failure point (all links and nodes in the topology). When implemented 
+with LDP, Not-Via adds one additional label to a tunnelled packet. It 
+significantly increases the size of the label table, multiplying it by 
+roughly the average number of neighbors. Not-Via also requires targeted 
+LDP sessions to each neighbor's neighbor.</t> 
+
+<t hangText="TI-LFA: ">Topology Independent Loop-free Alternate Fast 
+Re-route (TI-LFA) <xref 
+target="I-D.francois-rtgwg-segment-routing-ti-lfa"/> aims to provide 
+link and node protection of node and adjacency segments within the 
+Segment Routing (SR) framework. It guarantees complete coverage. The 
+TI-LFA computation for link-protection is fairly straightforward, while 
+the computation for node-protection is more complex. For link-protection 
+with symmetric link costs, TI-LFA can provide complete coverage by 
+pushing up to two additional labels. For node protection on arbitrary 
+topologies, the label stack size can grow significantly based on repair 
+path. Note that TI-LFA requires shortest path forwarding based on SR 
+Node-SIDs, as opposed to LDP labels, in order to construct label stacks 
+for backups paths without relying on a large number of targeted LDP 
+sessions to learn remote FEC-label bindings. It also requires the use of 
+Adj-SIDs to achieve 100% coverage. </t> 
+
+
 
      </list></t>
      
@@ -1172,7 +1246,8 @@ the MPLS Multi-Topology Identifiers Registry.  Prototype experiments have
 used a value of 3998.</t>
 
 <t hangText="GADAG Root Selection Policy: ">Among the routers in the
-MRT Island and with the highest priority advertised, an implementation
+MRT Island and with the most preferred priority advertised (corresponding
+to the lowest numerical value of GADAG Root Selection Priority), an implementation
 MUST pick the router with the highest Router ID to be the GADAG
 root.</t>
 
@@ -1938,7 +2013,6 @@ paths is not unique to MRT.</t>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.7307.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.4379.xml"?>
     &I-D.atlas-rtgwg-mrt-mc-arch;
-    &I-D.bryant-ipfrr-tunnels;
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-lfa-manageability-11.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-francois-rtgwg-segment-routing-ti-lfa-00.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-isis-mrt-01.xml"?>
@@ -1958,20 +2032,6 @@ paths is not unique to MRT.</t>
        </front>
         <seriesInfo name="Proceedings of IEEE INFOCOM" value=""/>
         <format type='PDF' target="http://mycite.omikk.bme.hu/doc/71691.pdf"/>
-      </reference>
-
-      <reference anchor="LFARevisited"
-                 target="http://opti.tmit.bme.hu/~tapolcai/papers/retvari2011lfa_infocom.pdf">
-       <front>
-          <title>IP Fast ReRoute: Loop Free Alternates Revisited</title>
-          <author fullname="Gabor Retvari" initials="G.R." surname="Retvari"/>
-          <author fullname="Janos Tapolcai" initials="J.T." surname="Tapolcai"/>
-    <author fullname="G&aacute;bor S&aacute;ndor Enyedi" initials="G.S.E." surname="Enyedi"/>
-    <author fullname="Andr&aacute;s Cs&aacute;sz&aacute;r" initials="A.C." surname="Cs&aacute;sz&aacute;r"/>
-          <date year="2011" />
-        </front>
-        <seriesInfo name="Proceedings of IEEE INFOCOM" value=""/>
-        <format type='PDF' target="http://opti.tmit.bme.hu/~tapolcai/papers/retvari2011lfa_infocom.pdf"/>
       </reference>
 
     <reference anchor="EnyediThesis"
