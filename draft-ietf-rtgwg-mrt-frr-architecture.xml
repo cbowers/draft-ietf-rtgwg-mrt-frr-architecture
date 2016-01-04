@@ -144,9 +144,8 @@ the primary next-hop forwarding used during stable operation. These two
 trees are maximally diverse from each other, providing link and node 
 protection for 100% of paths and failures as long as the failure does 
 not cut the network into multiple pieces. This document defines the 
-architecture for IP/LDP fast-reroute with MRT. The associated protocol 
-extensions are defined in <xref target="I-D.ietf-ospf-mrt"/> and <xref 
-target="I-D.ietf-mpls-ldp-mrt"/>. The exact MRT algorithm is defined in 
+architecture for IP/LDP fast-reroute with MRT.
+ The exact MRT algorithm is defined in 
 <xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>. </t> 
 
 <t>IP/LDP Fast-Reroute with MRT (MRT-FRR) uses two maximally diverse 
@@ -373,9 +372,8 @@ Adj-SIDs to achieve 100% coverage. </t>
 
      <section title="Partial Deployment and Backwards Compatibility">
 
-       <t>MRT-FRR supports partial deployment.  As with many new
-       features, the protocols (OSPF, LDP, ISIS) indicate their
-       capability to support MRT.  Inside the MRT-capable connected
+       <t>MRT-FRR supports partial deployment. Routers advertise their
+       ability to support MRT.  Inside the MRT-capable connected
        group of routers (referred to as an MRT Island), the MRTs are
        computed.  Alternates to destinations outside the MRT Island
        are computed and depend upon the existence of a loop-free
@@ -713,7 +711,7 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
     <t> This forwarding option uses the LDP signaling extensions
     described in <xref target="RFC7307"/>.
     The MRT-specific LDP extensions required to support this option
-    are described in <xref target="I-D.ietf-mpls-ldp-mrt"/>. </t>
+    will be described elsewhere.</t>
 
   </section>
 
@@ -780,12 +778,6 @@ along the MRT-red path to router X by encapsulating the packet using
 the MRT-red loopback address advertised by router X. Upon receiving the 
 packet, router X would remove the encapsulation header and forward the 
 packet based on the original destination address.</t> 
-
-<t>Announcements of these two additional loopback addresses per router with 
-their MRT color requires IGP extensions, which have not been 
-defined.</t> 
-
-
 
   <t> Either IPv4 (option 2A) or IPv6 (option 2B) can be used as the
   tunneling mechanism.</t>
@@ -977,22 +969,27 @@ IPv4 traffic.</t>
 
 <section anchor="sec_island" title="MRT Island Formation">
 
-  <t> The purpose of communicating support for MRT in the IGP is to
+  <t> The purpose of communicating support for MRT is to
   indicate that the MRT-Blue and MRT-Red forwarding topologies are
   created for transit traffic.  The MRT architecture allows for
   different, potentially incompatible options.  In order to create
-  constistent MRT forwarding topologies, the routers participating in
+  consistent MRT forwarding topologies, the routers participating in
   a particular MRT Island need to use the same set of options.  These
   options are grouped into MRT profiles.  In addition, the routers in
   an MRT Island all need to use the same set of nodes and links within
   the Island when computing the MRT forwarding topologies.  This
   section describes the information used by a router to determine the
-  nodes and links to include in a particular MRT Island.  Some of this
-  information is shared among routers using the newly-defined IGP
-  signaling extensions for MRT described in <xref
-  target="I-D.ietf-ospf-mrt"/> and <xref target="I-D.ietf-isis-mrt"/>.
-  Other information already exists in the IGPs and can be used by MRT
-  in Island formation, subject to the interpretation defined here.</t>
+  nodes and links to include in a particular MRT Island.  Some information
+  already exists in the IGPs and can be used by MRT
+  in Island formation, subject to the interpretation defined here.
+  </t>
+  
+ <t>Other information needs to be communicated between routers for which 
+there do not currently exist protocol extensions. This new information 
+needs to be shared among all routers in an IGP area, so defining 
+extensions to existing IGPs to carry this information makes sense. These 
+new protocol extensions will be defined elsewhere. 
+</t> 
 
   <t> Deployment scenarios using multi-topology OSPF or IS-IS, or
   running both ISIS and OSPF on the same routers is out of scope for
@@ -1010,15 +1007,16 @@ IPv4 traffic.</t>
   </section>
 
   <section title="Support for a specific MRT profile">
-    <t> All routers in an MRT Island MUST support the same MRT
-    profile.  A router advertises support for a given MRT profile
-    using the IGP extensions defined in <xref
-    target="I-D.ietf-ospf-mrt"/> and <xref target="I-D.ietf-isis-mrt"/>
-    using an 8-bit Profile ID value.  A given router can support
-    multiple MRT profiles and participate in multiple MRT Islands.
-    The options that make up an MRT profile, as well as the default
-    MRT profile, are defined in <xref target="sec_mrt_profile"/>.
-    </t>
+ <t> All routers in an MRT Island MUST support the same MRT profile. A 
+router advertises support for a given MRT profile using an 8-bit MRT 
+Profile ID value. The registry for the MRT Profile ID is defined in this 
+document. The protocol extensions for advertising the MRT Profile ID 
+value will be defined elsewhere. A given router can support multiple MRT 
+profiles and participate in multiple MRT Islands. The options that make 
+up an MRT profile, as well as the default MRT profile, are defined in 
+<xref target="sec_mrt_profile"/>. </t> 
+
+
 
   </section>
 
@@ -1041,7 +1039,7 @@ IPv4 traffic.</t>
       synchronization <xref target="RFC5443"/>.
       </t>
 
-      <t> Mechanisms also exist in ISIS and OSPF to prevent transit
+      <t> Mechanisms also already exist in ISIS and OSPF to prevent transit
       traffic from using a particular router.  In ISIS, the overload
       bit is used for this purpose.  In OSPF, <xref
        target="RFC6987"/> specifies
@@ -1068,16 +1066,15 @@ IPv4 traffic.</t>
     </section>
 
     <section title="MRT-specific exclusion mechanism">
-      <t> This architecture also defines a means of excluding an
-      otherwise usable link from MRT Islands.  <xref
-      target="I-D.ietf-ospf-mrt"/> and <xref
-      target="I-D.ietf-isis-mrt"/> define the IGP extensions for OSPF
-      and ISIS used to advertise that a link is MRT-Ineligible.  A
-      link with either interface advertised as MRT-Ineligible MUST be
-      excluded from an MRT Island.  Note that an interface advertised
-      as MRT-Ineligigle by a router is ineligible with respect to all
-      profiles advertised by that router.
-      </t>
+ <t> This architecture also defines a means of excluding an otherwise 
+usable link from MRT Islands. The protocol extensions for advertising 
+that a link is MRT-Ineligible will be defined elsewhere. A link with 
+either interface advertised as MRT-Ineligible MUST be excluded from an 
+MRT Island. Note that an interface advertised as MRT-Ineligigle by a 
+router is ineligible with respect to all profiles advertised by that 
+router. </t> 
+
+
     </section>
 
 </section>
@@ -1177,7 +1174,7 @@ overlap in their MRT-Red MT-ID or MRT-Blue MT-ID.</t>
 <section title="Router-specific MRT paramaters">
 
   <t>For some profiles, additional router-specific MRT parameters may
-  need to be distributed via the IGP.  While the set of options
+  need to be advertised.  While the set of options
   indicated by the MRT Profile ID must be identical for all routers in
   an MRT Island, these router-specific MRT parameters may differ
   between routers in the same MRT island.  Several such parameters are
@@ -1197,19 +1194,20 @@ given in the Default MRT profile below.
 
 <t hangText="MRT-Red Loopback Address: ">This provides the router's
 loopback address to reach the router via the MRT-Red forwarding
-topology.  It can be specified for either IPv4 and IPv6.</t>
+topology.  It can be specified for either IPv4 and IPv6. Note that
+this parameter is not needed to support the Default MRT profile.</t>
 
 <t hangText="MRT-Blue Loopback Address: ">This provides the router's
 loopback address to reach the router via the MRT-Blue forwarding
-topology.  It can be specified for either IPv4 and IPv6.</t>
+topology.  It can be specified for either IPv4 and IPv6.  Note that
+this parameter is not needed to support the Default MRT profile.</t>
 
 </list></t>
 
-<t>The extensions to OSPF and ISIS for advertising a router's GADAG
-Root Selection Priority value are defined in <xref
-target="I-D.ietf-ospf-mrt"/> and <xref target="I-D.ietf-isis-mrt"/>.
-IGP extensions for the advertising a router's MRT-Red and MRT-Blue
-Loopback Addresses have not been defined.
+<t> Protocol extensions for advertising a router's GADAG Root Selection 
+Priority value will be defined in other documents. Protocol extensions for the 
+advertising a router's MRT-Red and MRT-Blue Loopback Addresses will be 
+defined elsewhere. 
 </t>
 
 </section>
@@ -1224,15 +1222,13 @@ default MRT profile is indicated by the MRT Profile ID value of 0.</t>
 <t hangText="MRT Algorithm: ">MRT Lowpoint algorithm defined in <xref
 target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>.</t>
 
-<t hangText="MRT-Red MPLS MT-ID: "> <xref target="I-D.ietf-mpls-ldp-mrt"/> 
-contains the IANA request for allocation of this value from 
-the MPLS Multi-Topology Identifiers Registry.  Prototype experiments have
-used a value of 3997.</t>
+<t hangText="MRT-Red MPLS MT-ID: "> This value will be allocated from 
+the MPLS Multi-Topology Identifiers Registry. The IANA request
+for this allocation will be in another document.</t>
 
-<t hangText="MRT-Blue MPLS MT-ID: "> <xref target="I-D.ietf-mpls-ldp-mrt"/> 
-contains the IANA request for allocation of this value from 
-the MPLS Multi-Topology Identifiers Registry.  Prototype experiments have
-used a value of 3998.</t>
+<t hangText="MRT-Blue MPLS MT-ID: "> This value will be allocated from 
+the MPLS Multi-Topology Identifiers Registry. The IANA request
+for this allocation will be in another document.</t>
 
 <t hangText="GADAG Root Selection Policy: ">Among the routers in the
 MRT Island and with the most preferred priority advertised (corresponding
@@ -1260,8 +1256,8 @@ topology.</t>
 
 <section anchor="sec_proto_ldp" title="LDP signaling extensions and considerations">
 
-  <t>The protocol extensions for LDP are defined in <xref
-  target="I-D.ietf-mpls-ldp-mrt"/>.  A router must indicate that it
+  <t>The protocol extensions for LDP will be defined in 
+  another document.  A router must indicate that it
   has the ability to support MRT; having this explicit allows the use
   of MRT-specific processing, such as special handling of FECs sent
   with the Rainbow MRT MT-ID.</t>
@@ -1279,8 +1275,9 @@ topology.</t>
   MT-ID is used only by ABRs/LBRs or an LDP egress router, it is not
   MRT profile specific.</t>
 
-  <t> <xref target="I-D.ietf-mpls-ldp-mrt"/> contains the IANA
-  request for the Rainbow MRT MPLS MT-ID.
+  <t> The value of the Rainbow MRT MPLS MT-ID will be allocated from 
+the MPLS Multi-Topology Identifiers Registry. The IANA request
+for this allocation will be in another document.
   </t>
 
 </section>
@@ -1421,9 +1418,8 @@ Area ID may be needed for tie-breaking (prefer the route with the
 largest OPSF area ID) and the Area ID isn't announced as part of the
 ASBR link-state advertisement (LSA).  In this one case, suboptimal
 forwarding along the MRT in the other area would happen.  If that
-becomes a realistic deployment scenario, OSPF extensions could be
-considered.  This is not covered in <xref
-target="I-D.ietf-ospf-mrt"/>.</t>
+becomes a realistic deployment scenario, protocol extensions could
+be developed to address this issue.</t>
 
 <figure anchor="fig_abr_mrt" title="ABR Forwarding Behavior and MRTs"
 align="center">
@@ -1637,10 +1633,9 @@ to have named proxy-nodes for IP forwarding, but this would require
 extensions to signal two IP addresses to be associated with MRT-Red
 and MRT-Blue for the proxy-node.  A named proxy-node can be uniquely
 represented by the two routers in the MRT Island to which it is
-connected.  The extensions to signal such IP addresses are not defined
-in <xref target="I-D.ietf-ospf-mrt"/>.  The details of what
-label-bindings must be originated are described in <xref
-target="I-D.ietf-mpls-ldp-mrt"/>.</t>
+connected.  The extensions to signal such IP addresses will be
+defined elsewhere.  The details of what
+label-bindings must be originated will be described in another document.</t>
 
 <t>Computing the MRT next-hops to a named proxy-node and the MRT
 alternate for the computing router S to avoid a particular failure
@@ -2004,9 +1999,6 @@ paths is not unique to MRT.</t>
     &I-D.atlas-rtgwg-mrt-mc-arch;
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-lfa-manageability-11.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-francois-rtgwg-segment-routing-ti-lfa-00.xml"?>
-	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-isis-mrt-01.xml"?>
-	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-mpls-ldp-mrt-02.xml"?>
-	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-ospf-mrt-01.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-rlfa-node-protection-05.xml"?>
 
       <reference anchor="LightweightNotVia"
