@@ -132,12 +132,6 @@ Maximally Redundant Trees (MRT-FRR). MRT-FRR is a technology that gives
 link-protection and node-protection with 100% coverage in any network 
 topology that is still connected after the failure.</t> 
 
-<t>MRT removes the need to engineer for coverage.  MRT is also
-extremely computationally efficient.  For any router in the
-network, the MRT computation is less than the LFA computation for
-a node with three or more neighbors.
-</t>
-
    </abstract>
  </front>
 
@@ -507,9 +501,7 @@ Adj-SIDs to achieve 100% coverage. </t>
      shared between the trees.  The algorithm to compute MRTs is given
      in <xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>.  This
      algorithm can be computed in O(e + n log n); it is less than
-     three SPFs.  Modeling results comparing the alternate path
-     lengths obtained with MRT to other approaches are described in
-     <xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>.  This document
+     three SPFs.  This document
      describes how the MRTs can be used and not how to compute
      them.</t>
 
@@ -634,10 +626,7 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
   target="RFC5286"/> gives an example of link-protecting alternates
   causing a loop on node failure.  Even if a worse failure than
   anticipated happens, the use of MRT alternates will not cause
-  looping.  Therefore, while node-protecting LFAs may be preferred,
-  the certainty that no alternate-induced looping will occur is an
-  advantage of using MRT alternates when the available node-protecting
-  LFA is not a downstream path.</t>
+  looping.</t>
 
 </section>
      
