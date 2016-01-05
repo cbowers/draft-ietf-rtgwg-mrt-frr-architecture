@@ -145,8 +145,13 @@ trees are maximally diverse from each other, providing link and node
 protection for 100% of paths and failures as long as the failure does 
 not cut the network into multiple pieces. This document defines the 
 architecture for IP/LDP fast-reroute with MRT.
- The exact MRT algorithm is defined in 
-<xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>. </t> 
+</t>
+
+<t> <xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/> describes how 
+to compute maximally redundant trees using a specific algorithm, 
+the MRT Lowpoint algorithm.  The MRT Lowpoint algorithm 
+is used by a router that supports the Default MRT Profile, 
+as specified in this document. </t> 
 
 <t>IP/LDP Fast-Reroute with MRT (MRT-FRR) uses two maximally diverse 
 forwarding topologies to provide alternates. A primary next-hop should 
@@ -158,7 +163,7 @@ will not loop even if multiple failures occur. </t>
 <t> While MRT provides 100% protection for a single link or node 
 failure, it may not protect traffic in the event of multiple 
 simultaneous failures, nor does take into account Shared Risk Link 
-Groups (SRLGs). Also, while the MRT algorithm is computationally 
+Groups (SRLGs). Also, while the MRT Lowpoint algorithm is computationally 
 efficient, it is also new. In order for MRT-FRR to function properly, 
 all of the other nodes in the network that support MRT must correctly 
 compute next-hops based on the same algorithm, and install the 
@@ -496,7 +501,8 @@ Adj-SIDs to achieve 100% coverage. </t>
      spanning trees that provides maximally disjoint paths towards
      their common root.  Only links or nodes whose failure would
      partition the network (i.e. cut-links and cut-vertices) are
-     shared between the trees.  The algorithm to compute MRTs is given
+     shared between the trees.  The MRT Lowpoint algorithm to
+	 compute MRTs is given
      in <xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>.  This
      algorithm can be computed in O(e + n log n); it is less than
      three SPFs.  This document
@@ -1086,7 +1092,7 @@ router. </t>
   another.</t>
 </section>
 
-<section title="Example algorithm">
+<section title="Algorithm for MRT Island Indentification">
   <t>An algorithm that allows a computing router to identify the
   routers and links in the local MRT Island satisfying the above rules
   is given in section 5.2 of <xref
@@ -1110,8 +1116,9 @@ router. </t>
 
 <t><list style="hanging">
 
-  <t hangText="MRT Algorithm: ">This identifies the particular MRT
-  algorithm used by the router for this profile.  Algorithm
+  <t hangText="MRT Algorithm: ">This identifies the particular
+  algorithm for computing maximally redundant trees
+  used by the router for this profile.  Algorithm
   transitions can be managed by advertising multiple MRT profiles.</t>
 
   <t hangText="MRT-Red MT-ID: ">This specifies the MT-ID to be
@@ -1124,7 +1131,7 @@ router. </t>
   use in LDP signaling.  All routers in the MRT Island MUST agree on a
   value.</t>
 
-  <t hangText="GADAG Root Selection Policy: ">This specifes the manner
+  <t hangText="GADAG Root Selection Policy: ">This specifies the manner
   in which the GADAG root is selected. All routers in the MRT island
   need to use the same GADAG root in the calculations used construct
   the MRTs.  A valid GADAG Root Selection Policy MUST be such that
@@ -1818,12 +1825,12 @@ information as they see fit".</t>
 <list style="symbols">
 <t>Organization responsible for the implementation: 
 Juniper Networks</t> 
-<t>Implementation name: MRT-FRR algorithm </t> 
-<t>Implementation description: The MRT-FRR algorithm 
+<t>Implementation name: MRT-FRR </t> 
+<t>Implementation description: MRT-FRR  
   using OSPF as the IGP has been implemented and verified. </t> 
 <t>The implementation's level of maturity: prototype </t> 
-<t>Protocol coverage: This implementation of the MRT algorithm
-includes Island identification, GADAG root selection, Lowpoint
+<t>Protocol coverage: This implementation of the MRT-FRR
+includes Island identification, GADAG root selection, MRT Lowpoint
 algorithm, augmentation of GADAG with additional links, and
 calculation of MRT transit next-hops alternate next-hops based on
 draft "draft-ietf-rtgwg-mrt-frr-algorithm-00".  This implementation
@@ -1844,13 +1851,13 @@ shraddha@juniper.net, kishoret@juniper.net </t>
 <list style="symbols">
 <t>Organization responsible for the implementation: 
 Huawei Technology Co., Ltd.</t> 
-<t>Implementation name: MRT-FRR algorithm and IS-IS extensions for MRT. </t> 
-<t>Implementation description: The MRT-FRR algorithm, IS-IS extensions
+<t>Implementation name: MRT-FRR and IS-IS extensions for MRT. </t> 
+<t>Implementation description: The MRT-FRR using IS-IS extensions
 for MRT and LDP multi-topology have been implemented and verified.</t>
 <t>The implementation's level of maturity: prototype </t> 
 <t>Protocol coverage: This implementation of the 
 MRT algorithm includes Island 
-identification, GADAG root selection, Lowpoint algorithm,
+identification, GADAG root selection, MRT Lowpoint algorithm,
 augmentation of GADAG with additional links, and calculation of 
 MRT transit next-hops alternate next-hops based on 
 draft "draft-enyedi-rtgwg-mrt-frr-algorithm-03".  This implementation 
