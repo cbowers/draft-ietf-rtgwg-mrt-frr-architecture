@@ -2094,9 +2094,11 @@ outside of the MRT Island may not be diverse.</t>
 </section>
 
 <section anchor="IANA" title="IANA Considerations">
-<t>Please create an MRT Profile registry for the MRT Profile TLV.  The
-range is 0 to 255.  The default MRT Profile has value 0.  Values 1-200
-are by Standards Action.  Values 201-220 are for experimentation.
+<t>IANA is requested to create a registry entitled 
+"MRT Profile Identifier Registry".  The range is 0 to 255.  
+The Default MRT Profile defined in this document has value 0.  
+Values 1-200 are allocated by Standards Action.  
+Values 201-220 are for experimentation.
 Values 221-255 are for vendor private use.</t>
 
 </section>
@@ -2113,6 +2115,19 @@ traffic only following shortest paths.</t>
 
 <t>It should be noted that the creation of non-shortest forwarding
 paths is not unique to MRT.</t>
+
+<t> MRT-FRR requires that routers advertise information used in the 
+formation of MRT backup paths. While this document does not specify the 
+protocol extensions used to advertise this information, we discuss 
+security considerations related to the information itself. Injecting 
+false MRT-related information could be used to direct some MRT backup 
+paths over compromised transmission links. Combined with the ability to 
+generate network failures, this could be used to send traffic over 
+compromised transmission links during a fast-reroute event. In order to 
+prevent this potential exploit, a receiving router needs to be able to
+authenticate MRT-related information that claims to have been advertised by 
+another router.</t>
+
 
 </section>
 
@@ -2156,14 +2171,14 @@ paths is not unique to MRT.</t>
 
 
     <references title="Normative References">
-
+    &RFC2119;
     &RFC5286;
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-mrt-frr-algorithm-06.xml"?>
     </references>
 
     <references title="Informative References">
 	&RFC5714;
-    &RFC2119;
+
     &RFC2328;
     &RFC5443;
     &RFC5715;
