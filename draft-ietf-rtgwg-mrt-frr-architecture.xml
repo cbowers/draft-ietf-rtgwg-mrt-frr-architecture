@@ -771,7 +771,7 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
 
 </section>
 
-<section title="MRT IP tunnels (Options 2A and 2B)">
+<section anchor="sec_MRT_IP_tunnel" title="MRT IP tunnels (Options 2A and 2B)">
  <t> IP tunneling can also be used as an MRT transit forwarding 
 mechanism. Each router supporting this MRT transit forwarding mechanism 
 announces two additional loopback addresses and their associated MRT 
@@ -1076,7 +1076,7 @@ up an MRT profile, as well as the default MRT profile, are defined in
 usable link from MRT Islands. The protocol extensions for advertising 
 that a link is MRT-Ineligible will be defined elsewhere. A link with 
 either interface advertised as MRT-Ineligible MUST be excluded from an 
-MRT Island. Note that an interface advertised as MRT-Ineligigle by a 
+MRT Island. Note that an interface advertised as MRT-Ineligible by a 
 router is ineligible with respect to all profiles advertised by that 
 router. </t> 
 
@@ -1092,7 +1092,7 @@ router. </t>
   another.</t>
 </section>
 
-<section title="Algorithm for MRT Island Indentification">
+<section title="Algorithm for MRT Island Identification">
   <t>An algorithm that allows a computing router to identify the
   routers and links in the local MRT Island satisfying the above rules
   is given in section 5.2 of <xref
@@ -1137,7 +1137,7 @@ router. </t>
   the MRTs.  A valid GADAG Root Selection Policy MUST be such that
   each router in the MRT island chooses the same GADAG root based on
   information available to all routers in the MRT island.  GADAG Root
-  Selection Priority values, advertised in the IGP as router-specific
+  Selection Priority values, advertised as router-specific
   MRT parameters, MAY be used in a GADAG Root Selection Policy.</t>
 
   <t hangText="MRT Forwarding Mechanism: ">This specifies which
@@ -1875,39 +1875,184 @@ for MRT-FRR. </t>
 </section>
 
 <section anchor="sec_OAM" title="Operations and Management Considerations">
-<t> An implementation SHOULD provide an operator with the ability to 
-test MRT paths with OAM traffic. For example, when MRT paths are 
+
+<t> The following aspects of MRT-FRR are useful to consider 
+when deploying the technology in different operational environments 
+and network topologies.</t>
+
+<section title="Verifying Forwarding on MRT Paths">
+<t> The forwarding paths created by MRT-FRR are not used by normal 
+(non-FRR) traffic. They are only used to carry FRR traffic for a short 
+period of time after a failure has been detected. It is RECOMMENDED that 
+an operator proactively monitor the MRT forwarding paths in order to be 
+certain that the paths will be able to carry FRR traffic when needed. 
+Therefore, an implementation SHOULD provide an operator with the ability 
+to test MRT paths with OAM traffic. For example, when MRT paths are 
 realized using LDP labels distributed for topology-scoped FECs, an 
 implementation can use the MPLS ping and traceroute as defined in <xref 
 target="RFC4379"/> and extended in <xref target="RFC7307"/> for 
-topology-scoped FECs. </t> 
+topology-scoped FECs. </t>
+</section> 
+
+<section anchor="sec_gadag_root_sel" title="GADAG Root Selection">
+<t> The Default MRT Profile uses the GADAG Root Selection Priority 
+advertised by routers as the primary criteria for selecting the 
+GADAG root.  It is RECOMMENDED that an operator designate a set of routers as 
+good choices for selection as GADAG root by setting the GADAG Root 
+Selection Priority for that set of routers to lower (more preferred) 
+numerical values. Criteria for making this designation are 
+discussed below.</t> 
+
+<t>Analysis has shown that the centrality of a router can have a
+significant impact on the lengths of the alternate paths computed.
+Therefore, it is RECOMMENDED that off-line analysis that considers the
+centrality of a router be used to help determine how good a choice a
+particular router is for the role of GADAG root. </t>
+
+<t> If the router currently selected as GADAG root becomes unreachable 
+in the IGP topology, then a new GADAG root will be selected. Changing 
+the GADAG root can change the overall structure of the GADAG as well 
+the paths of the red and blue MRT trees built using that GADAG. In order 
+to minimize change in the associated red and blue MRT forwarding entries 
+that can result from changing the GADAG root, it is RECOMMENDED that 
+operators prioritize for selection as GADAG root those routers that are 
+expected to consistently remain part of the IGP topology. </t> 
 </section>
 
-<section anchor="sec_policy" title="Applying Policy to Select from Multiple Possible Alternates for FRR ">
-<t> For a given topology, GADAG root, and profile, MRT will provide a 
-node-protecting alternate path from each PLR to each destination for any 
-single link or node failure, if such a path exists. Therefore, an 
-implementation may choose to only use the alternates determined by MRT 
-to provide 100% FRR coverage.</t> 
+<section anchor="sec_traffic_on_backup_paths" title="Traffic Capacity on Backup Paths">
+<t> During a fast-reroute event initiated by a PLR in response to a 
+network failure, the flow of traffic in the network will generally not 
+be identical to the flow of traffic after the IGP forwarding state has 
+converged, taking the failure into account. Therefore, even if a network 
+has been engineered to have enough capacity on the appropriate links to 
+carry all traffic after the IGP has converged after the failure, the 
+network may still not have enough capacity on the appropriate links to 
+carry the flow of traffic during a fast-reroute event. This can result 
+in more traffic loss during the fast-reroute event than might otherwise 
+be expected.</t> 
 
-<t>However, it may be desirable to allow an operator to use MRT 
+<t> Note that there are two somewhat distinct aspects to this 
+phenomenon. The first is that the path from the PLR to the destination 
+during the fast-reroute event may be different from the path after the 
+IGP converges. In this case, any traffic for the destination that 
+reaches the PLR during the fast-reroute event will follow a different 
+path from the PLR to the destination than will be followed after IGP 
+convergence.</t> 
+
+<t> The second aspect is that the amount of traffic arriving at the PLR 
+for affected destinations during the fast-reroute event may be larger 
+than the amount of traffic arriving at the PLR for affected destinations 
+after IGP convergence. Immediately after a failure, any non-PLR routers 
+that were sending traffic to the PLR before the failure will continue 
+sending traffic to the PLR, and that traffic will be carried over backup 
+paths from the PLR to the destinations. After IGP convergence, 
+upstream non-PLR routers may direct some traffic away from the PLR.</t> 
+
+<t> In order to reduce or eliminate the potential for transient traffic 
+loss due to inadequate capacity during fast-reroute events, an operator 
+can model the amount of traffic taking different paths during a 
+fast-reroute event. If it is determined that there is not enough 
+capacity to support a given fast-reroute event, the operator can address 
+the issue either by augmenting capacity on certain links or modifying 
+the backup paths themselves. </t> 
+
+<t> The MRT Lowpoint algorithm produces a pair of diverse paths to each 
+destination. These paths are generated by following the directed links 
+on a common GADAG.  MRT-FRR allows an operator to exclude a link from the 
+MRT Island, and thus the GADAG, by advertising it as MRT-Ineligible. 
+Such a link will not be used on the MRT forwarding path for any 
+destination. Advertising links as MRT-Ineligible is the main tool 
+provided by MRT-FRR for keeping backup traffic off of lower bandwidth 
+links during fast-reroute events. </t> 
+
+<t> Note that all of the backup paths produced by the MRT Lowpoint 
+algorithm are closely tied to the common GADAG computed as part of that 
+algorithm. Therefore, it is generally not possible to modify a subset of 
+paths without affecting other paths. This precludes more fine-grained 
+modification of individual backup paths when using only paths computed 
+by the MRT Lowpoint algorithm. </t> 
+
+<t>However, it may be desirable to allow an operator to use MRT-FRR 
 alternates together with alternates provided by other FRR technologies. 
 A policy-based alternate selection process can allow an operator to 
 select the best alternate from those provided by MRT and other FRR 
-technologies. As an example, it may be desirable to implement a policy 
-where a node-protecting LFA (if it exists for a given failure mode and 
-destination) is preferred over a given MRT alternate. <xref 
-target="I-D.ietf-rtgwg-lfa-manageability"/> discusses many of the 
-potential criteria that one might take into account when evaluating 
-different alternates for selection. </t> 
+technologies. As a concrete example, it may be desirable to implement a 
+policy where a downstream LFA (if it exists for a given failure mode and 
+destination) is preferred over a given MRT alternate. This combination 
+gives the operator the ability to affect where traffic flows during a 
+fast-reroute event, while still producing backup paths that use no additional 
+labels for LDP traffic and will not loop under multiple failures. This 
+and other choices of alternate selection policy can be evaluated in the 
+context of their effect on fast-reroute traffic flow and available 
+capacity, as well as other deployment considerations. </t> 
 
 <t> Note that future documents may define MRT profiles in addition to 
 the default profile defined here. Different MRT profiles will generally 
-produce alternate paths with different properties. An implementation 
-may allow an operator to use different MRT profiles instead of or in 
+produce alternate paths with different properties. An implementation may 
+allow an operator to use different MRT profiles instead of or in 
 addition to the default profile. </t> 
 
 </section>
+
+<section title="MRT IP Tunnel Loopback Address Management">
+<t> As described in <xref target="sec_MRT_IP_tunnel"/>, 
+if an implementation uses IP tunneling as the mechanism to 
+realize MRT forwarding paths, each node must advertise an MRT-Red and 
+an MRT-Blue loopback address.  These IP addresses must be unique within
+the routing domain to the extent that they do not overlap with each other
+or with any other routing table entries. It is expected that 
+operators will use existing tools and processes for managing 
+infrastructure IP addresses to manage these additional MRT-related 
+loopback addresses.
+</t> 
+</section>
+
+<section title="MRT-FRR in a Network with Degraded Connectivity">
+<t> Ideally, routers is a service provider network using MRT-FRR will be 
+initially deployed in a 2-connected topology, allowing MRT-FRR to find 
+completely diverse paths to all destinations. However, a network can 
+differ from an ideal 2-connected topology for many possible reasons, 
+including network failures and planned maintenance events.</t> 
+
+<t> MRT-FRR is designed to continue to function properly when network 
+connectivity is degraded. When a network contains cut-vertices or 
+cut-links dividing the network into different 2-connected blocks, 
+MRT-FRR will continue to provide completely diverse paths for 
+destinations within the same block as the PLR. For a destination in a 
+different block from the PLR, the redundant paths created by MRT-FRR 
+will be link and node diverse within each block, and the paths will only 
+share links and nodes that are cut-links or cut-vertices in the 
+topology. </t> 
+
+<t> If a network becomes partitioned with one set of routers having no 
+connectivity to another set of routers, MRT-FRR will function 
+independently in each set of connected routers, providing redundant 
+paths to destinations in same set of connected routers as a given 
+PLR.</t> 
+
+</section>
+
+<section title="Partial Deployment of MRT-FRR in a Network">
+<t> A network operator may choose to deploy MRT-FRR only on a subset of 
+routers in an IGP area. MRT-FRR is designed to accommodate this partial 
+deployment scenario. Only routers that advertise support for a given MRT 
+profile will be included in a given MRT Island. For a PLR within the MRT 
+Island, MRT-FRR will create redundant forwarding paths to all 
+destinations with the MRT Island using maximally redundant trees all the 
+way to those destinations. For destinations outside of the MRT Island, 
+MRT-FRR creates paths to the destination which use forwarding state 
+created by MRT-FRR within the MRT Island and shortest path forwarding 
+state outside of the MRT Island. The paths created by MRT-FRR to 
+non-Island destinations are guaranteed to be diverse within the MRT 
+Island (if topologically possible). However, the part of the paths 
+outside of the MRT Island may not be diverse.</t> 
+
+</section>
+
+
+</section>
+
+
 
 <section anchor="Acknowledgements" title="Acknowledgements">
   <t>The authors would like to thank Mike Shand for his valuable
