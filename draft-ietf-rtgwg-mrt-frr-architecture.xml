@@ -1022,7 +1022,22 @@ profiles and participate in multiple MRT Islands. The options that make
 up an MRT profile, as well as the default MRT profile, are defined in 
 <xref target="sec_mrt_profile"/>. </t> 
 
-
+<t> Note that a router may advertise support for multiple different MRT 
+profiles. The process of MRT Island formation takes place independently 
+for each MRT profile advertised by a given router. For example, consider 
+a network with 40 connected routers in the same area advertising support 
+for MRT Profile A and MRT Profile B. Two distinct MRT Islands will be 
+formed corresponding to Profile A and Profile B, with each island 
+containing all 40 routers. A complete set of maximally redundant trees 
+will be computed for each island following the rules defined for each 
+profile. If we add a third MRT Profile to this example, with Profile C 
+being advertised by a connected subset of 30 routers, there will be a 
+third MRT Island formed corresponding to those 30 routers, and a third 
+set of maximally redundant trees will be computed. In this example, 
+40 routers would compute and install two sets of MRT transit forwarding 
+entries corresponding to Profiles A and B, while 30 routers would 
+compute and install three sets of MRT transit forwarding 
+entries corresponding to Profiles A, B, and C.</t> 
 
   </section>
 
@@ -1118,18 +1133,15 @@ router. </t>
 
   <t hangText="MRT Algorithm: ">This identifies the particular
   algorithm for computing maximally redundant trees
-  used by the router for this profile.  Algorithm
-  transitions can be managed by advertising multiple MRT profiles.</t>
+  used by the router for this profile.</t>
 
-  <t hangText="MRT-Red MT-ID: ">This specifies the MT-ID to be
-  associated with the MRT-Red forwarding topology.  It is needed for
-  use in LDP signaling.  All routers in the MRT Island MUST agree on a
-  value.</t>
+  <t hangText="MRT-Red MT-ID: ">This specifies the MPLS MT-ID to be
+  associated with the MRT-Red forwarding topology. It is 
+  allocated from the MPLS Multi-Topology Identifiers Registry.</t>
 
-  <t hangText="MRT-Blue MT-ID: ">This specifies the MT-ID to be
-  associated with the MRT-Blue forwarding topology.  It is needed for
-  use in LDP signaling.  All routers in the MRT Island MUST agree on a
-  value.</t>
+  <t hangText="MRT-Blue MT-ID: ">This specifies the MPLS MT-ID to be
+  associated with the MRT-Blue forwarding topology. It is 
+  allocated from the MPLS Multi-Topology Identifiers Registry.</t>
 
   <t hangText="GADAG Root Selection Policy: ">This specifies the manner
   in which the GADAG root is selected. All routers in the MRT island
@@ -1170,11 +1182,27 @@ router. </t>
 
 </list></t>
 
+<t>When a new MRT Profile is defined, new and unique values should be 
+allocated from the MPLS Multi-Topology Identifiers Registry, 
+corresponding to the MRT-Red and MRT-Blue MT-ID values for the new MRT 
+Profile .</t> 
+
 <t>If a router advertises support for multiple MRT profiles, then it
 MUST create the transit forwarding topologies for each of those,
 unless the profile specifies the None option for MRT Forwarding
-Mechanism.  A router MUST NOT advertise multiple MRT profiles that
-overlap in their MRT-Red MT-ID or MRT-Blue MT-ID.</t>
+Mechanism.</t>
+
+<t>The ability of MRT-FRR to support transit forwarding entries for 
+multiple profiles can be used to facilitate a smooth transition from an 
+existing deployed MRT Profile to a new MRT Profile. The new profile can 
+be activated in parallel with the existing profile, installing the 
+transit forwarding entries for the new profile without affecting the 
+transit forwarding entries for the existing profile. Once the new 
+transit forwarding state has been verified, the router can be configured 
+to use the alternates computed by the new profile in the event of a 
+failure.</t> 
+
+
 
 </section>
 
