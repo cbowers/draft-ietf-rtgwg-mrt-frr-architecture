@@ -900,8 +900,7 @@ IPv4 traffic.</t>
   destination.  As discussed in the previous section, for LDP traffic,
   using the MRT to the original destination simplifies MRT-FRR by
   avoiding the need for targeted LDP sessions to the next-next-hop.
-  For IP, that consideration doesn't apply.  However, consistency with
-  LDP is RECOMMENDED.</t>
+  For IP, that consideration doesn't apply.</t>
 
   <t>Some situations require tunneling IP traffic along an MRT to a
   tunnel endpoint that is not the destination of the IP traffic.
@@ -1065,17 +1064,25 @@ entries corresponding to Profiles A, B, and C.</t>
       synchronization <xref target="RFC5443"/>.
       </t>
 
-      <t> Mechanisms also already exist in ISIS and OSPF to prevent transit
+      <t> Mechanisms also already exist in ISIS and OSPF to discourage 
+	  or prevent transit
       traffic from using a particular router.  In ISIS, the overload
-      bit is used for this purpose.  In OSPF, <xref
-       target="RFC6987"/> specifies
-      setting all outgoing interface metrics to 0xFFFF to accomplish
-      this.
+      bit is prevents transit traffic from using a router.  
+	  </t>
+	  
+	  <t> For OSPFv2 and OSPFv3, <xref target="RFC6987"/> specifies
+      setting all outgoing interface metrics to 0xFFFF to discourage
+	  transit traffic from using a router.( <xref target="RFC6987"/> 
+	  defines the metric value 0xFFFF 
+      as MaxLinkMetric, a fixed architectural value for OSPF.)
+	  For OSPFv3, <xref target="RFC5340"/> specifies that a router be
+	  excluded from the intra-area shortest path tree computation 
+	  if the V6-bit or R-bit of the LSA options is not set in the Router LSA.
       </t>
 
       <t> The following rules for MRT Island formation ensure that MRT
       FRR protection traffic does not use a link or router that is
-      discouraged from carrying traffic by existing IGP mechanisms.
+      discouraged or prevented from carrying traffic by existing IGP mechanisms.
 
       <list style="numbers">
 	<t> A bidirectional link MUST be excluded from an MRT Island
@@ -1084,7 +1091,11 @@ entries corresponding to Profiles A, B, and C.</t>
 	<t> A router MUST be excluded from an MRT Island if it is
 	advertised with the overload bit set (for ISIS), or it is
 	advertised with metric values of 0xFFFF on all of its outgoing
-	interfaces (for OSPF).</t>
+	interfaces (for OSPFv2 and OSPFv3).</t>
+	<t> A router MUST be excluded from an MRT Island if it is
+	advertised with either the V6-bit or R-bit of the LSA options 
+	not set in the Router LSA.</t>
+	
       </list>
 
       </t>
@@ -2217,6 +2228,7 @@ another router.</t>
 	&RFC6982;
 	&RFC7490;
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5331.xml"?>
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5340.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.6976.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.6981.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.6987.xml"?>
