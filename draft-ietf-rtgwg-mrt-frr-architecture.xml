@@ -366,7 +366,7 @@ Adj-SIDs to achieve 100% coverage. </t>
 
        <t>When a network needs to use a micro-loop prevention
        mechanism <xref target="RFC5715"/> such as Ordered FIB<xref
-       target="RFC6976"/> or Farside Tunneling<xref
+       target="RFC6976"/> or Nearside Tunneling<xref
        target="RFC5715"/>, then the whole IGP area needs to have
        alternates available so that the micro-loop prevention
        mechanism, which requires slower network convergence, can take
@@ -374,7 +374,8 @@ Adj-SIDs to achieve 100% coverage. </t>
        Without complete coverage, traffic to the unprotected
        destinations will be dropped for significantly longer than with
        current convergence - where routers individually converge as
-       fast as possible.
+       fast as possible. See <xref target="sec_micro_loop"/> for more
+	   discussion of micro-loop prevention and MRTs.
        </t>
 
      </section>
@@ -630,7 +631,7 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
 
   <t>As described in <xref target="RFC5286"/>, when a worse failure
   than is anticipated happens, using LFAs that are not downstream
-  neighbors can cause micro-looping.  Section 1.1 of <xref
+  neighbors can cause looping among alternates.  Section 1.1 of <xref
   target="RFC5286"/> gives an example of link-protecting alternates
   causing a loop on node failure.  Even if a worse failure than
   anticipated happens, the use of MRT alternates will not cause
@@ -1765,27 +1766,57 @@ topology.  As link-state updates reach the routers, the IGP process
 calculates the new shortest paths. Two things need attention:
 micro-loop prevention and MRT re-calculation.</t>
 
-<section title="Micro-forwarding loop prevention and MRTs">
+<section anchor="sec_micro_loop" title="Micro-loop prevention and MRTs">
 
-<t>As is well known<xref target="RFC5715"/>, micro-loops can occur
-during IGP convergence; such loops can be local to the failure or
-remote from the failure.  Managing micro-loops is an orthogonal issue
-to having alternates for local repair, such as MRT fast-reroute
-provides.</t>
+<t> A micro-loop is a transient packet forwarding loop among two or more 
+routers that can occur during convergence of IGP forwarding state.
+ <xref target="RFC5715"/> 
+discusses several techniques for preventing micro-loops.   This section 
+discusses how MRT-FRR relates to two of the micro-loop prevention 
+techniques discussed in <xref target="RFC5715"/>, Nearside Tunneling
+and Farside Tunneling.  </t> 
 
-<t>There are two possible micro-loop prevention mechanisms discussed
-in <xref target="RFC5715"/>.  The first is Ordered FIB <xref
-target="RFC6976"/>.  The second is Farside
-Tunneling which requires tunnels or an alternate topology to reach
-routers on the farside of the failure.</t>
+<t> In Nearside Tunneling, a router (PLR) adjacent to a failure perform 
+local repair and inform remote routers of the failure. The remote 
+routers initially tunnel affected traffic to the nearest PLR, using 
+tunnels which are unaffected by the failure. Once the forwarding state 
+for normal shortest path routing has converged, the remote routers 
+return the traffic to shortest path forwarding. MRT-FRR is relevant for 
+Nearside Tunneling for the following reason. The process of tunneling 
+traffic to the PLRs and waiting a sufficient amount of time for IGP 
+forwarding state convergence with Nearside Tunneling means that traffic 
+will generally be relying on the local repair at the PLR for longer than 
+it would in the absence of Nearside Tunneling. Since MRT-FRR provides 
+100% coverage for single link and node failure, it may be an attractive 
+option to provide the local repair paths when Nearside Tunneling is 
+deployed. </t> 
 
-<t>Since MRTs provide an alternate topology through which traffic can
-be sent and which can be manipulated separately from the SPT, it is
-possible that MRTs could be used to support Farside Tunneling.
-Details of how to do so are outside the scope of this document.</t>
+<t> MRT-FRR is also relevant for the Farside Tunneling micro-loop 
+prevention technique. In Farside Tunneling, remote routers tunnel 
+traffic affected by a failure to a node downstream of the failure with 
+respect to traffic destination. This node can be viewed as being on the 
+farside of the failure with respect to the node initiating the tunnel. 
+Note that the discussion of Farside Tunneling in <xref 
+target="RFC5715"/> focuses on the case where the farside node is 
+immediately adjacent to a failed link or node. However, the farside node 
+may be any node downstream of the failure with respect to traffic 
+destination, including the destination itself. The tunneling mechanism 
+used to reach the farside node must be unaffected by the failure. The 
+alternative forwarding paths created by MRT-FRR have the potential to be 
+used to forward traffic from the remote routers upstream of the failure 
+all the way to the destination. In the event of failure, either the 
+MRT-Red or MRT-Blue path from the remote upstream router to the 
+destination is guaranteed to avoid a link failure or inferred node 
+failure.  The MRT forwarding paths are also guaranteed to 
+not be subject to micro-loops because they are locked to the topology 
+before the failure.</t> 
 
-<t>Micro-loop mitigation mechanisms can also work when combined with
-MRT.</t>
+<t> We note that the computations in <xref 
+target="I-D.ietf-rtgwg-mrt-frr-algorithm"/> address the case of a PLR 
+adjacent to a failure determining which choice of MRT-Red or MRT-Blue 
+will avoid a failed link or node. More computation may be required for 
+an arbitrary remote upstream router to determine whether to choose 
+MRT-Red or MRT-Blue for a given destination and failure.</t> 
 
 </section>
 
