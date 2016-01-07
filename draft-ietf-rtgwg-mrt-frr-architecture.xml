@@ -157,8 +157,11 @@ as specified in this document. </t>
 forwarding topologies to provide alternates. A primary next-hop should 
 be on only one of the diverse forwarding topologies; thus, the other can 
 be used to provide an alternate. Once traffic has been moved to one of 
-MRTs, it is not subject to further repair actions. Thus, the traffic 
-will not loop even if multiple failures occur. </t> 
+the MRTs by one PLR, that traffic is not subject to further repair 
+actions by another PLR, even in the event of multiple simultaneous 
+failures. Therefore, traffic repaired by MRT-FRR will not loop between 
+different PLRs responding to different simultaneous failures. </t> 
+
 
 <t> While MRT provides 100% protection for a single link or node 
 failure, it may not protect traffic in the event of multiple 
@@ -179,7 +182,8 @@ target="sec_OAM"/>).</t>
 <t>In addition to supporting IP and LDP unicast fast-reroute, the diverse 
 forwarding topologies and guarantee of 100% coverage permit fast-reroute 
 technology to be applied to multicast traffic as described in <xref 
-target="I-D.atlas-rtgwg-mrt-mc-arch"/>. </t> 
+target="I-D.atlas-rtgwg-mrt-mc-arch"/>.  However, the current document 
+does not address the multicast applications of MRTs. </t> 
 
 <t> <xref target="table_comparison"/> compares different methods of 
 providing FRR for IP and LDP traffic, illustrating some of the 
@@ -1162,19 +1166,15 @@ router. </t>
   supported.  If IPv4 is supported, then both MRT-Red and MRT-Blue
   IPv4 Loopback Addresses SHOULD be specified.  If IPv6 is supported,
   both MRT-Red and MRT-Blue IPv6 Loopback Addresses SHOULD be
-  specified.  The None option in may be useful for multicast global
-  protection.</t>
+  specified.</t>
 
   <t hangText="Recalculation: ">Recalculation specifies the process and timing
   by which new MRTs are computed after the topology has been modified.
   </t>
 
-  <t hangText="Area/Level Border Behavior: ">Should inter-area traffic
-  on the MRT-Blue or MRT-Red be put back onto the shortest path tree?
-  Should it be swapped from MRT-Blue or MRT-Red in one area/level to
-  MRT-Red or MRT-Blue in the next area/level to avoid the potential
-  failure of an ABR? (See <xref target="I-D.atlas-rtgwg-mrt-mc-arch"/>
-  for use-case details.</t>
+  <t hangText="Area/Level Border Behavior: "> This specifies how
+  traffic traveling on the MRT-Blue or MRT-Red in one area should be 
+  treated when it passes into another area. </t>
 
   <t hangText="Other Profile-Specific Behavior: "> Depending upon the
   use-case for the profile, there may be additional profile-specific
@@ -1924,7 +1924,7 @@ topology-scoped FECs. </t>
 
 <section anchor="sec_gadag_root_sel" title="GADAG Root Selection">
 <t> The Default MRT Profile uses the GADAG Root Selection Priority 
-advertised by routers as the primary criteria for selecting the 
+advertised by routers as the primary criterion for selecting the 
 GADAG root.  It is RECOMMENDED that an operator designate a set of routers as 
 good choices for selection as GADAG root by setting the GADAG Root 
 Selection Priority for that set of routers to lower (more preferred) 
