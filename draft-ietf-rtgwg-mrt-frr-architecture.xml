@@ -157,7 +157,7 @@ as specified in this document. </t>
 forwarding topologies to provide alternates. A primary next-hop should 
 be on only one of the diverse forwarding topologies; thus, the other can 
 be used to provide an alternate. Once traffic has been moved to one of 
-the MRTs by one PLR, that traffic is not subject to further repair 
+the MRTs by one point of local repair (PLR), that traffic is not subject to further repair 
 actions by another PLR, even in the event of multiple simultaneous 
 failures. Therefore, traffic repaired by MRT-FRR will not loop between 
 different PLRs responding to different simultaneous failures. </t> 
@@ -387,7 +387,8 @@ Adj-SIDs to achieve 100% coverage. </t>
        group of routers (referred to as an MRT Island), the MRTs are
        computed.  Alternates to destinations outside the MRT Island
        are computed and depend upon the existence of a loop-free
-       neighbor of the MRT Island for that destination.
+       neighbor of the MRT Island for that destination.  MRT Islands are
+	   discussed in detail in <xref target="sec_island"/>.
        </t>
 
      </section>
@@ -410,53 +411,8 @@ Adj-SIDs to achieve 100% coverage. </t>
        topology where all links connect exactly two nodes and
        broadcast links have been transformed into the standard
        pseudo-node representation.</t>
-
-       <t hangText="Redundant Trees (RT): ">A pair of trees where the
-       path from any node X to the root R along the first tree is
-       node-disjoint with the path from the same node X to the root
-       along the second tree.  These can be computed in 2-connected
-       graphs.</t>
-
-       <t hangText="Maximally Redundant Trees (MRT): ">A pair of trees
-       where the path from any node X to the root R along the first
-       tree and the path from the same node X to the root along the
-       second tree share the minimum number of nodes and the minimum
-       number of links.  Each such shared node is a cut-vertex.  Any
-       shared links are cut-links.  Any RT is an MRT but many MRTs are
-       not RTs.</t>
-
-       <t hangText="MRT-Red: "> MRT-Red is used to describe one of the
-       two MRTs; it is used to described the associated forwarding
-       topology and MPLS MT-ID.  Specifically, MRT-Red is the decreasing
-       MRT where links in the GADAG are taken in the direction from a
-       higher topologically ordered node to a lower one.</t>
-
-       <t hangText="MRT-Blue: "> MRT-Blue is used to describe one of
-       the two MRTs; it is used to described the associated forwarding
-       topology and MPLS MT-ID.  Specifically, MRT-Blue is the increasing
-       MRT where links in the GADAG are taken in the direction from a
-       lower topologically ordered node to a higher one.</t>
-
-       <t hangText="Rainbow MRT: "> It is useful to have an MPLS MT-ID that
-       refers to the multiple MRT topologies and to the default
-       topology.  This is referred to as the Rainbow MRT MPLS MT-ID and is
-       used by LDP to reduce signaling and permit the same label to
-       always be advertised to all peers for the same (MT-ID,
-       Prefix).</t>
-
-       <t hangText="MRT Island: "> The set of routers that support a
-       particular MRT profile and the links connecting them that
-       support MRT. </t>
-
-       <t hangText="Island Border Router (IBR): "> A router in the MRT
-       Island that is connected to a router not in the MRT Island and
-       both routers are in a common area or level.</t>
-
-       <t hangText="Island Neighbor (IN): ">A router that is not in
-       the MRT Island but is adjacent to an IBR and in the same
-       area/level as the IBR.</t>
-
-       <t hangText="cut-link: ">A link whose removal partitions the
+	   
+	   <t hangText="cut-link: ">A link whose removal partitions the
        network.  A cut-link by definition must be connected between
        two cut-vertices.  If there are multiple parallel links, then
        they are referred to as cut-links in this document if removing
@@ -473,13 +429,27 @@ Adj-SIDs to achieve 100% coverage. </t>
        <t hangText="2-connected cluster: ">A maximal set of nodes that
        are 2-connected.</t>
 
-       <t hangText="2-edge-connected: ">A network graph where at least
-       two links must be removed to partition the network.</t>
-
        <t hangText="block: ">Either a 2-connected cluster, a cut-edge,
        or an isolated vertex.</t>
 
-       <t hangText="DAG: ">Directed Acyclic Graph - a graph where all
+       <t hangText="Redundant Trees (RT): ">A pair of trees where the
+       path from any node X to the root R along the first tree is
+       node-disjoint with the path from the same node X to the root
+       along the second tree.  Redundant trees can always 
+	   be computed in 2-connected graphs.</t>
+
+       <t hangText="Maximally Redundant Trees (MRT): ">A pair of trees
+       where the path from any node X to the root R along the first
+       tree and the path from the same node X to the root along the
+       second tree share the minimum number of nodes and the minimum
+       number of links.  Each such shared node is a cut-vertex.  Any
+       shared links are cut-links.  In graphs that are not 2-connected,
+	   it is not possible to compute RTs.  However, it is possible to compute
+	   MRTs.  MRTs are maximally redundant in the sense that they are as
+	   redundant as possible given the constraints of the network graph.
+	   </t>
+
+	   <t hangText="DAG: ">Directed Acyclic Graph - a graph where all
        links are directed and there are no cycles in it.</t>
 
        <t hangText="ADAG: ">Almost Directed Acyclic Graph - a graph
@@ -488,6 +458,38 @@ Adj-SIDs to achieve 100% coverage. </t>
 
        <t hangText="GADAG: ">Generalized ADAG - a graph that is the
        combination of the ADAGs of all blocks.</t>
+
+       <t hangText="MRT-Red: "> MRT-Red is used to describe one of the
+       two MRTs; it is used to described the associated forwarding
+       topology and MPLS multi-topology identifier (MT-ID).  
+	   Specifically, MRT-Red is the decreasing
+       MRT where links in the GADAG are taken in the direction from a
+       higher topologically ordered node to a lower one.</t>
+
+       <t hangText="MRT-Blue: "> MRT-Blue is used to describe one of
+       the two MRTs; it is used to described the associated forwarding
+       topology and MPLS MT-ID.  Specifically, MRT-Blue is the increasing
+       MRT where links in the GADAG are taken in the direction from a
+       lower topologically ordered node to a higher one.</t>
+
+       <t hangText="Rainbow MRT: "> It is useful to have an MPLS MT-ID that
+       refers to the multiple MRT forwarding topologies and to the default
+       forwarding topology.  This is referred to as the Rainbow MRT MPLS MT-ID and is
+       used by LDP to reduce signaling and permit the same label to
+       always be advertised to all peers for the same (MT-ID,
+       Prefix).</t>
+
+       <t hangText="MRT Island: "> The set of routers that support a
+       particular MRT profile and the links connecting them that
+       support MRT. </t>
+
+       <t hangText="Island Border Router (IBR): "> A router in the MRT
+       Island that is connected to a router not in the MRT Island and
+       both routers are in a common area or level.</t>
+
+       <t hangText="Island Neighbor (IN): ">A router that is not in
+       the MRT Island but is adjacent to an IBR and in the same
+       area/level as the IBR.</t>
 
        <t hangText="named proxy-node: ">A proxy-node can represent a
        destination prefix that can be attached to the MRT Island via
@@ -592,9 +594,9 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
 
 <section anchor="mrt_and_frr" title="Maximally Redundant Trees (MRT) and Fast-Reroute">
 
-  <t>In normal IGP routing, each router has its shortest-path-tree to
+  <t>In normal IGP routing, each router has its shortest path tree (SPT)to
   all destinations.  From the perspective of a particular destination,
-  D, this looks like a reverse SPT (rSPT).  To use maximally redundant
+  D, this looks like a reverse SPT.  To use maximally redundant
   trees, in addition, each destination D has two MRTs associated with
   it; by convention these will be called the MRT-Blue and MRT-Red.
   MRT-FRR is realized by using multi-topology forwarding.  There is a
