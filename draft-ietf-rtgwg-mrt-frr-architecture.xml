@@ -1848,19 +1848,25 @@ FIBs.</t>
 <t>At each router, therefore, the sequence is as follows:
 <list style="numbers">
 <t>Receive failure notification</t> 
-<t>Recompute SPT</t> 
-<t>Install new SPT</t> 
+<t>Recompute SPT.</t> 
+<t>Install the new SPT in the FIB.</t> 
 <t>If the network was stable before the failure occured, wait a
 configured (or advertised) period for all routers to be using their SPTs
 and traffic to drain from the MRTs.</t>
-<t>Recompute MRTs</t> 
-<t>Install new MRTs.</t> 
+<t>Recompute MRTs.</t> 
+<t>Install new MRTs in the FIB.</t> 
 </list>
 </t>
 
 <t>While the recomputed MRTs are not installed in the FIB, protection
 coverage is lowered.  Therefore, it is important to recalculate the
 MRTs and install them quickly.</t>
+
+<t> New protocol extensions for advertising the time needed to recompute 
+shortest path routes and install them in the FIB will be defined 
+elsewhere.</t> 
+
+
 
 </section>
 
