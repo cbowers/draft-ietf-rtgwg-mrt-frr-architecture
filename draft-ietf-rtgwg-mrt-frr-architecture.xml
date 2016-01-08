@@ -460,7 +460,7 @@ Adj-SIDs to achieve 100% coverage. </t>
        combination of the ADAGs of all blocks.</t>
 
        <t hangText="MRT-Red: "> MRT-Red is used to describe one of the
-       two MRTs; it is used to described the associated forwarding
+       two MRTs; it is used to describe the associated forwarding
        topology and MPLS multi-topology identifier (MT-ID).  
 	   Specifically, MRT-Red is the decreasing
        MRT where links in the GADAG are taken in the direction from a
@@ -893,7 +893,7 @@ IPv4 traffic.</t>
 
 
 
-  <t>The choice of tunnel egress MAY be
+  <t>The choice of tunnel egress is
   flexible since any router closer to the destination than the
   next-hop can work.  This architecture assumes that the original
   destination in the area is selected (see <xref
@@ -1243,7 +1243,7 @@ given in the Default MRT profile below.
 
 <t hangText="MRT-Red Loopback Address: ">This provides the router's
 loopback address to reach the router via the MRT-Red forwarding
-topology.  It can be specified for either IPv4 and IPv6. Note that
+topology.  It can be specified for either IPv4 or IPv6. Note that
 this parameter is not needed to support the Default MRT profile.</t>
 
 <t hangText="MRT-Blue Loopback Address: ">This provides the router's
@@ -1332,10 +1332,6 @@ for this allocation will be in another document.
 </section>
 
 <section anchor= "sec_abr_forwarding" title="Inter-area Forwarding Behavior">
-
-<t>Unless otherwise specified, in this section we will use the terms
-area and ABR to indicate either an OSPF area and OSPF ABR or ISIS
-level and ISIS LBR.</t>
 
 <t>An ABR/LBR has two forwarding roles.  First, it forwards traffic
 within areas.  Second, it forwards traffic from one area into another.
@@ -1437,7 +1433,7 @@ destination outside its local area/level will pick the MRT and use the
 associated MRT loopback address of the selected ABR/LBR advertising
 the lowest cost to the external destination.</t>
 
-<t>Thus, for these two MRT Forwarding Mechanisms( MRT LDP Label 
+<t>Thus, for these two MRT Forwarding Mechanisms (MRT LDP Label 
 option 1A and IP tunneling option 2), there is 
 no need for additional computation or per-area forwarding state.</t>
 
@@ -1529,7 +1525,7 @@ attached to an MRT Island.  The first type are multi-homed prefixes
 that usually connect at a domain or protocol boundary.  The second
 type represent routers that do not support the profile for the MRT
 Island.  The key difference is whether the traffic, once out of the
-MRT Island, remains in the same area/level and might re-enter the MRT
+MRT Island, might re-enter the MRT
 Island if a loop-free exit point is not selected.</t>
 
 <t>FRR using LFA has the useful property that it is able to protect
@@ -1550,7 +1546,11 @@ could be:
 <t>An AS-External route announced by 2 or more ASBRs,</t>
 <t>A prefix with iBGP multipath to different ASBRs,</t>
 <t>etc.</t>
-</list></t>
+</list>
+See <xref target="sec_area_abstraction"/> for a discussion of a general issue
+with multi-homed prefixes connected in two different areas.
+</t>
+
 
 <t>There are also two different approaches to protection.  The first
 is tunnel endpoint selection where the PLR picks a router to tunnel to
@@ -2273,7 +2273,7 @@ another router.</t>
       </reference>
     </references>
 
-<section title="General Issues with Area Abstraction">
+<section anchor="sec_area_abstraction" title="General Issues with Area Abstraction">
 
 <t>When a multi-homed prefix is connected in two different areas, it
 may be impractical to protect them without adding the complexity of
