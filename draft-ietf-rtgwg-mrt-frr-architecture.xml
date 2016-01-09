@@ -1952,7 +1952,7 @@ for MRT-FRR. </t>
   
 </section>
 
-<section anchor="sec_OAM" title="Operations and Management Considerations">
+<section anchor="sec_OAM" title="Operational Considerations">
 
 <t> The following aspects of MRT-FRR are useful to consider 
 when deploying the technology in different operational environments 
@@ -1972,30 +1972,7 @@ target="RFC4379"/> and extended in <xref target="RFC7307"/> for
 topology-scoped FECs. </t>
 </section> 
 
-<section anchor="sec_gadag_root_sel" title="GADAG Root Selection">
-<t> The Default MRT Profile uses the GADAG Root Selection Priority 
-advertised by routers as the primary criterion for selecting the 
-GADAG root.  It is RECOMMENDED that an operator designate a set of routers as 
-good choices for selection as GADAG root by setting the GADAG Root 
-Selection Priority for that set of routers to lower (more preferred) 
-numerical values. Criteria for making this designation are 
-discussed below.</t> 
 
-<t>Analysis has shown that the centrality of a router can have a
-significant impact on the lengths of the alternate paths computed.
-Therefore, it is RECOMMENDED that off-line analysis that considers the
-centrality of a router be used to help determine how good a choice a
-particular router is for the role of GADAG root. </t>
-
-<t> If the router currently selected as GADAG root becomes unreachable 
-in the IGP topology, then a new GADAG root will be selected. Changing 
-the GADAG root can change the overall structure of the GADAG as well 
-the paths of the red and blue MRT trees built using that GADAG. In order 
-to minimize change in the associated red and blue MRT forwarding entries 
-that can result from changing the GADAG root, it is RECOMMENDED that 
-operators prioritize for selection as GADAG root those routers that are 
-expected to consistently remain part of the IGP topology. </t> 
-</section>
 
 <section anchor="sec_traffic_on_backup_paths" title="Traffic Capacity on Backup Paths">
 <t> During a fast-reroute event initiated by a PLR in response to a 
