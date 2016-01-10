@@ -174,10 +174,9 @@ corresponding forwarding state. This is in contrast to other FRR methods
 where the calculation of backup paths generally involves repeated 
 application of the simpler and widely-deployed SPF algorithm, and backup 
 paths themselves re-use the forwarding state used for shortest path 
-forwarding of normal traffic. It is RECOMMENDED that operators 
-proactively monitor the MRT forwarding paths to ensure that they are 
-available to act as alternate paths when needed (see <xref 
-target="sec_OAM"/>).</t> 
+forwarding of normal traffic. <xref 
+target="sec_OAM"/>  provides operational guidance related to verification 
+of MRT forwarding paths.</t> 
 
 <t>In addition to supporting IP and LDP unicast fast-reroute, the diverse 
 forwarding topologies and guarantee of 100% coverage permit fast-reroute 
@@ -189,15 +188,16 @@ does not address the multicast applications of MRTs. </t>
 providing FRR for IP and LDP traffic, illustrating some of the 
 trade-offs between the different approaches. For several methods, the 
 methods are separated into link-protecting (LP) and node-protecting (NP) 
-variants since the metrics for LP and NP differ. The first column 
+variants. The first column 
 indicates whether the method provides 100% protection coverage (when 
 topologically feasible). The second column indicates whether or not 
 traffic traversing alternate path can loop when multiple 
 failures occur.</t> 
 
-<t> The third column gives an estimate of the computation required at 
+<t> The third column gives an estimate of the amount of computation required at 
 each node to support the FRR method, in addition to the usual SPF 
-computation. This metric is important for implementations that seek to 
+computation rooted at the computing node itself. This metric of comparison 
+is important for implementations that seek to 
 quickly recompute repair paths following their initial use after a 
 topology change, without reliance on an external system, in order to 
 minimize the risk of a new failure occurring before the new repair paths 
@@ -205,7 +205,7 @@ are in place.</t>
 
 <t> The fourth column indicates the maximum number of additional labels 
 that need to be applied to packets to support the FRR method, while the 
-fifth column gives indicates the size of the MPLS label table needed to 
+fifth column gives the size of the MPLS label table needed to 
 support the FRR method. These two metrics may be useful for evaluating 
 requirements placed on hardware to support the different FRR 
 methods.</t> 
@@ -222,10 +222,10 @@ shortest path forwarding with LDP.</t>
 |         |cov. | loop?| at each     | labels|(relative to | reqs.    |
 |         |     |      | node        |       | SPF labels) |          |
 +---------+-----+------+-------------+-------+-------------+----------+
-| MRT-FRR | Yes | No   | equivalent  | 0(LDP)|     3x      | IGP and  |
-| LP and  |     |      | of less     | 1(IP) |             | LDP      |
-| NP      |     |      | than        |       |             | exts.    |
-|         |     |      | 3 SPFs      |       |             | for MRT  |
+| MRT-FRR | Yes | No   | equivalent  | 0(LDP)|     3x      | MRT-     |
+| LP and  |     |      | of less     | 1(IP) |             | specific |
+| NP      |     |      | than        |       |             | protocol |
+|         |     |      | 3 SPFs      |       |             | extens.  |
 +---------+-----+------+-------------+-------+-------------+----------+
 | LFA LP  | No  | Yes  |  SPF per    |   0   |     1x      | None     |
 | and NP  |     |      |  neighbor   |       |             |          |
@@ -272,7 +272,7 @@ MRT requires one additional label, while for LDP traffic, no additional
 labels are needed. However, the size of the MPLS label table is three 
 times what would normally be required for shortest path LDP forwarding, 
 due to the presence of additional red and blue labels for each FEC. MRT 
-requires IGP extensions in order to allow a node to advertise support 
+requires protocol extensions in order to allow a node to advertise support 
 for MRT as well as a value for the GADAG Root Selection Priority. It 
 also requires support for multi-topology LDP extensions. </t> 
 
@@ -388,7 +388,9 @@ Adj-SIDs to achieve 100% coverage. </t>
        computed.  Alternates to destinations outside the MRT Island
        are computed and depend upon the existence of a loop-free
        neighbor of the MRT Island for that destination.  MRT Islands are
-	   discussed in detail in <xref target="sec_island"/>.
+	   discussed in detail in <xref target="sec_island"/>, and partial
+	   deployment is discussed in more detail in 
+	   <xref target="sec_partial_deployment"/>.
        </t>
 
      </section>
@@ -508,8 +510,7 @@ Adj-SIDs to achieve 100% coverage. </t>
      spanning trees that provides maximally disjoint paths towards
      their common root.  Only links or nodes whose failure would
      partition the network (i.e. cut-links and cut-vertices) are
-     shared between the trees.  The MRT Lowpoint algorithm to
-	 compute MRTs is given
+     shared between the trees.  The MRT Lowpoint algorithm is given
      in <xref target="I-D.ietf-rtgwg-mrt-frr-algorithm"/>.  This
      algorithm can be computed in O(e + n log n); it is less than
      three SPFs.  This document
@@ -2087,7 +2088,7 @@ PLR.</t>
 
 </section>
 
-<section title="Partial Deployment of MRT-FRR in a Network">
+<section anchor="sec_partial_deployment" title="Partial Deployment of MRT-FRR in a Network">
 <t> A network operator may choose to deploy MRT-FRR only on a subset of 
 routers in an IGP area. MRT-FRR is designed to accommodate this partial 
 deployment scenario. Only routers that advertise support for a given MRT 
