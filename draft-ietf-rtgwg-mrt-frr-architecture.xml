@@ -2221,23 +2221,8 @@ another router.</t>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.7307.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.4379.xml"?>
     &I-D.atlas-rtgwg-mrt-mc-arch;
-	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-lfa-manageability-11.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-francois-rtgwg-segment-routing-ti-lfa-00.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-rlfa-node-protection-05.xml"?>
-
-      <reference anchor="LightweightNotVia"
-                 target="http://mycite.omikk.bme.hu/doc/71691.pdf">
-       <front>
-          <title>IP Fast ReRoute: Lightweight Not-Via without Additional Addresses</title>
-    <author fullname="G&aacute;bor S&aacute;ndor Enyedi" initials="G.S.E." surname="Enyedi"/>
-          <author fullname="Gabor Retvari" initials="G.R." surname="Retvari"/>
-          <author fullname="Peter Szilagyi" initials="P.S." surname="Szilagyi"/>
-    <author fullname="Andr&aacute;s Cs&aacute;sz&aacute;r" initials="A.C." surname="Cs&aacute;sz&aacute;r"/>
-          <date year="2009" />
-       </front>
-        <seriesInfo name="Proceedings of IEEE INFOCOM" value=""/>
-        <format type='PDF' target="http://mycite.omikk.bme.hu/doc/71691.pdf"/>
-      </reference>
 
     <reference anchor="EnyediThesis"
                target="http://timon.tmit.bme.hu/theses/thesis_book.pdf">
