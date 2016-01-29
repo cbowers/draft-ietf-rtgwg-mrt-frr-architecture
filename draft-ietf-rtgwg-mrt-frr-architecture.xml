@@ -207,29 +207,15 @@ does not address the multicast applications of MRTs. </t>
        topology-sensitive methods such as LFA and Remote LFA.  If
        fast-reroute is important for the network services provided,
        then a method that guarantees 100% coverage is important to
-       accomodate natural network topology changes.
+       accommodate natural network topology changes.
        </t>
 
-       <t>Asymmetric link costs are also a common aspect of networks.
-       There are at least three common causes for them.  First, any
-       broadcast interface is represented by a pseudo-node and has
-       asymmetric link costs to and from that pseudo-node.  Second,
-       when routers come up or a link with LDP comes up, it is
-       recommended in <xref target="RFC5443"/> and <xref
-       target="RFC6987"/> that the link metric be raised to the
-       maximum cost; this may not be symmetric and for <xref
-       target="RFC6987"/> is not expected to be.  Third, techniques
-       such as IGP metric tuning for traffic-engineering can result in
-       asymmetric link costs.  A fast-reroute solution needs to handle
-       network topologies with asymmetric link costs.
-       </t>
-
-       <t>When a network needs to use a micro-loop prevention
-       mechanism <xref target="RFC5715"/> such as Ordered FIB<xref
+       <t>When a network needs to use Ordered FIB<xref
        target="RFC6976"/> or Nearside Tunneling<xref
-       target="RFC5715"/>, then the whole IGP area needs to have
-       alternates available so that the micro-loop prevention
-       mechanism, which requires slower network convergence, can take
+       target="RFC5715"/> as a micro-loop prevention
+       mechanism <xref target="RFC5715"/>, then the whole IGP area needs to have
+       alternates available.  This allows the micro-loop prevention
+       mechanism, which requires slower network convergence, to take
        the necessary time without adversely impacting traffic.
        Without complete coverage, traffic to the unprotected
        destinations will be dropped for significantly longer than with
