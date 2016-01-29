@@ -519,7 +519,7 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
   forwarding mechanisms can be applied to carrying LDP and IP
   traffic.</t>
 
-<section anchor="sec_mrt_forwarding_mechanisms" title="MRT Forwarding Mechanisms">
+<section anchor="sec_mrt_forwarding_mechanisms" title="Introduction to MRT Forwarding Options">
 
   <t> The following options for MRT forwarding mechanisms are
   considered.</t>
@@ -731,13 +731,13 @@ along the shortest path tree from the primary next-next-hop, this would
 require tunneling to the primary next-next-hop and a targeted LDP 
 session for the PLR to learn the FEC-label binding for primary 
 next-next-hop to correctly forward the packet.</t> 
+  </section>
 
-
-
+<section title="Required support for LDP traffic ">
     <t>For greatest hardware compatibility, routers implementing MRT
     fast-reroute of LDP traffic MUST support Option 1A of encoding the
     MT-ID in the labels (See <xref target="sec_proto_ldp"/>). </t>
-  </section>
+</section>
   
 </section>
 
@@ -826,7 +826,7 @@ IPv4 traffic.</t>
     of the tunnel endpoint.</t>
   </section>
 
-  <section title="Required support"> 
+  <section title="Required support for IP traffic"> 
 
     <t>For greatest hardware compatibility and ease in removing the
     MRT-topology marking at area/level boundaries, routers that
