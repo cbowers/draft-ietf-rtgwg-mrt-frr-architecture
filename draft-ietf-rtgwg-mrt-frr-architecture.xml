@@ -301,8 +301,9 @@ does not address the multicast applications of MRTs. </t>
        links are directed and there are no cycles in it.</t>
 
        <t hangText="ADAG: ">Almost Directed Acyclic Graph - a graph
-       that, if all links incoming to the root were removed, would be
-       a DAG.</t>
+	   with one node designated as the root.  The graph has the property
+       that if all links incoming to the root were removed, then resulting 
+	   graph would be a DAG.</t>
 
        <t hangText="GADAG: ">Generalized ADAG - a graph that is the
        combination of the ADAGs of all blocks.</t>
@@ -566,7 +567,9 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
     <t>This approach is very simple for hardware to support. However,
     it reduces the label space for other uses, and it increases the
     memory needed to store the labels and the communication required
-    by LDP to distribute FEC-label bindings.</t>
+    by LDP to distribute FEC-label bindings. In general, this approach will
+	also increase the time needed to install the FRR entries in the FIB 
+	and hence the time needed before the next failure can be protected. </t>
 
     <t> This forwarding option uses the LDP signaling extensions
     described in <xref target="RFC7307"/>.
@@ -855,8 +858,14 @@ new protocol extensions will be defined elsewhere.
   this specification.  As with LFA, it is expected that OSPF Virtual
   Links will not be supported.</t>
 
+
+<t> At a high level, an MRT Island is defined as the set of routers 
+supporting the same MRT profile, in the same IGP area/level and the 
+bi-directional links interconnecting those routers. More detailed 
+descriptions of these critera are given below. </t> 
+
   <section title="IGP Area or Level">
-    <t> All links in an MRT Island MUST be bidirectional and belong to
+    <t> All links in an MRT Island are bidirectional and belong to
     the same IGP area or level.  For ISIS, a link belonging to both
     level 1 and level 2 would qualify to be in multiple MRT Islands.
     A given ABR or LBR can belong to multiple MRT Islands,
@@ -866,7 +875,7 @@ new protocol extensions will be defined elsewhere.
   </section>
 
   <section title="Support for a specific MRT profile">
- <t> All routers in an MRT Island MUST support the same MRT profile. A 
+ <t> All routers in an MRT Island support the same MRT profile. A 
 router advertises support for a given MRT profile using an 8-bit MRT 
 Profile ID value. The registry for the MRT Profile ID is defined in this 
 document. The protocol extensions for advertising the MRT Profile ID 
@@ -2057,13 +2066,13 @@ another router.</t>
 
     <references title="Normative References">
     &RFC2119;
-    &RFC5286;
+	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.7307.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-mrt-frr-algorithm-06.xml"?>
     </references>
 
     <references title="Informative References">
 	&RFC5714;
-
+    &RFC5286;
     &RFC2328;
     &RFC5443;
     &RFC5715;
@@ -2074,7 +2083,7 @@ another router.</t>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.6976.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.6981.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.6987.xml"?>
-	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.7307.xml"?>
+
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.4379.xml"?>
     &I-D.atlas-rtgwg-mrt-mc-arch;
 
