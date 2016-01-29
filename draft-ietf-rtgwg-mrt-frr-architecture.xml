@@ -139,7 +139,8 @@ topology that is still connected after the failure.</t>
    <section title="Introduction">
      
 <t>This document describes a solution for IP/LDP fast-reroute <xref 
-target="RFC5714"/>. MRT-FRR creates two alternate trees separate from 
+target="RFC5714"/>. MRT-FRR creates two alternate forwarding trees which
+ are distinct from 
 the primary next-hop forwarding used during stable operation. These two 
 trees are maximally diverse from each other, providing link and node 
 protection for 100% of paths and failures as long as the failure does 
@@ -2080,7 +2081,6 @@ another router.</t>
     &RFC2328;
     &RFC5443;
     &RFC5715;
-    &RFC6571;
 	&RFC6982;
 	&RFC7490;
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5331.xml"?>
@@ -2091,8 +2091,6 @@ another router.</t>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.7307.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.4379.xml"?>
     &I-D.atlas-rtgwg-mrt-mc-arch;
-	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-francois-rtgwg-segment-routing-ti-lfa-00.xml"?>
-	<?rfc include="http://xml.resource.org/public/rfc/bibxml3/reference.I-D.draft-ietf-rtgwg-rlfa-node-protection-05.xml"?>
 
     <reference anchor="EnyediThesis"
                target="http://timon.tmit.bme.hu/theses/thesis_book.pdf">
