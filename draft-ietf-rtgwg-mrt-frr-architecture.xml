@@ -1134,11 +1134,13 @@ for this allocation will be in another document.</t>
 the MPLS Multi-Topology Identifiers Registry. The IANA request
 for this allocation will be in another document.</t>
 
-<t hangText="GADAG Root Selection Policy: ">Among the routers in the
-MRT Island and with the most preferred GADAG Root Selection Priority advertised (corresponding
-to the lowest numerical value of GADAG Root Selection Priority), an implementation
-MUST pick the router with the highest Router ID to be the GADAG
-root.</t>
+<t hangText="GADAG Root Selection Policy: "> Among the routers in the MRT 
+Island with the lowest numerical value advertised for GADAG Root 
+Selection Priority, an implementation MUST pick the router with the 
+highest Router ID to be the GADAG root. Note that a lower numerical 
+value for GADAG Root Selection Priority indicates a higher preference 
+for selection. 
+</t>
 
 <t hangText="Forwarding Mechanisms: ">MRT LDP Labels</t>
 
