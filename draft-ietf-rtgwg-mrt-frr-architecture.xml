@@ -1226,10 +1226,11 @@ area/level.  It is highly desirable to go back to the default
 forwarding topology when leaving an area/level.  There are three basic
 reasons for this.  First, the default topology uses shortest paths;
 the packet will thus take the shortest possible route to the
-destination.  Second, this allows failures that might appear in
-multiple areas (e.g. ABR/LBR failures) to be separately identified and
+destination.  Second, this allows a single router failure that manifests
+itself in multiple areas (as would be the case with an ABR/LBR failure)
+to be separately identified and
 repaired around.  Third, the packet can be fast-rerouted again, if
-necessary, due to a failure in a different area.</t>
+necessary, due to a second distinct failure in a different area.</t>
 
 <t>An ABR/LBR that receives a packet on MRT-Red or MRT-Blue towards
 destination Z should continue to forward the packet along MRT-Red or
@@ -1291,7 +1292,7 @@ for MRT-Blue and MRT-Red) to non-best-area neighbors of the ABR.</t>
 <t>The use of the Rainbow-FEC by the ABR for non-best-area
 advertisements is RECOMMENDED.  An ABR MAY advertise the label for the
 default topology in separate MRT-Blue and MRT-Red advertisements.
-However, a router that supports the LDP Label MRT Forwarding Mechanism
+However, a router that supports the MRT LDP Label Forwarding Mechanism
 MUST be able to receive and correctly interpret the Rainbow-FEC.
 </t>
 
@@ -1318,7 +1319,7 @@ no need for additional computation or per-area forwarding state.</t>
 
 </section>
 
-<section title="ABR Forwarding Behavior with LDP Label option 1B">
+<section title="ABR Forwarding Behavior with MRT LDP Label option 1B">
 <t>The other MRT forwarding mechanism described in <xref
 target="sec_uni_forwarding"/> uses two labels, a topology-id label,
 and a FEC-label.  This mechanism would require that any router whose
