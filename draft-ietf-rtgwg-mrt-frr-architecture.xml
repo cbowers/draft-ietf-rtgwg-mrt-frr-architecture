@@ -862,7 +862,7 @@ new protocol extensions will be defined elsewhere.
 <t> At a high level, an MRT Island is defined as the set of routers 
 supporting the same MRT profile, in the same IGP area/level and the 
 bi-directional links interconnecting those routers. More detailed 
-descriptions of these critera are given below. </t> 
+descriptions of these criteria are given below. </t> 
 
   <section title="IGP Area or Level">
     <t> All links in an MRT Island are bidirectional and belong to
@@ -884,8 +884,7 @@ profiles and participate in multiple MRT Islands. The options that make
 up an MRT profile, as well as the default MRT profile, are defined in 
 <xref target="sec_mrt_profile"/>. </t> 
 
-<t> Note that a router may advertise support for multiple different MRT 
-profiles. The process of MRT Island formation takes place independently 
+<t>The process of MRT Island formation takes place independently 
 for each MRT profile advertised by a given router. For example, consider 
 a network with 40 connected routers in the same area advertising support 
 for MRT Profile A and MRT Profile B. Two distinct MRT Islands will be 
