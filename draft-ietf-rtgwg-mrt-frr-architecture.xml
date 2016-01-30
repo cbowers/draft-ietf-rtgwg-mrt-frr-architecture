@@ -610,20 +610,43 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
     specified.</t>
   </section>
 
-  <section title="Compatibility of Option 1A and 1B">
-    <t> In principle, MRT transit forwarding mechanisms 1A and 1B can
-    coexist in the same network, with a packet being forwarding along
-    a single MRT path using the single label of option 1A for some
-    hops and the two label stack of option 1B for other hops.
-    </t>
+  <section title="Compatibility of MRT LDP Label Options 1A and 1B">
+  <t> MRT transit forwarding based on MRT LDP Label options 1A and 1B can 
+coexist in the same network, with a packet being forwarded along a 
+single MRT path using the single label of option 1A for some hops and 
+the two label stack of option 1B for other hops. However, to simplify 
+the process of MRT Island formation we require that all routers in the 
+MRT Island support at least one common forwarding mechanism. As an example, the 
+Default MRT Profile requires support for the MRT LDP Label Option 1A 
+forwarding mechanism. This ensures that the routers in an MRT island 
+supporting the Default MRT Profile will be able to establish MRT 
+forwarding paths based on MRT LDP Label Option 1A. However, an 
+implementation supporting Option 1A may also support Option 1B. If the 
+scaling or performance characteristics for the two options differ in 
+this implementation, then it may be desirable for a pair of adjacent 
+routers to use Option 1B labels instead of the Option 1A labels. 
+If those routers successfully negotiate the use of Option 1B labels, 
+they are free to use them. This can occur without any of the other 
+routers in the MRT Island being made aware of it. 
+</t>
+
+<t> Note that this document only defines the Default MRT Profile which
+requires support for the MRT LDP Label Option 1A forwarding mechanism.
+</t>
+
   </section>
 
-  <section title="Mandatory support for MRT LDP Label option 1A">
+  <section title="Required support for MRT LDP Label options">
     <t> If a router supports a profile that includes the MRT LDP Label
-    option for MRT transit forwarding mechanism, then it MUST support
-    option 1A, which encodes topology-scoped FECs using a single
-    label.
-    </t>
+Option 1A for the MRT transit forwarding mechanism, then it MUST support 
+option 1A, which encodes topology-scoped FECs using a single label. The 
+router MAY also support option 1B. </t>
+
+ <t> If a router supports a profile that includes the MRT LDP Label
+Option 1B for the MRT transit forwarding mechanism, then it MUST support 
+option 1B, which encodes the topology and FEC using a two label stack. 
+The router MAY also support option 1A. </t> 
+
   </section>
 
 </section>
@@ -676,7 +699,7 @@ packet based on the original destination address.</t>
   As described below, the two MRT forwarding mechanisms that 
   use LDP labels do not require targeted LDP sessions.</t>
   
-  <section title="Forwarding LDP traffic using MRT LDP Labels (Option 1A)">
+  <section title="Forwarding LDP traffic using MRT LDP Label Option 1A">
     <t> The MRT LDP Label option 1A forwarding mechanism uses
     topology-scoped FECs encoded using a single label as described in
     section <xref target="sec_option_1a"/>.  When a PLR receives an
@@ -691,7 +714,7 @@ packet based on the original destination address.</t>
     with the packet is maintained at each hop along the MRT. </t>
   </section>
 
-  <section title="Forwarding LDP traffic using MRT LDP Labels (Option 1B)">
+  <section title="Forwarding LDP traffic using MRT LDP Label Option 1B">
     <t>The MRT LDP Label option 1B forwarding mechanism encodes the
     topology and the FEC using a two label stack as described in <xref
     target="sec_option_1b"/>.  When a PLR receives an LDP packet that
@@ -773,7 +796,7 @@ IPv4 traffic.</t>
     than using IP.  Also, no additional IP addresses would need to be
     allocated or signaled.</t>
 
-    <section title="Tunneling IP traffic using MRT LDP Labels (Option 1A)">
+    <section title="Tunneling IP traffic using MRT LDP Label Option 1A">
       <t>The MRT LDP Label option 1A forwarding mechanism uses
       topology-scoped FECs encoded using a single label as described
       in section <xref target="sec_option_1a"/>.  When a PLR receives
@@ -784,7 +807,7 @@ IPv4 traffic.</t>
       </t> 
     </section>
 
-    <section title="Tunneling IP traffic using MRT LDP Labels (Option 1B)">
+    <section title="Tunneling IP traffic using MRT LDP Label Option 1B">
       <t>The MRT LDP Label option 1B forwarding mechanism encodes the
       topology and the FEC using a two label stack as described in
       <xref target="sec_option_1b"/>.  When a PLR receives an IP
@@ -821,7 +844,7 @@ IPv4 traffic.</t>
     <t>For greatest hardware compatibility and ease in removing the
     MRT-topology marking at area/level boundaries, routers that
     support MPLS and implement IP MRT fast-reroute MUST support
-    tunneling of IP traffic using MRT LDP Labels Option 1A
+    tunneling of IP traffic using MRT LDP Label Option 1A
     (topology-scoped FEC encoded using a single label). </t>
 
   </section>
@@ -1029,10 +1052,9 @@ router. </t>
   forwarding mechanism the router uses to carry transit traffic along
   MRT paths.  A router which supports a specific MRT forwarding
   mechanism must program appropriate next-hops into the forwarding
-  plane.  The current options are MRT LDP Labels, IPv4 Tunneling, IPv6
-  Tunneling, and None.  If the MRT LDP Labels option is supported,
-  then option 1A and the appropriate signaling extensions MUST be
-  supported.  If IPv4 is supported, then both MRT-Red and MRT-Blue
+  plane.  The current options are MRT LDP Label Option 1A, 
+  MRT LDP Label Option 1B, IPv4 Tunneling, IPv6
+  Tunneling, and None.  If IPv4 is supported, then both MRT-Red and MRT-Blue
   IPv4 Loopback Addresses SHOULD be specified.  If IPv6 is supported,
   both MRT-Red and MRT-Blue IPv6 Loopback Addresses SHOULD be
   specified.</t>
@@ -1142,7 +1164,7 @@ value for GADAG Root Selection Priority indicates a higher preference
 for selection. 
 </t>
 
-<t hangText="Forwarding Mechanisms: ">MRT LDP Labels</t>
+<t hangText="Forwarding Mechanisms: ">MRT LDP Label Option 1A</t>
 
 <t hangText="Recalculation: ">Recalculation of MRTs SHOULD occur as
 described in <xref target="sec_recalculation"/>.  This allows the MRT
