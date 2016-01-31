@@ -1232,47 +1232,55 @@ to be separately identified and
 repaired around.  Third, the packet can be fast-rerouted again, if
 necessary, due to a second distinct failure in a different area.</t>
 
-<t>An ABR/LBR that receives a packet on MRT-Red or MRT-Blue towards
-destination Z should continue to forward the packet along MRT-Red or
-MRT-Blue only if the best route to Z is in the same area as the
-interface that the packet was received on.  Otherwise, the packet
-should be removed from MRT-Red or MRT-Blue and forwarded on the
-shortest-path default forwarding topology.</t>
+<t>In OSPF, an ABR that receives a packet on MRT-Red or MRT-Blue towards 
+destination Z should continue to forward the packet along MRT-Red or 
+MRT-Blue only if the best route to Z is in the same OSPF area as the 
+interface that the packet was received on. Otherwise, the packet should 
+be removed from MRT-Red or MRT-Blue and forwarded on the shortest-path 
+default forwarding topology. To avoid per-interface forwarding state for 
+MRT-Red and MRT-Blue, the ABR needs to arrange that packets destined to 
+a different OSPF area arrive at the ABR already not marked as MRT-Red or 
+MRT-Blue.</t> 
 
-<t>To avoid per-interface forwarding state for MRT-Red and MRT-Blue,
-the ABR/LBR needs to arrange that packets destined to a different area
-arrive at the ABR/LBR already not marked as MRT-Red or MRT-Blue.</t>
+<t> The above description applies to OSPF. The same essential behavior 
+also applies to IS-IS if one substitutes IS-IS level for OSPF area. 
+However, the analogy with OSPF is not exact. An interface in OSPF can 
+only be in one area, whereas an interface in IS-IS can be in both 
+Level-1 and Level-2. Therefore, to avoid confusion and address this 
+difference, we explicitly describe the behavior for IS-IS in <xref 
+target="sec_inter_level_isis"/>. In the following sections only the OSPF 
+terminology is used. </t> 
 
 <section title="ABR Forwarding Behavior with MRT LDP Label Option 1A">
 
 <t>For LDP forwarding where a single label specifies (MT-ID, FEC), the
-ABR/LBR is responsible for advertising the proper label to each
-neighbor.  Assume that an ABR/LBR has allocated three labels for a
+ABR is responsible for advertising the proper label to each
+neighbor.  Assume that an ABR has allocated three labels for a
 particular destination; those labels are L_primary, L_blue, and L_red.
 To those routers in the same area as the best route to the
-destination, the ABR/LBR advertises the following FEC-label bindings:
+destination, the ABR advertises the following FEC-label bindings:
 L_primary for the default topology, L_blue for the MRT-Blue MT-ID and
 L_red for the MRT-Red MT-ID, as expected.  However, to routers in
-other areas, the ABR/LBR advertises the following FEC-label bindings:
+other areas, the ABR advertises the following FEC-label bindings:
 L_primary for the default topology, and L_primary for the Rainbow MRT
 MT-ID.  Associating L_primary with the Rainbow MRT MT-ID causes the
 receiving routers to use L_primary for the MRT-Blue MT-ID and for the
 MRT-Red MT-ID.</t>
 
-<t>The ABR/LBR installs all next-hops for the best area: primary
+<t>The ABR installs all next-hops for the best area: primary
 next-hops for L_primary, MRT-Blue next-hops for L_blue, and MRT-Red
-next-hops for L_red.  Because the ABR/LBR advertised (Rainbow MRT
+next-hops for L_red.  Because the ABR advertised (Rainbow MRT
 MT-ID, FEC) with L_primary to neighbors not in the best area, packets
-from those neighbors will arrive at the ABR/LBR with a label L_primary
+from those neighbors will arrive at the ABR with a label L_primary
 and will be forwarded into the best area along the default topology.
-By controlling what labels are advertised, the ABR/LBR can thus
+By controlling what labels are advertised, the ABR can thus
 enforce that packets exiting the area do so on the shortest-path
 default topology.</t>
 
 <section title="Motivation for Creating the Rainbow-FEC">
 <t> The desired forwarding behavior could be achieved in the above
 example without using the Rainbow-FEC. This could be done by having
-the ABR/LBR advertise the following FEC-label bindings to neighbors
+the ABR advertise the following FEC-label bindings to neighbors
 not in the best area: L1_primary for the default topology, L1_primary
 for the MRT-Blue MT-ID, and L1_primary for the MRT-Red MT-ID.  Doing
 this would require machinery to spoof the labels used in FEC-label
@@ -1302,15 +1310,15 @@ MUST be able to receive and correctly interpret the Rainbow-FEC.
 
 <section title="ABR Forwarding Behavior with IP Tunneling (option 2)">
 
-<t>If IP tunneling is used, then the ABR/LBR behavior is dependent
+<t>If IP tunneling is used, then the ABR behavior is dependent
 upon the outermost IP address.  If the outermost IP address is an MRT
-loopback address of the ABR/LBR, then the packet is decapsulated and
+loopback address of the ABR, then the packet is decapsulated and
 forwarded based upon the inner IP address, which should go on the
 default SPT topology.  If the outermost IP address is not an MRT
-loopback address of the ABR/LBR, then the packet is simply forwarded
+loopback address of the ABR, then the packet is simply forwarded
 along the associated forwarding topology.  A PLR sending traffic to a
 destination outside its local area/level will pick the MRT and use the
-associated MRT loopback address of the selected ABR/LBR advertising
+associated MRT loopback address of the selected ABR advertising
 the lowest cost to the external destination.</t>
 
 <t>Thus, for these two MRT Forwarding Mechanisms (MRT LDP Label 
@@ -1323,10 +1331,10 @@ no need for additional computation or per-area forwarding state.</t>
 <t>The other MRT forwarding mechanism described in <xref
 target="sec_uni_forwarding"/> uses two labels, a topology-id label,
 and a FEC-label.  This mechanism would require that any router whose
-MRT-Red or MRT-Blue next-hop is an ABR/LBR would need to determine
-whether the ABR/LBR would forward the packet out of the area/level.
+MRT-Red or MRT-Blue next-hop is an ABR would need to determine
+whether the ABR would forward the packet out of the area/level.
 If so, then that router should pop off the topology-identification
-label before forwarding the packet to the ABR/LBR.</t>
+label before forwarding the packet to the ABR.</t>
 
 <t> For example, in <xref target="fig_abr_mrt"/>, if node H fails,
 node E has to put traffic towards prefix p onto MRT-Red.  But since
@@ -2123,6 +2131,49 @@ another router.</t>
       </reference>
     </references>
 
+<section anchor="sec_inter_level_isis" title="Inter-level Forwarding Behavior for IS-IS">
+<t> In the description below, we use the terms "Level-1-only 
+interface", "Level-2-only interface", and "Level-1-and-Level-2 
+interface" to mean in interface which has formed only a Level-1 
+adjacency, only a Level-2 adjacency, or both Level-1 and Level-2 
+adjacencies. Note that IS-IS also defines the concept of areas. A router 
+is configured with an IS-IS area identifier, and a given router may be 
+configured with multiple IS-IS area identifiers. For an IS-IS Level-1 
+adjacency to form between two routers, at least one IS-IS area 
+identifier must match. IS-IS Level-2 adjacencies to not require any area 
+identifiers to match. The behavior described below does not explicitly 
+refer to IS-IS area identifiers. However, IS-IS area identifiers will indirectly 
+affect the behavior by affecting the formation of Level-1 adjacencies. 
+</t>
+
+<t>First consider a packet destined to Z on MRT-Red or MRT-Blue received 
+on a Level-1-only interface. If the best shortest path route to Z points 
+out either a Level-1-only interface or a Level-1-and-Level-2 interface, 
+then the packet should continue to be forwarded along MRT-Red or 
+MRT-Blue. If instead the best route points out a Level-2-only interface, 
+then the packet should be removed from MRT-Red or MRT-Blue and forwarded 
+on the shortest-path default forwarding topology. </t> 
+
+<t>Now consider a packet destined to Z on MRT-Red or MRT-Blue received 
+on a Level-2-only interface. If the best route to Z points 
+out either a Level-2-only interface or a Level-1-and-Level-2 interface, 
+then the packet should continue to be forwarded along MRT-Red or 
+MRT-Blue. If instead the best route points out a Level-1-only interface, 
+then the packet should be removed from MRT-Red or MRT-Blue and forwarded 
+on the shortest-path default forwarding topology. </t> 
+
+<t>Finally, consider a packet destined to Z on MRT-Red or MRT-Blue received 
+on a Level-1-and-Level-2 interface. This packet should continue to be 
+forwarded along MRT-Red or MRT-Blue, regardless of the outgoing interface of the 
+best route to Z. </t>
+ 
+<t> Note that the above rules have the following effect. A packet on 
+MRT-Red or MRT-Blue going from Level-1 to Level-2 (or vice versa) that 
+traverses a Level-1-and-Level-2 interface in the process will remain on 
+MRT-Red or MRT-Blue.</t>
+
+</section> 
+	
 <section anchor="sec_area_abstraction" title="General Issues with Area Abstraction">
 
 <t>When a multi-homed prefix is connected in two different areas, it
