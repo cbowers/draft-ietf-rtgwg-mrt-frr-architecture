@@ -2023,8 +2023,34 @@ outside of the MRT Island may not be diverse.</t>
 "MRT Profile Identifier Registry".  The range is 0 to 255.  
 The Default MRT Profile defined in this document has value 0.  
 Values 1-200 are allocated by Standards Action.  
-Values 201-220 are for experimentation.
-Values 221-255 are for vendor private use.</t>
+Values 201-220 are for Experimental Use.
+Values 221-254 are for Private use.
+Value 255 is reserved for future registry extension.
+</t>
+
+<t> The initial registry is shown below.
+<figure>
+<artwork align="left"><![CDATA[
+   Value    Description                               Reference
+   -------  ----------------------------------------  ------------
+   0        Default MRT Profile                       [This draft]
+   1-200    Unassigned
+   201-220  Experimental Use
+   221-254  Private Use
+   255      Reserved (for future registry extension)
+
+]]></artwork>
+</figure> 
+</t>
+
+<t> The MRT Profile Identifier Registry is a new registry in the IANA Matrix.
+Following existing conventions, 
+http://www.iana.org/protocols should display a new header entitled 
+"Maximally Redundant Tree (MRT) Parameters".  Under that header, there should
+be an entry for "MRT Profile Identifier Registry" with a link to the registry 
+itself at http://www.iana.org/assignments/
+mrt-parameters/mrt-parameters.xhtml#mrt-profile-registry.
+</t>
 
 </section>
 
