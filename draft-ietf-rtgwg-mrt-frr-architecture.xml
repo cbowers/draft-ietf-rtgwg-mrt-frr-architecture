@@ -2171,30 +2171,43 @@ affect the behavior by affecting the formation of Level-1 adjacencies.
 </t>
 
 <t>First consider a packet destined to Z on MRT-Red or MRT-Blue received 
-on a Level-1-only interface. If the best shortest path route to Z points 
-out either a Level-1-only interface or a Level-1-and-Level-2 interface, 
-then the packet should continue to be forwarded along MRT-Red or 
-MRT-Blue. If instead the best route points out a Level-2-only interface, 
-then the packet should be removed from MRT-Red or MRT-Blue and forwarded 
-on the shortest-path default forwarding topology. </t> 
+on a Level-1-only interface. If the best shortest path route to Z was 
+learned from Level-1 advertisements, then the packet should continue to 
+be forwarded along MRT-Red or MRT-Blue. If instead the best route was 
+learned from Level-2 advertisements, then the packet should be removed 
+from MRT-Red or MRT-Blue and forwarded on the shortest-path default 
+forwarding topology. </t> 
 
 <t>Now consider a packet destined to Z on MRT-Red or MRT-Blue received 
-on a Level-2-only interface. If the best route to Z points 
-out either a Level-2-only interface or a Level-1-and-Level-2 interface, 
-then the packet should continue to be forwarded along MRT-Red or 
-MRT-Blue. If instead the best route points out a Level-1-only interface, 
-then the packet should be removed from MRT-Red or MRT-Blue and forwarded 
-on the shortest-path default forwarding topology. </t> 
+on a Level-2-only interface. If the best route to Z was learned from 
+Level-2 advertisements, then the packet should continue to be forwarded 
+along MRT-Red or MRT-Blue. If instead the best route was learned from 
+Level-1 advertisements, then the packet should be removed from MRT-Red 
+or MRT-Blue and forwarded on the shortest-path default forwarding 
+topology. </t> 
 
-<t>Finally, consider a packet destined to Z on MRT-Red or MRT-Blue received 
-on a Level-1-and-Level-2 interface. This packet should continue to be 
-forwarded along MRT-Red or MRT-Blue, regardless of the outgoing interface of the 
-best route to Z. </t>
- 
-<t> Note that the above rules have the following effect. A packet on 
-MRT-Red or MRT-Blue going from Level-1 to Level-2 (or vice versa) that 
-traverses a Level-1-and-Level-2 interface in the process will remain on 
-MRT-Red or MRT-Blue.</t>
+<t>Finally, consider a packet destined to Z on MRT-Red or MRT-Blue 
+received on a Level-1-and-Level-2 interface. This packet should continue 
+to be forwarded along MRT-Red or MRT-Blue, regardless of the outgoing 
+interface of the best route to Z. </t> 
+
+<t> In implementation may simplify the decision-making process above by 
+using the interface of the next-hop for the route to Z to determine the 
+level that the best route to Z was learned from. If the next-hop points 
+out a Level-1-only interface, then the route was learned from a Level-1 
+advertisement. If the next-hop points out a Level-2-only interface, then 
+the route was learned from a Level-2 advertisement. A next-hop that 
+points out a Level-1-and-Level-2 interface does not provide enough 
+information to determine the source of the best route. With this 
+simplification, an implementation would need to continue forwarding 
+along MRT-Red or MRT-Blue when the next-hop points out a 
+Level-1-and-Level-2 interface. Therefore, a packet on MRT-Red or 
+MRT-Blue going from Level-1 to Level-2 (or vice versa) that traverses a 
+Level-1-and-Level-2 interface in the process will remain on MRT-Red or 
+MRT-Blue. This simplification may not always produce the optimal 
+forwarding behavior, but it does not introduce interoperability 
+problems. The packet will stay on an MRT backup path longer than 
+necessary, but it will still reach its destination. </t> 
 
 </section> 
 	
