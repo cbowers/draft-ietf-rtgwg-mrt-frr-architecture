@@ -1297,10 +1297,9 @@ Rainbow FEC, we can use per-neighbor FEC-filtering machinery to
 advertise the FEC-label binding for the Rainbow-FEC (and filter those
 for MRT-Blue and MRT-Red) to non-best-area neighbors of the ABR.</t>
 
-<t>The use of the Rainbow-FEC by the ABR for non-best-area
-advertisements is RECOMMENDED.  An ABR MAY advertise the label for the
-default topology in separate MRT-Blue and MRT-Red advertisements.
-However, a router that supports the MRT LDP Label Forwarding Mechanism
+<t> An ABR may choose to either advertise the Rainbow-FEC or 
+advertise separate MRT-Blue and MRT-Red advertisements. This is a local choice.
+A router that supports the MRT LDP Label Option 1A Forwarding Mechanism
 MUST be able to receive and correctly interpret the Rainbow-FEC.
 </t>
 
