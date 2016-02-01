@@ -877,7 +877,7 @@ new protocol extensions will be defined elsewhere.
 </t> 
 
   <t> Deployment scenarios using multi-topology OSPF or IS-IS, or
-  running both ISIS and OSPF on the same routers is out of scope for
+  running both IS-IS and OSPF on the same routers is out of scope for
   this specification.  As with LFA, it is expected that OSPF Virtual
   Links will not be supported.</t>
 
@@ -889,7 +889,7 @@ descriptions of these criteria are given below. </t>
 
   <section title="IGP Area or Level">
     <t> All links in an MRT Island are bidirectional and belong to
-    the same IGP area or level.  For ISIS, a link belonging to both
+    the same IGP area or level.  For IS-IS, a link belonging to both
     level 1 and level 2 would qualify to be in multiple MRT Islands.
     A given ABR or LBR can belong to multiple MRT Islands,
     corresponding to the areas or levels in which it participates.
@@ -933,7 +933,7 @@ entries corresponding to Profiles A, B, and C.</t>
 
     <section title="Existing IGP exclusion mechanisms">
       <t> Mechanisms for discouraging traffic from using particular
-      links already exist in ISIS and OSPF.  In ISIS, an interface
+      links already exist in IS-IS and OSPF.  In IS-IS, an interface
       configured with a metric of 2^24-2 (0xFFFFFE) will only be used
       as a last resort.  (An interface configured with a metric of
       2^24-1 (0xFFFFFF) will not be advertised into the topology.)  In
@@ -944,9 +944,9 @@ entries corresponding to Profiles A, B, and C.</t>
       synchronization <xref target="RFC5443"/>.
       </t>
 
-      <t> Mechanisms also already exist in ISIS and OSPF to discourage 
+      <t> Mechanisms also already exist in IS-IS and OSPF to discourage 
 	  or prevent transit
-      traffic from using a particular router.  In ISIS, the overload
+      traffic from using a particular router.  In IS-IS, the overload
       bit is prevents transit traffic from using a router.  
 	  </t>
 	  
@@ -967,9 +967,9 @@ entries corresponding to Profiles A, B, and C.</t>
       <list style="numbers">
 	<t> A bidirectional link MUST be excluded from an MRT Island
 	if either the forward or reverse cost on the link is 0xFFFFFE
-	(for ISIS) or 0xFFFF for OSPF.</t>
+	(for IS-IS) or 0xFFFF for OSPF.</t>
 	<t> A router MUST be excluded from an MRT Island if it is
-	advertised with the overload bit set (for ISIS), or it is
+	advertised with the overload bit set (for IS-IS), or it is
 	advertised with metric values of 0xFFFF on all of its outgoing
 	interfaces (for OSPFv2 and OSPFv3).</t>
 	<t> A router MUST be excluded from an MRT Island if it is
@@ -1285,11 +1285,11 @@ not in the best area: L1_primary for the default topology, L1_primary
 for the MRT-Blue MT-ID, and L1_primary for the MRT-Red MT-ID.  Doing
 this would require machinery to spoof the labels used in FEC-label
 binding advertisements on a per-neighbor basis.  Such label-spoofing
-machinery does not currently exist in most LDP implmentations and
+machinery does not currently exist in most LDP implementations and
 doesn't have other obvious uses.
 </t>
 
-<t>Many existing LDP implmentations do however have the ability to
+<t>Many existing LDP implementations do however have the ability to
 filter FEC-label binding advertisements on a per-neighbor basis. The
 Rainbow-FEC allows us to re-use the existing per-neighbor FEC
 filtering machinery to achieve the desired result.  By introducing the
@@ -1342,7 +1342,7 @@ safe for D to pop the Topology-Identification Label and just forward
 the packet to ABR1 along the MRT-Red next-hop.  ABR1 will use the
 shortest path in Area 10.</t>
 
-<t>In all cases for ISIS and most cases for OSPF, the penultimate
+<t>In all cases for IS-IS and most cases for OSPF, the penultimate
 router can determine what decision the adjacent ABR will make.  The
 one case where it can't be determined is when two ASBRs are in
 different non-backbone areas attached to the same ABR, then the ASBR's
@@ -1831,7 +1831,7 @@ based on "draft-li-mrt-00". </t>
 <t>Licensing: proprietary </t>
 <t>Implementation experience: It is important produce a second
 implementation to verify the algorithm is implemented correctly
-without looping.  It is important to verify the ISIS extensions work
+without looping.  It is important to verify the IS-IS extensions work
 for MRT-FRR. </t>
 <t>Contact information: lizhenbin@huawei.com, eric.wu@huawei.com </t>
 </list>
@@ -2048,8 +2048,7 @@ Following existing conventions,
 http://www.iana.org/protocols should display a new header entitled 
 "Maximally Redundant Tree (MRT) Parameters".  Under that header, there should
 be an entry for "MRT Profile Identifier Registry" with a link to the registry 
-itself at http://www.iana.org/assignments/
-mrt-parameters/mrt-parameters.xhtml#mrt-profile-registry.
+itself at http://www.iana.org/assignments/mrt-parameters/mrt-parameters.xhtml#mrt-profile-registry.
 </t>
 
 </section>
