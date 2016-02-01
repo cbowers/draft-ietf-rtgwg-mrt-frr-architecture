@@ -2191,7 +2191,7 @@ received on a Level-1-and-Level-2 interface. This packet should continue
 to be forwarded along MRT-Red or MRT-Blue, regardless of which level the
 route was learned from. </t> 
 
-<t> In implementation may simplify the decision-making process above by 
+<t> An implementation may simplify the decision-making process above by 
 using the interface of the next-hop for the route to Z to determine the 
 level that the best route to Z was learned from. If the next-hop points 
 out a Level-1-only interface, then the route was learned from a Level-1 
