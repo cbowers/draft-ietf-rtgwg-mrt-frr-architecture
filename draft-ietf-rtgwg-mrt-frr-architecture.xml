@@ -2172,24 +2172,24 @@ affect the behavior by affecting the formation of Level-1 adjacencies.
 
 <t>First consider a packet destined to Z on MRT-Red or MRT-Blue received 
 on a Level-1-only interface. If the best shortest path route to Z was 
-learned from Level-1 advertisements, then the packet should continue to 
+learned from a Level-1 advertisement, then the packet should continue to 
 be forwarded along MRT-Red or MRT-Blue. If instead the best route was 
-learned from Level-2 advertisements, then the packet should be removed 
+learned from a Level-2 advertisement, then the packet should be removed 
 from MRT-Red or MRT-Blue and forwarded on the shortest-path default 
 forwarding topology. </t> 
 
 <t>Now consider a packet destined to Z on MRT-Red or MRT-Blue received 
-on a Level-2-only interface. If the best route to Z was learned from 
-Level-2 advertisements, then the packet should continue to be forwarded 
+on a Level-2-only interface. If the best route to Z was learned from a
+Level-2 advertisement, then the packet should continue to be forwarded 
 along MRT-Red or MRT-Blue. If instead the best route was learned from 
-Level-1 advertisements, then the packet should be removed from MRT-Red 
+a Level-1 advertisement, then the packet should be removed from MRT-Red 
 or MRT-Blue and forwarded on the shortest-path default forwarding 
 topology. </t> 
 
 <t>Finally, consider a packet destined to Z on MRT-Red or MRT-Blue 
 received on a Level-1-and-Level-2 interface. This packet should continue 
-to be forwarded along MRT-Red or MRT-Blue, regardless of the outgoing 
-interface of the best route to Z. </t> 
+to be forwarded along MRT-Red or MRT-Blue, regardless of which level the
+route was learned from. </t> 
 
 <t> In implementation may simplify the decision-making process above by 
 using the interface of the next-hop for the route to Z to determine the 
