@@ -2136,7 +2136,6 @@ another router.</t>
     &RFC5715;
 	&RFC6982;
 	&RFC7490;
-	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5226.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5331.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.5340.xml"?>
 	<?rfc include="http://xml.resource.org/public/rfc/bibxml/reference.RFC.6976.xml"?>
