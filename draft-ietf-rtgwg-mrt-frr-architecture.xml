@@ -1499,7 +1499,9 @@ to send traffic to p via a different area/level, then this is
 definitional.  Otherwise, distance-based computations are necessary
 and an SPF from B's perspective may be necessary.  The following
 equations give the checks needed; the rationale is similar to that
-given in <xref target="RFC5286"/>.</t>
+given in <xref target="RFC5286"/>.  In the inequalities below, 
+D_opt(X,Y) means the shortest distance from node X to node Y, and 
+D_opt(X,p) means the shortest distance from node X to prefix p.  </t>
 
 <t>Loop-Free for S:   D_opt(B, p) &lt; D_opt(B, S) + D_opt(S, p)</t>
 <t>Loop-Free for F:   D_opt(B, p) &lt; D_opt(B, F) + D_opt(F, p)</t>
