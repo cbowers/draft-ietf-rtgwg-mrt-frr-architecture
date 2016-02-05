@@ -1237,11 +1237,7 @@ destination Z should continue to forward the packet along MRT-Red or
 MRT-Blue only if the best route to Z is in the same OSPF area as the 
 interface that the packet was received on. Otherwise, the packet should 
 be removed from MRT-Red or MRT-Blue and forwarded on the shortest-path 
-default forwarding topology. To avoid per-interface forwarding state for 
-MRT-Red and MRT-Blue, the ABR can arrange for packets destined to 
-a different OSPF area to arrive at the ABR already not marked as MRT-Red or 
-MRT-Blue. The Rainbow FEC mechanism can be used to achieve this, as 
-described in the next section.</t> 
+default forwarding topology. </t> 
 
 <t> The above description applies to OSPF. The same essential behavior 
 also applies to IS-IS if one substitutes IS-IS level for OSPF area. 
