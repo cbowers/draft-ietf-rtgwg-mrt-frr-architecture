@@ -127,7 +127,7 @@
 
    <abstract>
 
-<t>This document defines the architecture for IP/LDP Fast-Reroute using 
+<t>This document defines the architecture for IP and LDP Fast-Reroute using 
 Maximally Redundant Trees (MRT-FRR). MRT-FRR is a technology that gives 
 link-protection and node-protection with 100% coverage in any network 
 topology that is still connected after the failure.</t> 
@@ -167,17 +167,18 @@ different PLRs responding to different simultaneous failures. </t>
 <t> While MRT provides 100% protection for a single link or node 
 failure, it may not protect traffic in the event of multiple 
 simultaneous failures, nor does take into account Shared Risk Link 
-Groups (SRLGs). Also, while the MRT Lowpoint algorithm is computationally 
-efficient, it is also new. In order for MRT-FRR to function properly, 
-all of the other nodes in the network that support MRT must correctly 
-compute next-hops based on the same algorithm, and install the 
-corresponding forwarding state. This is in contrast to other FRR methods 
-where the calculation of backup paths generally involves repeated 
-application of the simpler and widely-deployed SPF algorithm, and backup 
-paths themselves re-use the forwarding state used for shortest path 
-forwarding of normal traffic. <xref 
-target="sec_OAM"/>  provides operational guidance related to verification 
+Groups (SRLGs). Also, while the MRT Lowpoint algorithm is 
+computationally efficient, it is also new. In order for MRT-FRR to 
+function properly, all of the other nodes in the network that support 
+MRT must correctly compute next-hops based on the same algorithm, and 
+install the corresponding forwarding state. This is in contrast to other 
+FRR methods where the calculation of backup paths generally involves 
+repeated application of the simpler and widely-deployed shortest path 
+first (SPF) algorithm, and backup paths themselves re-use the forwarding 
+state used for shortest path forwarding of normal traffic. <xref 
+target="sec_OAM"/> provides operational guidance related to verification 
 of MRT forwarding paths.</t> 
+
 
 <t>In addition to supporting IP and LDP unicast fast-reroute, the diverse 
 forwarding topologies and guarantee of 100% coverage permit fast-reroute 
@@ -199,7 +200,7 @@ does not address the multicast applications of MRTs. </t>
        topology for coverage.  However, a real network does not always
        have the same topology.  For instance, maintenance events will
        take links or nodes out of use.  Simply costing out a link can
-       have a significant effect on what LFAs are
+       have a significant effect on what loop-free alternates (LFAs) are
        available. Similarly, after a single failure has happened, the
        topology is changed and its associated coverage.  Finally, many
        networks have new routers or links added and removed; each of
@@ -297,15 +298,15 @@ does not address the multicast applications of MRTs. </t>
 	   redundant as possible given the constraints of the network graph.
 	   </t>
 
-	   <t hangText="DAG: ">Directed Acyclic Graph - a graph where all
+	   <t hangText="Directed Acyclic Graph (DAG): ">A graph where all
        links are directed and there are no cycles in it.</t>
 
-       <t hangText="ADAG: ">Almost Directed Acyclic Graph - a graph
+       <t hangText="Almost Directed Acyclic Graph (ADAG): ">A graph
 	   with one node designated as the root.  The graph has the property
        that if all links incoming to the root were removed, then resulting 
 	   graph would be a DAG.</t>
 
-       <t hangText="GADAG: ">Generalized ADAG - a graph that is the
+       <t hangText="Generalized ADAG (GADAG): ">A graph that is the
        combination of the ADAGs of all blocks.</t>
 
        <t hangText="MRT-Red: "> MRT-Red is used to describe one of the
@@ -344,7 +345,7 @@ does not address the multicast applications of MRTs. </t>
        destination prefix that can be attached to the MRT Island via
        at least two routers.  It is named if there is a way that
        traffic can be encapsulated to reach specifically that proxy
-       node; this could be because there is an LDP FEC for the
+       node; this could be because there is an LDP FEC (Forwarding Equivalence Class) for the
        associated prefix or because MRT-Red and MRT-Blue IP addresses
        are advertised in an undefined fashion for that proxy-node.</t>
 
@@ -442,7 +443,7 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
 
 <section anchor="mrt_and_frr" title="Maximally Redundant Trees (MRT) and Fast-Reroute">
 
-  <t>In normal IGP routing, each router has its shortest path tree (SPT)to
+  <t>In normal IGP routing, each router has its shortest path tree (SPT) to
   all destinations.  From the perspective of a particular destination,
   D, this looks like a reverse SPT.  To use maximally redundant
   trees, in addition, each destination D has two MRTs associated with
@@ -494,7 +495,7 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
   <t> There are three possible types of routers involved in forwarding
   a packet along an MRT path.  At the MRT ingress router, the packet
   leaves the shortest path to the destination and follows an MRT path
-  to the destination.  In a FRR application, the MRT ingress router is
+  to the destination.  In an FRR application, the MRT ingress router is
   the PLR.  An MRT transit router takes a packet that arrives already
   associated with the particular MRT, and forwards it on that same
   MRT.  In some situations (to be discussed later), the packet will
@@ -568,7 +569,7 @@ a 2-connected graph     Blue MRT towards R          Red MRT towards R
     it reduces the label space for other uses, and it increases the
     memory needed to store the labels and the communication required
     by LDP to distribute FEC-label bindings. In general, this approach will
-	also increase the time needed to install the FRR entries in the FIB 
+	also increase the time needed to install the FRR entries in the Forwarding Information Base (FIB) 
 	and hence the time needed before the next failure can be protected. </t>
 
     <t> This forwarding option uses the LDP signaling extensions
@@ -781,7 +782,8 @@ IPv4 traffic.</t>
   tunnel endpoint that is not the destination of the IP traffic.
   These situations will be discussed in detail later.  We note here
   that an IP packet with a destination in a different IGP area/level
-  from the PLR should be tunneled on the MRT to the ABR/LBR on the
+  from the PLR should be tunneled on the MRT to the Area Border Router (ABR)
+  or Level Border Router (LBR) on the
   shortest path to the destination.  For a destination outside of the
   PLR's MRT Island, the packet should be tunneled on the MRT to a
   non-proxy-node immediately before the named proxy-node on that
@@ -1851,7 +1853,8 @@ period of time after a failure has been detected. It is RECOMMENDED that
 an operator proactively monitor the MRT forwarding paths in order to be 
 certain that the paths will be able to carry FRR traffic when needed. 
 Therefore, an implementation SHOULD provide an operator with the ability 
-to test MRT paths with OAM traffic. For example, when MRT paths are 
+to test MRT paths with Operations, Administration, and Maintenance (OAM) traffic. 
+For example, when MRT paths are 
 realized using LDP labels distributed for topology-scoped FECs, an 
 implementation can use the MPLS ping and traceroute as defined in <xref 
 target="RFC4379"/> and extended in <xref target="RFC7307"/> for 
