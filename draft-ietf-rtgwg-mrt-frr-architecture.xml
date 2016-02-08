@@ -2170,7 +2170,7 @@ adjacencies. Note that IS-IS also defines the concept of areas. A router
 is configured with an IS-IS area identifier, and a given router may be 
 configured with multiple IS-IS area identifiers. For an IS-IS Level-1 
 adjacency to form between two routers, at least one IS-IS area 
-identifier must match. IS-IS Level-2 adjacencies to not require any area 
+identifier must match. IS-IS Level-2 adjacencies do not require any area 
 identifiers to match. The behavior described below does not explicitly 
 refer to IS-IS area identifiers. However, IS-IS area identifiers will indirectly 
 affect the behavior by affecting the formation of Level-1 adjacencies. 
